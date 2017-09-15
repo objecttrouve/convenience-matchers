@@ -1,0 +1,18 @@
+Hardware Overview:
+
+  Model Name:	MacBook Pro
+  Model Identifier:	MacBookPro5,5
+  Processor Name:	Intel Core 2 Duo
+  Processor Speed:	2,26 GHz
+  Number of Processors:	1
+  Total Number of Cores:	2
+  L2 Cache:	3 MB
+  Memory:	8 GB
+  Bus Speed:	1,07 GHz
+  Boot ROM Version:	MBP55.00AC.B03
+  SMC Version (system):	1.47f2
+  Serial Number (system):	W89341RS66H
+  Hardware UUID:	FB2DEE8A-E7D6-52FD-A7F3-E8D75A682735
+  Sudden Motion Sensor:
+  State:	Enabled
+
