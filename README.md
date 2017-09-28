@@ -1,11 +1,11 @@
 Convenience Matchers
 ====================
 
-Convenience library with [Hamcrest](http://hamcrest.org/JavaHamcrest/) Matchers for comfortable unit testing.
+Convenience library with custom [Hamcrest](http://hamcrest.org/JavaHamcrest/) Matcher derivates for comfortable unit testing.
 
 `FluentAttributeMatcher`
 ------------------------
-A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) implementation to check multiple target object attributes at once. 
+A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) derivate to check multiple target object attributes at once. 
 Offers a fluent builder API in which the attributes of the target object can be referred to via lambda expressions. 
 
 ### Basic Concept 
