@@ -13,13 +13,17 @@ buildscript {
     }
     dependencies {
         classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.3"
+        classpath 'net.researchgate:gradle-release:2.6.0'
     }
 }
+
+
 
 apply plugin: 'java-library'
 apply plugin: "me.champeau.gradle.jmh"
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'net.researchgate.release'
 
 
 
@@ -63,8 +67,6 @@ jmhJar.dependsOn(fixJmhMetaInf)
 removeJmhDuplicates.mustRunAfter(jmhCompileGeneratedClasses)
 fixJmhMetaInf.dependsOn(removeJmhDuplicates)
 
-
-
 jmh {
     duplicateClassesStrategy = 'fail'
     failOnError = true
@@ -92,3 +94,55 @@ test {
     systemProperties System.getProperties()
 }
 
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'Convenience Matchers'
+                packaging 'jar'
+                description 'Convenient Hamcrest Matcher derivations'
+                url 'https://github.com/objecttrouve/convenience-matchers'
+
+                scm {
+                    url 'https://github.com/objecttrouve/convenience-matchers'
+                    connection 'scm:https://github.com/objecttrouve/convenience-matchers.git'
+                    developerConnection 'scm:git://github.com/objecttrouve/convenience-matchers.git'
+                }
+
+                licenses {
+                    license {
+                        name 'MIT License'
+                        url 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'objecttrouve'
+                        name "L'objet trouvé"
+                        email 'un.object.trouve@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
+release {
+    scmAdapters = [
+            net.researchgate.release.GitAdapter
+    ]
+}
+
+afterReleaseBuild.dependsOn uploadArchives
