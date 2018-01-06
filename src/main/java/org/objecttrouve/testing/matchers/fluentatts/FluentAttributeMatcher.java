@@ -119,7 +119,9 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> {
      * @param getter        Function returning the value to be checked
      * @param <O>           type of the value returned by the getter
      * @return FluentAttributeMatcher
+     * @deprecated Method will be removed with version 1.0.0. Use {@link FluentAttributeMatcher#with(org.objecttrouve.testing.matchers.fluentatts.Attribute, java.lang.Object)}.
      */
+    @Deprecated
     public <O> FluentAttributeMatcher<T> with(final Function<T, O> getter, final O expectedValue) {
         check(getter);
         expectations.add(new Expectation<>(null, getter, (actual) -> Objects.equals(actual, expectedValue), expectedValue, null));
@@ -170,8 +172,10 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> {
      * @param getter  Function returning the value to be checked
      * @param <O>     type of the value returned by the getter
      * @return FluentAttributeMatcher
+     * @deprecated Method will be removed with version 1.0.0. Use {@link FluentAttributeMatcher#with(org.objecttrouve.testing.matchers.fluentatts.Attribute, java.lang.Object)}.
      */
     @SuppressWarnings("WeakerAccess")
+    @Deprecated
     public <O> FluentAttributeMatcher<T> having(final Function<T, O> getter, final Matcher<O> matcher) {
         check(getter);
         check(matcher);
