@@ -9,8 +9,6 @@ package org.objecttrouve.testing.matchers.fluentatts;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.objecttrouve.testing.matchers.ConvenientMatchers;
-
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.LinkedList;

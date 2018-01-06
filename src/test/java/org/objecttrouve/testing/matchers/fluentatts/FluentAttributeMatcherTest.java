@@ -23,7 +23,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 
-@SuppressWarnings("ResultOfMethodCallIgnored")
+@SuppressWarnings({"ResultOfMethodCallIgnored", "deprecation"})
 public class FluentAttributeMatcherTest {
 
 
@@ -1124,10 +1124,6 @@ public class FluentAttributeMatcherTest {
         // Rename anyway -> keep sysprop backwards compatible.
         assertThat(FluentAttributeMatcher.class.getCanonicalName(),
             is("org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher"));
-    }
-
-    private static <T> FluentAttributeMatcher<T> anNonTracking(@SuppressWarnings("UnusedParameters") final Class<T> clazz) {
-        return new FluentAttributeMatcher<>(false);
     }
 
     private static <T> FluentAttributeMatcher<T> aTracking(@SuppressWarnings("UnusedParameters") final Class<T> clazz) {
