@@ -10,22 +10,25 @@ Offers a fluent builder API in which the attributes of the target object can be 
 
 ### Basic Concept 
 
-Best illustrated with an example. 
-
-Example:
+Best illustrated with an example:
 
 ```java
 package org.objecttrouve.testing.matchers.fluentatts;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 // Use the factory method for syntactic sugaring and configurability!
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
+@SuppressWarnings("ALL")
+@Ignore("Failing intentionally.")
 public class Example {
 
+    // The class we want to match.
     static class Result {
         private final String stringValue;
         private final int intValue;
@@ -54,18 +57,22 @@ public class Example {
         return new Result(s, i, b);
     }
 
+    // Name the functions that provide the output you're interested in. 
+    // The names are used for descriptions in case there's a mismatch.
+    private static final Attribute<Result, String> stringValue = attribute("stringValue", Result::getStringValue);
+    private static final Attribute<Result, Integer> intValue = attribute("intValue", Result::getIntValue);
+    private static final Attribute<Result, Boolean> boolValue = attribute("booleanValue", Result::isBoolValue);
+
     @Test
     public void testSomething(){
 
         final Result result = methodWithResult("2=", 1, false);
 
-        // Failing intentionally.
-        //noinspection Convert2MethodRef
         assertThat(result, is(//
-                a(Result.class)//
-                .with(Result::getStringValue, "1=") //
-                .having(Result::getIntValue, is(2)) //
-                .with(r -> r.isBoolValue(), true)
+                a(Result.class)                 // One matcher to rule them ALL!
+                .with(stringValue, "1=")        // Add an expectation about a particular property value.
+                .with(intValue, is(2))          // You can also pass another matcher.
+                .with(boolValue, true)          // ...And so on...
         ));
     }
 
@@ -74,80 +81,12 @@ public class Example {
 
 The idea is to pass a lambda expression or method reference that is getting an attribute value from the target object along with the expected value. 
 Alternatively, it is possible to pass a `Matcher` instead of an expected object. 
-Moreover, the `FluentAttributeMatcher` implements the builder pattern so that it can be set up in a fluent style.  
-
-Use 
-* `FluentAttributeMatcher.with` to pass an expected `Object` and
-* `FluentAttributeMatcher.having` to pass a `Matcher` for the expected object. 
-
-### Run It
-
-Running the `Example` yields the following output: 
-
-```
-> ./gradlew -Dorg.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher.tracking=true test --tests org.objecttrouve.testing.matchers.fluentatts.Example --info
-
-org.objecttrouve.testing.matchers.fluentatts.Example > testSomething FAILED
-    java.lang.AssertionError: 
-    Expected: is 
-        org.objecttrouve.testing.matchers.fluentatts.Example$$Lambda$1/872982730@23d168a2 = "1=" <> "2="
-        org.objecttrouve.testing.matchers.fluentatts.Example$$Lambda$3/891373301@649869c7 =~ is <2>
-        org.objecttrouve.testing.matchers.fluentatts.Example$$Lambda$5/322067951@371320e6 = <true> <> <false>
-        
-
-    If tracking is disabled, test output is not human-friendly.
-    Accept a performance penalty and set system property
-    org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher.tracking=true
-    to obtain human readable output.
-
-         but: was <org.objecttrouve.testing.matchers.fluentatts.Example$Result@d6d3c30>
-        at org.hamcrest.MatcherAssert.assertThat(MatcherAssert.java:20)
-        at org.hamcrest.MatcherAssert.assertThat(MatcherAssert.java:8)
-        at org.objecttrouve.testing.matchers.fluentatts.Example.testSomething(Example.java:48)
-
-1 test completed, 1 failed
-```
-
-Not very human-friendly but assuming optimistically that tests seldomly fail when running as a safety net on Jenkins. 
-
-In the hot phase, during development, however, you might want to have something more user friendly. 
-
-Just run the test with the sytem property `org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher.tracking=true`. 
-
-Like so:
-
-```
-./gradlew -Dorg.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher.tracking=true test --tests org.objecttrouve.testing.matchers.fluentatts.Example --info 
-
-org.objecttrouve.testing.matchers.fluentatts.Example > testSomething FAILED
-    java.lang.AssertionError: 
-    Expected: is 
-        getStringValue = "1=" <> "2="
-        getIntValue =~ is <2>
-        isBoolValue = <true> <> <false>
-        
-         but: was <org.objecttrouve.testing.matchers.fluentatts.Example$Result@2f3e8ae3>
-        at org.hamcrest.MatcherAssert.assertThat(MatcherAssert.java:20)
-        at org.hamcrest.MatcherAssert.assertThat(MatcherAssert.java:8)
-        at org.objecttrouve.testing.matchers.fluentatts.Example.testSomething(Example.java:52)
-
-1 test completed, 1 failed
-```
-
-All of a sudden, the output becomes much more user friendly.
-
-### Limitations
-
-The `FluentAttributeMatcher` attempts to track what's happening inside the getter lambda. This involves quite a bit of expensive magic with a significant performance penalty. Which is why the feature is disabled by default. 
-
-And it does come with quite a few limitations at the moment. There's no support for 
-* tracking across final classes or methods,
-* tracking anything but method calls,
-* tracking implementations with package structures causing `IllegalAccessError`,
-* probably more....
+The `FluentAttributeMatcher` implements the builder pattern so that it can be set up in a fluent style.  
 
 
 ### Interpreting The Output
+
+If you provide nice names you get nice output in case of a mismatch.
 
 The output always follows the form 
 ```
@@ -160,15 +99,21 @@ or
 ```
 reading as "property matching whatever the matchter formulates".
 
-If the getter function involves further calls on intermediate objects they are separated by a `/` e.g.
-```
-getValue/getSubValues/first/length
-```
-sometimes terminating with a `/???` indicating that the call could not be tracked any further. 
-
-In some cases, e.g. when the thing tracked is not a method, the getter description may end up empty.
-
 
 License
 -------
 [MIT License](https://opensource.org/licenses/MIT)
+
+
+L'Objet Trouvé
+==============
+
+It's Art!
+---------
+
+This piece of code can just be grabbed and turned into artwork.
+(So much for the theory.)
+
+Of course, people will become aware of the ground-breaking cultural impact only after the author's passing.  
+
+And yes, you write the real French [objet trouvé](https://en.wikipedia.org/wiki/Found_object) without a _c_. But who knows French, anyway? So just consider the "object" in `objecttrouve` an anglicism. 
