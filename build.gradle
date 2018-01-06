@@ -1,5 +1,7 @@
 import net.researchgate.release.GitAdapter
 
+import java.util.regex.Matcher
+
 /*
  * Released under the terms of the MIT License.
  *
@@ -149,6 +151,11 @@ release {
     scmAdapters = [
             GitAdapter
     ]
+    //noinspection GroovyVariableCanBeFinal
+    versionPatterns = [
+            /[.]*\.(\d+)\.(\d+)[.]*/: { Matcher m, Project p -> m.replaceAll(".${(m[0][1] as int) + 1}.0") }
+    ]
+
 }
 
 afterReleaseBuild.dependsOn uploadArchives
