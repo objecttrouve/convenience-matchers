@@ -14,7 +14,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 // Use the factory method for syntactic sugaring and configurability!
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
+@SuppressWarnings("ALL")
 @Ignore("Failing intentionally.")
 public class Example {
 
@@ -28,6 +30,7 @@ public class Example {
             this.intValue = intValue;
             this.boolValue = boolValue;
         }
+
 
         public String getStringValue() {
             return stringValue;
@@ -46,20 +49,21 @@ public class Example {
         return new Result(s, i, b);
     }
 
+    private static final Attribute<Result, String> stringValue = attribute("stringValue", Result::getStringValue);
+    private static final Attribute<Result, Integer> intValue = attribute("intValue", Result::getIntValue);
+    private static final Attribute<Result, Boolean> boolValue = attribute("booleanValue", Result::isBoolValue);
+
     @Test
     public void testSomething(){
 
         final Result result = methodWithResult("2=", 1, false);
 
-        // Failing intentionally.
-        //noinspection Convert2MethodRef
         assertThat(result, is(//
                 a(Result.class)//
-                .with(Result::getStringValue, "1=") //
-                .having(Result::getIntValue, is(2)) //
-                .with(r -> r.isBoolValue(), true)
+                .with(stringValue, "1=") //
+                .with(intValue, is(2)) //
+                .with(boolValue, true)
         ));
     }
-
 
 }

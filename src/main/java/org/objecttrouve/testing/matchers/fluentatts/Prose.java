@@ -21,18 +21,19 @@ import java.util.stream.Collectors;
 @SuppressWarnings("Convert2streamapi")
 class Prose {
 
+    static final String typeMatchExpectationDescription = "CHECK TEST FOR TYPE-SAFETY: Expected class";
     private static final String methodPathSeparator = "/";
     private static final String methodCallsSeparator = "&";
-    public static final String eq = " = ";
-    public static final String neq = " <> ";
-    public static final String matching = " =~ ";
-    public static final String unknown = "???";
+    private static final String eq = " = ";
+    private static final String neq = " <> ";
+    private static final String matching = " =~ ";
+    private static final String unknown = "???";
 
-    static String describe(final TrackingTree calls) {
+    private static String describe(final TrackingTree calls) {
         return describeAll(calls).stream().collect(Collectors.joining(methodCallsSeparator));
     }
 
-    static List<String> describeAll(final TrackingTree calls) {
+    private static List<String> describeAll(final TrackingTree calls) {
         if (calls.tracked().size() == 0) {
             return new LinkedList<>();
         }
@@ -41,7 +42,8 @@ class Prose {
         if (!calls.getArray().isEmpty()) {
             for (final TrackingTree arrayCall : calls.getArray()) {
                 final List<String> suffixes = describeAll(arrayCall);
-                final String methodName = arrayCall.method().get().getName();
+                //noinspection ConstantConditions
+                final String methodName = arrayCall.method().   get().getName();
                 if (suffixes.isEmpty()) {
                     result.add(methodName);
                 } else {
@@ -76,7 +78,10 @@ class Prose {
     }
 
     static void wording(final Description description, final Result result) {
-        if (result.getCalled() != null) {
+        final String getterDescription = result.getExpectation().getDescription();
+        if (getterDescription != null){
+            description.appendText(getterDescription);
+        } else if (result.getCalled() != null) {
             description.appendText(describe(result.getCalled()));
         } else {
             description.appendText(result.getExpectation().getGetter().toString());
@@ -105,5 +110,9 @@ class Prose {
                     ConvenientMatchers.sysPropTracking +"=true\n" +
                     "to obtain human readable output.\n");
         }
+    }
+
+    static <T>String typeMismatchMsg(final T target) {
+        return "NOT " + target.getClass().getSimpleName() + " what the type parameters define";
     }
 }

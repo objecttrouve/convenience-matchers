@@ -4,3 +4,4 @@ build/
 .gradle/
 sandbox.iml
 convenience-matchers.iml
+/out
