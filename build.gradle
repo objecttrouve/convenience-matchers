@@ -40,6 +40,7 @@ repositories {
 group='org.objecttrouve'
 //noinspection GroovyUnusedAssignment
 sourceCompatibility=JavaVersion.VERSION_1_8
+targetCompatibility=JavaVersion.VERSION_1_8
 //noinspection GroovyUnusedAssignment
 archivesBaseName = "convenience-matchers"
 
