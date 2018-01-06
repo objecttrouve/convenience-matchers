@@ -255,7 +255,6 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> {
                 Prose.wording(description, r);
                 description.appendText("\n\t");
             }
-            Prose.appendEnableTrackingHint(description, tracking);
         }
     }
 

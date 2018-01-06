@@ -102,15 +102,6 @@ class Prose {
         }
     }
 
-    static void appendEnableTrackingHint(final Description description, final boolean isTracking) {
-        if (!isTracking) {
-            description.appendText("\n\n" + //
-                    "If tracking is disabled, test output is not human-friendly.\n" + //
-                    "Accept a performance penalty and set system property\n" + //
-                    ConvenientMatchers.sysPropTracking +"=true\n" +
-                    "to obtain human readable output.\n");
-        }
-    }
 
     static <T>String typeMismatchMsg(final T target) {
         return "NOT " + target.getClass().getSimpleName() + " what the type parameters define";
