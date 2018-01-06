@@ -1,3 +1,5 @@
+import net.researchgate.release.GitAdapter
+
 /*
  * Released under the terms of the MIT License.
  *
@@ -35,7 +37,7 @@ repositories {
 //noinspection GroovyUnusedAssignment
 group='org.objecttrouve'
 //noinspection GroovyUnusedAssignment
-sourceCompatibility=JavaVersion.VERSION_1_8;
+sourceCompatibility=JavaVersion.VERSION_1_8
 //noinspection GroovyUnusedAssignment
 archivesBaseName = "convenience-matchers"
 
@@ -71,6 +73,7 @@ removeJmhDuplicates.mustRunAfter(jmhCompileGeneratedClasses)
 fixJmhMetaInf.dependsOn(removeJmhDuplicates)
 
 jmh {
+    //noinspection GroovyAccessibility
     duplicateClassesStrategy = 'fail'
     failOnError = true
 }
@@ -101,7 +104,7 @@ test {
 uploadArchives {
     repositories {
         mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            beforeDeployment { final MavenDeployment deployment -> signing.signPom(deployment) }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                 authentication(userName: ossrhUsername, password: ossrhPassword)
@@ -144,7 +147,7 @@ uploadArchives {
 
 release {
     scmAdapters = [
-            net.researchgate.release.GitAdapter
+            GitAdapter
     ]
 }
 
