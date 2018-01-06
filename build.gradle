@@ -152,3 +152,12 @@ release {
 }
 
 afterReleaseBuild.dependsOn uploadArchives
+
+ext.moduleName = 'org.objecttrouve.testing.conveniencematchers'
+
+jar {
+    inputs.property("moduleName", moduleName)
+    manifest {
+        attributes('Automatic-Module-Name': moduleName)
+    }
+}
