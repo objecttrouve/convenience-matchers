@@ -12,7 +12,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.3"
+        classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.5"
         classpath 'net.researchgate:gradle-release:2.6.0'
     }
 }
@@ -32,8 +32,11 @@ repositories {
     mavenCentral()
 }
 
+//noinspection GroovyUnusedAssignment
 group='org.objecttrouve'
+//noinspection GroovyUnusedAssignment
 sourceCompatibility=JavaVersion.VERSION_1_8;
+//noinspection GroovyUnusedAssignment
 archivesBaseName = "convenience-matchers"
 
 
