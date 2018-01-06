@@ -16,12 +16,21 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 @SuppressWarnings("unused")
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class FluentAttributeMatcher__05__Tracking__ComplexLambdaMatch {
+public class FluentAttributeMatcher__23__LongPathMatch {
+
+    private static final Attribute<RootThing, String> str = attribute("string", r -> r//
+        .getYat()//
+        .getThingWithThingsWithString()//
+        .getThingWithStringList()//
+        .iterator()//
+        .next()//
+        .getStr());
 
     private static class ThingWithString {
         private final String str;
@@ -63,39 +72,21 @@ public class FluentAttributeMatcher__05__Tracking__ComplexLambdaMatch {
 
     public static class RootThing {
         private final YetAnotherThingWithOtherThings yat;
-        private final ThingWithThingsWithString twtwt;
-        private final ThingWithString twt;
 
-        public RootThing(final YetAnotherThingWithOtherThings yat, final ThingWithThingsWithString twtwt, final ThingWithString twt) {
+        public RootThing(final YetAnotherThingWithOtherThings yat) {
             this.yat = yat;
-            this.twtwt = twtwt;
-            this.twt = twt;
         }
 
         public YetAnotherThingWithOtherThings getYat() {
             return yat;
         }
-
-        ThingWithString getTwt() {
-            return twt;
-        }
-
-        ThingWithThingsWithString getTwtwt() {
-            return twtwt;
-        }
     }
 
     @SuppressWarnings("FieldMayBeFinal")
-    private RootThing input = getInput();
-
-    private RootThing getInput() {
-        final ThingWithString twt = new ThingWithString("input");
-        final ThingWithThingsWithString twtwt = new ThingWithThingsWithString(//
-                twt);
-        return new RootThing(
-                new YetAnotherThingWithOtherThings(
-                        twtwt), twtwt, twt);
-    }
+    private RootThing input = new RootThing(//
+        new YetAnotherThingWithOtherThings(//
+            new ThingWithThingsWithString(//
+                new ThingWithString("input"))));
 
     @Setup(Level.Trial)
     public void checkMatches() {
@@ -106,24 +97,21 @@ public class FluentAttributeMatcher__05__Tracking__ComplexLambdaMatch {
 
     @Benchmark
     public boolean matcher() {
-        return Flatts.aTracking(RootThing.class)//
-                .with(r -> {
-                            String str1 = r.getTwt().getStr();
-                            int size = r.getTwtwt().getThingWithStringList().size();
-                            boolean empty = r.getYat().getThingWithThingsWithString().getThingWithStringList().isEmpty();
-                            return str1 + size + empty;
-                        }, //
-                        "input1false"//
-                )//
-                .matches(input);
+        return Flatts.aNonTracking(RootThing.class)//
+            .with(str, "input")//
+            .matches(input);
     }
 
     @Benchmark
     public boolean control() {
-        final String str1 = input.getTwt().getStr();
-        final int size = input.getTwtwt().getThingWithStringList().size();
-        final boolean empty = input.getYat().getThingWithThingsWithString().getThingWithStringList().isEmpty();
-        final String actual = str1 + size + empty;
-        return CoreMatchers.is("input1false").matches(actual);
+        return CoreMatchers.is("input").matches(//
+            input //
+                .getYat()//
+                .getThingWithThingsWithString()//
+                .getThingWithStringList()//
+                .iterator()//
+                .next()//
+                .getStr() //
+        );
     }
 }

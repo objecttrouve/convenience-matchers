@@ -40,7 +40,7 @@ public class FluentAttributeMatcher__19__NonTracking__CrossAnArrayMatch {
             this.array = array;
         }
 
-        public ThingWithString[] getArray() {
+        ThingWithString[] getArray() {
             return array;
         }
     }

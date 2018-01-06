@@ -18,12 +18,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.objecttrouve.testing.boilerplate.Boilerplate.matchAndDescribe;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 @SuppressWarnings("unused")
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class FluentAttributeMatcher__10__Tracking__CrossAnArrayFailAndDescribe {
+public class FluentAttributeMatcher__22__SimplestFailAndDescribe {
+
+    private static final Attribute<ThingWithString, String> str = attribute("string", ThingWithString::getStr);
 
     private static class ThingWithString {
         private final String str;
@@ -37,42 +40,30 @@ public class FluentAttributeMatcher__10__Tracking__CrossAnArrayFailAndDescribe {
         }
     }
 
-    private static class ThingWithThingWithStringArray {
-        private final ThingWithString[] array;
-
-        private ThingWithThingWithStringArray(final ThingWithString... array) {
-            this.array = array;
-        }
-
-        ThingWithString[] getArray() {
-            return array;
-        }
-    }
-
-
     @SuppressWarnings("FieldMayBeFinal")
-    private ThingWithThingWithStringArray input = new ThingWithThingWithStringArray(//
-            new ThingWithString("1"),//
-            new ThingWithString("2"),//
-            new ThingWithString("3")//
-    );
+    private ThingWithString input = new ThingWithString("input");
 
     @Setup(Level.Trial)
     public void checkFails() {
         assertThat(matcher(), not(is("")));
-        assertThat(control(), not(is(matchAndDescribe(is("3"), "3"))));
+        assertThat(control(), not(is(matchAndDescribe(is("input"), "input"))));
     }
+
 
     @Benchmark
     public Description matcher() {
-        final FluentAttributeMatcher<ThingWithThingWithStringArray> matcher = Flatts.aTracking(ThingWithThingWithStringArray.class)//
-                .with(twa -> twa.getArray()[1].getStr(), "3");
-        return matchAndDescribe(matcher, input);
+
+        final FluentAttributeMatcher<ThingWithString> matcher = Flatts.aNonTracking(ThingWithString.class)//
+                .with(str, "putt");
+
+        return matchAndDescribe(matcher, this.input);
     }
 
     @Benchmark
     public Description control() {
-        final Matcher<String> matcher = CoreMatchers.is("3");
-        return matchAndDescribe(matcher, input.getArray()[1].getStr());
+        final Matcher<String> matcher = CoreMatchers.is("putt");
+
+        return matchAndDescribe(matcher, this.input.getStr());
     }
+
 }

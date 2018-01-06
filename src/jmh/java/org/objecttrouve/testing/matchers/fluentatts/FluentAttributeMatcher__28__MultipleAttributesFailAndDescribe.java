@@ -19,12 +19,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.objecttrouve.testing.boilerplate.Boilerplate.matchAndDescribe;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 @SuppressWarnings("unused")
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class FluentAttributeMatcher__08__Tracking__MultipleAttributesFailAndDescribe {
+public class FluentAttributeMatcher__28__MultipleAttributesFailAndDescribe {
+
+    private static final Attribute<ThingWithAttributes, String> strVal = attribute("string", ThingWithAttributes::getStr);
+    private static final Attribute<ThingWithAttributes, Integer> intVal = attribute("int", ThingWithAttributes::getInteger);
+    private static final Attribute<ThingWithAttributes, OneTwoThree> o23Val = attribute("int", ThingWithAttributes::getO23);
+    private static final Attribute<ThingWithAttributes, Boolean> boolVal = attribute("int", ThingWithAttributes::isBool);
 
     private enum OneTwoThree {
         one, two, three
@@ -72,11 +78,11 @@ public class FluentAttributeMatcher__08__Tracking__MultipleAttributesFailAndDesc
 
     @Benchmark
     public Description matcher() {
-        final FluentAttributeMatcher<ThingWithAttributes> matcher = Flatts.aTracking(ThingWithAttributes.class)//
-                .with(ThingWithAttributes::getStr, "putt")//
-                .with(ThingWithAttributes::getInteger, 2)//
-                .with(ThingWithAttributes::getO23, OneTwoThree.two)//
-                .with(ThingWithAttributes::isBool, false);
+        final FluentAttributeMatcher<ThingWithAttributes> matcher = Flatts.aNonTracking(ThingWithAttributes.class)//
+                .with(strVal, "putt")//
+                .with(intVal, 2)//
+                .with(o23Val, OneTwoThree.two)//
+                .with(boolVal, false);
         return matchAndDescribe(matcher, input);
     }
 

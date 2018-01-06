@@ -26,7 +26,7 @@ import java.util.function.Function;
  * <p>
  * Example:
  * </p>
- * <p>
+ *
  * <pre>
  * <code>
  *
@@ -72,9 +72,9 @@ import java.util.function.Function;
  * return new Result(s, i, b);
  * }
  *
- * private static final Attribute<Result, String> stringValue = attribute("stringValue", Result::getStringValue);
- * private static final Attribute<Result, Integer> intValue = attribute("intValue", Result::getIntValue);
- * private static final Attribute<Result, Boolean> boolValue = attribute("booleanValue", Result::isBoolValue);
+ * private static final Attribute&lt;Result, String&gt; stringValue = attribute("stringValue", Result::getStringValue);
+ * private static final Attribute&lt;Result, Integer&gt; intValue = attribute("intValue", Result::getIntValue);
+ * private static final Attribute&lt;Result, Boolean&gt; boolValue = attribute("booleanValue", Result::isBoolValue);
  *
  * {@literal @}Test
  * public void testSomething(){
@@ -94,6 +94,7 @@ import java.util.function.Function;
  *
  * </code>
  * </pre>
+ *
  */
 public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> {
 

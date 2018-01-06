@@ -48,15 +48,15 @@ public class FluentAttributeMatcher__18__NonTracking__MultipleAttributesFailAndD
             return str;
         }
 
-        public int getInteger() {
+        int getInteger() {
             return integer;
         }
 
-        public OneTwoThree getO23() {
+        OneTwoThree getO23() {
             return o23;
         }
 
-        public boolean isBool() {
+        boolean isBool() {
             return bool;
         }
     }

@@ -7,23 +7,23 @@
 package org.objecttrouve.testing.matchers.fluentatts;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.objecttrouve.testing.boilerplate.Flatts;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.objecttrouve.testing.boilerplate.Boilerplate.matchAndDescribe;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 @SuppressWarnings("unused")
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class FluentAttributeMatcher__10__Tracking__CrossAnArrayFailAndDescribe {
+public class FluentAttributeMatcher__29__CrossAnArrayMatch {
+
+
+    private static final Attribute<ThingWithThingWithStringArray, String> str = attribute("string", twa -> twa.getArray()[1].getStr());
 
     private static class ThingWithString {
         private final String str;
@@ -58,21 +58,21 @@ public class FluentAttributeMatcher__10__Tracking__CrossAnArrayFailAndDescribe {
     );
 
     @Setup(Level.Trial)
-    public void checkFails() {
-        assertThat(matcher(), not(is("")));
-        assertThat(control(), not(is(matchAndDescribe(is("3"), "3"))));
+    public void checkMatches() {
+        assertThat(matcher(), is(true));
+        assertThat(control(), is(true));
+    }
+
+
+    @Benchmark
+    public boolean matcher() {
+        return Flatts.aNonTracking(ThingWithThingWithStringArray.class)//
+                .with(str, "2")//
+                .matches(input);
     }
 
     @Benchmark
-    public Description matcher() {
-        final FluentAttributeMatcher<ThingWithThingWithStringArray> matcher = Flatts.aTracking(ThingWithThingWithStringArray.class)//
-                .with(twa -> twa.getArray()[1].getStr(), "3");
-        return matchAndDescribe(matcher, input);
-    }
-
-    @Benchmark
-    public Description control() {
-        final Matcher<String> matcher = CoreMatchers.is("3");
-        return matchAndDescribe(matcher, input.getArray()[1].getStr());
+    public boolean control() {
+        return CoreMatchers.is("2").matches(input.getArray()[1].getStr());
     }
 }

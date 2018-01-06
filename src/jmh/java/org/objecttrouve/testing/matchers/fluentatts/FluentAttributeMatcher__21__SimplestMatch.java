@@ -6,21 +6,22 @@
  */
 package org.objecttrouve.testing.matchers.fluentatts;
 
-import org.hamcrest.CoreMatchers;
 import org.objecttrouve.testing.boilerplate.Flatts;
-import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 @SuppressWarnings("unused")
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class FluentAttributeMatcher__09__Tracking__CrossAnArrayMatch {
+public class FluentAttributeMatcher__21__SimplestMatch {
+
+    private static final Attribute<ThingWithString, String> str = attribute("string", ThingWithString::getStr);
 
     private static class ThingWithString {
         private final String str;
@@ -34,25 +35,8 @@ public class FluentAttributeMatcher__09__Tracking__CrossAnArrayMatch {
         }
     }
 
-    private static class ThingWithThingWithStringArray {
-        private final ThingWithString[] array;
-
-        private ThingWithThingWithStringArray(final ThingWithString... array) {
-            this.array = array;
-        }
-
-        ThingWithString[] getArray() {
-            return array;
-        }
-    }
-
-
     @SuppressWarnings("FieldMayBeFinal")
-    private ThingWithThingWithStringArray input = new ThingWithThingWithStringArray(//
-            new ThingWithString("1"),//
-            new ThingWithString("2"),//
-            new ThingWithString("3")//
-    );
+    private ThingWithString input = new ThingWithString("input");
 
     @Setup(Level.Trial)
     public void checkMatches() {
@@ -60,16 +44,15 @@ public class FluentAttributeMatcher__09__Tracking__CrossAnArrayMatch {
         assertThat(control(), is(true));
     }
 
-
     @Benchmark
     public boolean matcher() {
-        return Flatts.aTracking(ThingWithThingWithStringArray.class)//
-                .with(twa -> twa.getArray()[1].getStr(), "2")//
+        return Flatts.aNonTracking(ThingWithString.class)//
+                .with(str, "input")//
                 .matches(input);
     }
 
     @Benchmark
     public boolean control() {
-        return CoreMatchers.is("2").matches(input.getArray()[1].getStr());
+        return is("input").matches(input.getStr());
     }
 }

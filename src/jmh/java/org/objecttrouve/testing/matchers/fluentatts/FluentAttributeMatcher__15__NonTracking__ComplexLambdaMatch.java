@@ -76,11 +76,11 @@ public class FluentAttributeMatcher__15__NonTracking__ComplexLambdaMatch {
             return yat;
         }
 
-        public ThingWithString getTwt() {
+        ThingWithString getTwt() {
             return twt;
         }
 
-        public ThingWithThingsWithString getTwtwt() {
+        ThingWithThingsWithString getTwtwt() {
             return twtwt;
         }
     }

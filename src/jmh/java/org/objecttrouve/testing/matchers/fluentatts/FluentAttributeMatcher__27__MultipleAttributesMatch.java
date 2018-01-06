@@ -14,12 +14,18 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 @SuppressWarnings("unused")
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class FluentAttributeMatcher__17__NonTracking__MultipleAttributesMatch {
+public class FluentAttributeMatcher__27__MultipleAttributesMatch {
+
+    private static final Attribute<ThingWithAttributes, String> strVal = attribute("string", ThingWithAttributes::getStr);
+    private static final Attribute<ThingWithAttributes, Integer> intVal = attribute("int", ThingWithAttributes::getInteger);
+    private static final Attribute<ThingWithAttributes, OneTwoThree> o23Val = attribute("int", ThingWithAttributes::getO23);
+    private static final Attribute<ThingWithAttributes, Boolean> boolVal = attribute("int", ThingWithAttributes::isBool);
 
     private enum OneTwoThree {
         one, two, three
@@ -68,10 +74,10 @@ public class FluentAttributeMatcher__17__NonTracking__MultipleAttributesMatch {
     @Benchmark
     public boolean matcher() {
         return Flatts.aNonTracking(ThingWithAttributes.class)//
-                .with(ThingWithAttributes::getStr, "input")//
-                .with(ThingWithAttributes::getInteger, 3)//
-                .with(ThingWithAttributes::getO23, OneTwoThree.three)//
-                .with(ThingWithAttributes::isBool, true)//
+                .with(strVal, "input")//
+                .with(intVal, 3)//
+                .with(o23Val, OneTwoThree.three)//
+                .with(boolVal, true)//
                 .matches(input);
     }
 

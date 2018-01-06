@@ -20,12 +20,20 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.objecttrouve.testing.boilerplate.Boilerplate.matchAndDescribe;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 @SuppressWarnings("unused")
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class FluentAttributeMatcher__06__Tracking__ComplexLambdaFailAndDescribe {
+public class FluentAttributeMatcher__26__ComplexLambdaFailAndDescribe {
+
+    private static final Attribute<RootThing, String> str = attribute("string", r -> {
+        String str1 = r.getTwt().getStr();
+        int size = r.getTwtwt().getThingWithStringList().size();
+        boolean empty = r.getYat().getThingWithThingsWithString().getThingWithStringList().isEmpty();
+        return str1 + size + empty;
+    });
 
     private static class ThingWithString {
         private final String str;
@@ -109,14 +117,8 @@ public class FluentAttributeMatcher__06__Tracking__ComplexLambdaFailAndDescribe 
 
     @Benchmark
     public Description matcher() {
-        final FluentAttributeMatcher<RootThing> matcher = Flatts.aTracking(RootThing.class)//
-                .with(r -> {
-                            final String str1 = r.getTwt().getStr();
-                            final int size = r.getTwtwt().getThingWithStringList().size();
-                            final boolean empty = r.getYat().getThingWithThingsWithString().getThingWithStringList().isEmpty();
-                            return str1 + size + empty;
-                        }, //
-                        "output2true"//
+        final FluentAttributeMatcher<RootThing> matcher = Flatts.aNonTracking(RootThing.class)//
+                .with(str,"output2true"//
                 );
         return matchAndDescribe(matcher, input);
     }

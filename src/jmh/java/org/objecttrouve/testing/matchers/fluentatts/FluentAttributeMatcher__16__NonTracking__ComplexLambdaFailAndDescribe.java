@@ -80,11 +80,11 @@ public class FluentAttributeMatcher__16__NonTracking__ComplexLambdaFailAndDescri
             return yat;
         }
 
-        public ThingWithString getTwt() {
+        ThingWithString getTwt() {
             return twt;
         }
 
-        public ThingWithThingsWithString getTwtwt() {
+        ThingWithThingsWithString getTwtwt() {
             return twtwt;
         }
     }

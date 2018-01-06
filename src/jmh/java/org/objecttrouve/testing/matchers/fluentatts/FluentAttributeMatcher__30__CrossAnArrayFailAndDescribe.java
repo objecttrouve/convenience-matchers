@@ -18,12 +18,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.objecttrouve.testing.boilerplate.Boilerplate.matchAndDescribe;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 @SuppressWarnings("unused")
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class FluentAttributeMatcher__10__Tracking__CrossAnArrayFailAndDescribe {
+public class FluentAttributeMatcher__30__CrossAnArrayFailAndDescribe {
+
+
+    private static final Attribute<ThingWithThingWithStringArray, String> str = attribute("string", twa -> twa.getArray()[1].getStr());
 
     private static class ThingWithString {
         private final String str;
@@ -65,8 +69,8 @@ public class FluentAttributeMatcher__10__Tracking__CrossAnArrayFailAndDescribe {
 
     @Benchmark
     public Description matcher() {
-        final FluentAttributeMatcher<ThingWithThingWithStringArray> matcher = Flatts.aTracking(ThingWithThingWithStringArray.class)//
-                .with(twa -> twa.getArray()[1].getStr(), "3");
+        final FluentAttributeMatcher<ThingWithThingWithStringArray> matcher = Flatts.aNonTracking(ThingWithThingWithStringArray.class)//
+                .with(str, "3");
         return matchAndDescribe(matcher, input);
     }
 

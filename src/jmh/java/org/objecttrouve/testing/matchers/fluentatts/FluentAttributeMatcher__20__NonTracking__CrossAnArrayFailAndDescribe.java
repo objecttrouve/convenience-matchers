@@ -44,7 +44,7 @@ public class FluentAttributeMatcher__20__NonTracking__CrossAnArrayFailAndDescrib
             this.array = array;
         }
 
-        public ThingWithString[] getArray() {
+        ThingWithString[] getArray() {
             return array;
         }
     }
