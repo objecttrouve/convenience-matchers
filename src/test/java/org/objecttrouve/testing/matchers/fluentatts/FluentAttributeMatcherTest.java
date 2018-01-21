@@ -275,6 +275,35 @@ public class FluentAttributeMatcherTest {
 
     }
 
+    private static class HeirThing extends Thing {
+
+        HeirThing(final String value) {
+            super(value);
+        }
+    }
+
+    @Test
+    public void test__with__mismatch__expecting_Matcher__with_super_type() {
+
+        final Attribute<Thing, String> value = Attribute.attribute("value", Thing::getValue);
+
+        final FluentAttributeMatcher<Thing> matcher = aTracking(Thing.class)//
+            .with(value, aTracking(HeirThing.class)); //
+
+        assertTrue(matcher.matches(new Thing("It's a String!")));
+    }
+
+    @Test
+    public void test__with__mismatch__expecting_Matcher__with_sub_type() {
+
+        final Attribute<HeirThing, String> value = Attribute.attribute("value", Thing::getValue);
+
+        final FluentAttributeMatcher<HeirThing> matcher = aTracking(HeirThing.class)//
+            .with(value, aTracking(HeirThing.class)); //
+
+        assertFalse(matcher.matches(new Thing("It's a String!")));
+    }
+
     @Test
     public void test__with__mismatch__expecting_null() {
 
