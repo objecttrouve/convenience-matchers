@@ -102,6 +102,6 @@ class Prose {
 
 
     static <T>String typeMismatchMsg(final T target) {
-        return "NOT " + target.getClass().getSimpleName() + " what the type parameters define";
+        return "NOT " + target.getClass().getSimpleName() + " but what the type parameters define";
     }
 }
