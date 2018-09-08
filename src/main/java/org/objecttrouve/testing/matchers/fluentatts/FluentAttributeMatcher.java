@@ -212,6 +212,13 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> {
         return results.isEmpty();
     }
 
+    /**
+     * @return Percentage of matching expectations.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public double getScore(){
+        final double rawScore = ((expectations.size() - results.size()) / (double) expectations.size()) * 100;
+        return Math.round(rawScore*100.0)/100.0;}
 
     private <O> Result<O> matching(final T item, final Expectation<T, O> exp) {
 

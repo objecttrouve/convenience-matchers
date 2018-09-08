@@ -76,7 +76,7 @@ public class FluentAttributeMatcherTest {
     }
 
     @Test
-    public void test__with__happy_path() {
+    public void test__with__happy_path__getScore__scores_100() {
 
         final Attribute<Thing, String> value = Attribute.attribute("value", Thing::getValue);
 
@@ -84,6 +84,9 @@ public class FluentAttributeMatcherTest {
             .with(value, "the value"); //
 
         assertThat(new Thing("the value"), is(matching));
+
+         final double score = matching.getScore();
+        assertThat(score,  is(100.0));
     }
 
     @Test
@@ -97,6 +100,20 @@ public class FluentAttributeMatcherTest {
         assertThat(new Thing("the value"), is(matching));
     }
 
+    @Test
+    public void test__withValue__happy_path__getScore__scores_100() {
+
+        final Attribute<Thing, String> value = Attribute.attribute("value", Thing::getValue);
+
+        final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
+            .withValue(value, "the value"); //
+
+        assertThat(new Thing("the value"), is(matching));
+
+         final double score = matching.getScore();
+        assertThat(score,  is(100.0));
+    }
+
 
     @Test
     public void test__with__mismatch__self_describing() {
@@ -108,7 +125,7 @@ public class FluentAttributeMatcherTest {
     }
 
     @Test
-    public void test__with__mismatch() {
+    public void test__with__mismatch__nothing_matches__getScore__scores_0() {
 
         final Attribute<Thing, String> value = Attribute.attribute("value", Thing::getValue);
 
@@ -116,10 +133,13 @@ public class FluentAttributeMatcherTest {
             .with(value, "the value"); //
 
         assertThat(new Thing("not the value"), not(is(matching)));
+
+         final double score = matching.getScore();
+        assertThat(score, is(0.0));
     }
 
     @Test
-    public void test__withValue__mismatch() {
+    public void test__withValue__mismatch__nothing_matches__getScore__scores_0() {
 
         final Attribute<Thing, String> value = Attribute.attribute("value", Thing::getValue);
 
@@ -127,6 +147,10 @@ public class FluentAttributeMatcherTest {
             .withValue(value, "the value"); //
 
         assertThat(new Thing("not the value"), not(is(matching)));
+
+
+         final double score = matching.getScore();
+        assertThat(score, is(0.0));
     }
 
     @Test
@@ -184,6 +208,18 @@ public class FluentAttributeMatcherTest {
     }
 
     @Test
+    public void test__having__happy_path__getScore__scores_100() {
+
+        final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
+            .having(Thing::getValue, equalTo("the value")); //
+
+        assertThat(new Thing("the value"), is(matching));
+
+         final double score = matching.getScore();
+        assertThat(score,  is(100.0));
+    }
+
+    @Test
     public void test__withMatching__happy_path() {
 
         final Attribute<Thing, String> value = Attribute.attribute("value", Thing::getValue);
@@ -192,6 +228,20 @@ public class FluentAttributeMatcherTest {
             .withMatching(value, equalTo("the value")); //
 
         assertThat(new Thing("the value"), is(matching));
+    }
+
+    @Test
+    public void test__withMatching__happy_path__getScore__scores_100() {
+
+        final Attribute<Thing, String> value = Attribute.attribute("value", Thing::getValue);
+
+        final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
+            .withMatching(value, equalTo("the value")); //
+
+        assertThat(new Thing("the value"), is(matching));
+
+         final double score = matching.getScore();
+        assertThat(score,  is(100.0));
     }
 
 
@@ -216,6 +266,18 @@ public class FluentAttributeMatcherTest {
     }
 
     @Test
+    public void test__having__mismatch__nothing_matches__getScore__scores_0() {
+
+        final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
+            .having(Thing::getValue, equalTo("the value")); //
+
+        assertThat(new Thing("the other value"), not(is(matching)));
+
+         final double score = matching.getScore();
+        assertThat(score, is(0.0));
+    }
+
+    @Test
     public void testSthNotMatching2() {
 
         final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
@@ -233,6 +295,20 @@ public class FluentAttributeMatcherTest {
             .withMatching(value, equalTo("the value")); //
 
         assertThat(new Thing("the other value"), not(is(matching)));
+    }
+
+    @Test
+    public void test__withMatching__mismatch__nothing_matches__getScore__scores_0() {
+
+        final Attribute<Thing, String> value = Attribute.attribute("value", Thing::getValue);
+
+        final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
+            .withMatching(value, equalTo("the value")); //
+
+        assertThat(new Thing("the other value"), not(is(matching)));
+
+         final double score = matching.getScore();
+        assertThat(score, is(0.0));
     }
 
     @Test
@@ -741,7 +817,7 @@ public class FluentAttributeMatcherTest {
     }
 
     @Test
-    public void testMultipleExpectationsAllMatching() {
+    public void test__multiple_expectations__all_matching() {
         final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
             .with(ThingWithNumbers::count, 3L)//
             .with(ThingWithNumbers::sum, 6)//
@@ -749,10 +825,25 @@ public class FluentAttributeMatcherTest {
             ;//
 
         assertThat(new ThingWithNumbers(1, 2, 3), is(matching));
+
     }
 
     @Test
-    public void testMultipleExpectationsNoneMatching() {
+    public void test__multiple_expectations__all_matching__getScore_scores_100() {
+        final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
+            .with(ThingWithNumbers::count, 3L)//
+            .with(ThingWithNumbers::sum, 6)//
+            .having(twn -> twn.getNumbers().size(), is(3))//
+            ;//
+
+        assertThat(new ThingWithNumbers(1, 2, 3), is(matching));
+
+         final double score = matching.getScore();
+        assertThat(score,  is(100.0));
+    }
+
+    @Test
+    public void test__multiple_expectations__none_matching() {
         final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
             .with(ThingWithNumbers::count, 6)//
             .with(ThingWithNumbers::sum, 3)//
@@ -762,9 +853,23 @@ public class FluentAttributeMatcherTest {
         assertThat(new ThingWithNumbers(1, 2, 3, 4), not(is(matching)));
     }
 
+    @Test
+    public void test__multiple_expectations__none_matching__getScore__scores_0() {
+        final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
+            .with(ThingWithNumbers::count, 6)//
+            .with(ThingWithNumbers::sum, 3)//
+            .having(twn -> twn.getNumbers().size(), is(2))//
+            ;//
+
+        assertThat(new ThingWithNumbers(1, 2, 3, 4), not(is(matching)));
+
+         final double score = matching.getScore();
+        assertThat(score, is(0.0));
+    }
+
 
     @Test
-    public void testMultipleExpectationsNoneMatchingDescribesNicely() {
+    public void test__multiple_expectations__none_matching__describes_nicely() {
         final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
             .with(ThingWithNumbers::count, 6)//
             .with(ThingWithNumbers::sum, 3)//
@@ -786,8 +891,48 @@ public class FluentAttributeMatcherTest {
             + "\t"));
     }
 
+
     @Test
-    public void testMultipleExpectationsSomeNotMatchingDescribesNicely() {
+    public void test__multiple_expectations__some_not_matching() {
+        final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
+            .with(ThingWithNumbers::count, 3L)//
+            .with(ThingWithNumbers::sum, 3)//
+            .having(twn -> twn.getNumbers().size(), is(2))//
+            ;//
+
+        assertThat(new ThingWithNumbers(1, 2, 3), not(is(matching)));
+    }
+
+    @Test
+    public void test__multiple_expectations__some_not_matching__getScore__scores_matching_percentage__1_of_3() {
+        final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
+            .with(ThingWithNumbers::count, 3L)//
+            .with(ThingWithNumbers::sum, 3)//
+            .having(twn -> twn.getNumbers().size(), is(2))//
+            ;//
+
+        matching.matchesSafely(new ThingWithNumbers(1, 2, 3));
+
+        final double score = matching.getScore();
+        assertThat(score, is(33.33));
+    }
+
+    @Test
+    public void test__multiple_expectations__some_not_matching__getScore__scores_matching_percentage__2_of_3() {
+        final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
+            .with(ThingWithNumbers::count, 3L)//
+            .with(ThingWithNumbers::sum, 3)//
+            .having(twn -> twn.getNumbers().size(), is(3))//
+            ;//
+
+        matching.matchesSafely(new ThingWithNumbers(1, 2, 3));
+
+        final double score = matching.getScore();
+        assertThat(score, is(66.67));
+    }
+
+    @Test
+    public void test__multiple_expectations__some_not_matching__describes_nicely() {
         final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
             .with(ThingWithNumbers::count, 3L)//
             .with(ThingWithNumbers::sum, 3)//
