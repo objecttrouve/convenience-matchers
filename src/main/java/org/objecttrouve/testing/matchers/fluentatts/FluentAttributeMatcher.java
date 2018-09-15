@@ -10,11 +10,14 @@ package org.objecttrouve.testing.matchers.fluentatts;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.objecttrouve.testing.matchers.api.ScorableMatcher;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+
+import static org.objecttrouve.testing.matchers.fluentatts.Scorer.score;
 
 /**
  * <p>
@@ -96,7 +99,7 @@ import java.util.function.Function;
  * </pre>
  *
  */
-public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> {
+public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements ScorableMatcher {
 
 
     private final List<Expectation<T, ?>> expectations = new LinkedList<>();
@@ -212,13 +215,9 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> {
         return results.isEmpty();
     }
 
-    /**
-     * @return Percentage of matching expectations.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public double getScore(){
-        final double rawScore = ((expectations.size() - results.size()) / (double) expectations.size()) * 100;
-        return Math.round(rawScore*100.0)/100.0;}
+
+
+
 
     private <O> Result<O> matching(final T item, final Expectation<T, O> exp) {
 
@@ -287,4 +286,8 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> {
         }
     }
 
+    @Override
+    public double getScore() {
+        return score((expectations.size()-results.size()), expectations.size());
+    }
 }

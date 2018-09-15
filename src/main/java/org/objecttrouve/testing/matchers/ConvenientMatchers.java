@@ -8,10 +8,13 @@
 package org.objecttrouve.testing.matchers;
 
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
+import org.objecttrouve.testing.matchers.fluentcollections.FluentCollectionMatcher;
+
+import java.util.Collection;
 
 /**
  * <p>
- * {@link org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher} factory.
+ * {@link FluentAttributeMatcher} factory.
  * </p>
  * <p>
  * Performs minimal configuration such that lambda tracking
@@ -44,7 +47,7 @@ public class ConvenientMatchers {
      * <br>
      * {@code org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher.tracking=<true|false>}
      * */
-    public static final String sysPropTracking = "org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher.tracking";
+    private static final String sysPropTracking = "org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher.tracking";
 
     private ConvenientMatchers(){
         /* Not there. */
@@ -54,7 +57,7 @@ public class ConvenientMatchers {
     }
 
     /**
-     * Factory method for a {@link org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher}
+     * Factory method for a {@link FluentAttributeMatcher}
      * matching the <i>actual</i> object's properties.
      *
      * @param klass <i>actual</i> object class
@@ -70,7 +73,7 @@ public class ConvenientMatchers {
 
 
     /**
-     * Factory method for a {@link org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher}
+     * Factory method for a {@link FluentAttributeMatcher}
      * matching the <i>actual</i> object's properties.
      *
      * @param klass <i>actual</i> object class
@@ -87,6 +90,12 @@ public class ConvenientMatchers {
     @SuppressWarnings("unused")
     public static boolean isTracking() {
         return tracking;
+    }
+
+
+
+    public static <X, C extends Collection<X>> FluentCollectionMatcher<X, C> aCollectionOf(final Class<X> klass){
+        return new FluentCollectionMatcher<>(klass);
     }
 
 }
