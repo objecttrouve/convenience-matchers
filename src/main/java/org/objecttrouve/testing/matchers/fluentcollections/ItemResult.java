@@ -1,7 +1,7 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
@@ -15,7 +15,6 @@ import java.util.List;
 class ItemResult<X> {
 
     private final int index;
-    private final int length;
     private final boolean matched;
     private final X actual;
     private final List<Matcher> matchers;
@@ -27,7 +26,6 @@ class ItemResult<X> {
     private ItemResult(final Builder<X> builder) {
         matched = builder.matched;
         index = builder.index;
-        length= builder.length;
         actual = builder.actual;
         matchers = builder.matchers;
         breakingSort = builder.breakingSort;
@@ -44,7 +42,6 @@ class ItemResult<X> {
 
         private boolean matched;
         private int index;
-        private int length;
         private final X actual;
         private List<Matcher> matchers = Collections.emptyList();
         private boolean breakingSort;
@@ -58,11 +55,6 @@ class ItemResult<X> {
 
         ItemResult<X> build(){
             return new ItemResult<>(this);
-        }
-
-        Builder withMaxIndex(final int length) {
-            this.length = length;
-            return this;
         }
 
         Builder withIndex(final int index) {
@@ -109,9 +101,6 @@ class ItemResult<X> {
         return index;
     }
 
-    int getLength() {
-        return length;
-    }
 
     public X getActual() {
         return actual;

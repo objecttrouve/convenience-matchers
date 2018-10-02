@@ -1,7 +1,7 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
@@ -278,24 +278,20 @@ public class ProseTest {
     @Test
     public void test__itemString(){
 
-        final int length = 100;
         final ItemResult r1 = ItemResult.<String>builder(null)
             .withIndex(0)
-            .withMaxIndex(length)
             .matched(true)
             .withMatchers(singletonList(equalTo("y")))
             .build();
 
         final ItemResult r2 = ItemResult.builder("pooooh")
             .withIndex(1)
-            .withMaxIndex(length)
             .matched(false)
             .withMatchers(singletonList(equalTo("y")))
             .build();
 
         final ItemResult r3 = ItemResult.builder("fooooo")
             .withIndex(2)
-            .withMaxIndex(length)
             .matched(false)
             .breakingSortOrder(true)
             .withMatchers(singletonList(equalTo("y")))
@@ -303,7 +299,6 @@ public class ProseTest {
 
         final ItemResult r4 = ItemResult.builder(Arrays.asList("XXXXX", "YYYYY").toString())
             .withIndex(3)
-            .withMaxIndex(length)
             .matched(false)
             .breakingSortOrder(true)
             .breakingItemOrder(true)
@@ -313,7 +308,6 @@ public class ProseTest {
 
         final ItemResult r5 = ItemResult.builder(Arrays.asList("XXXXX", "YYYYY", "ZZZZZZZZZZZZZZ").toString())
             .withIndex(4)
-            .withMaxIndex(length)
             .matched(false)
             .breakingSortOrder(true)
             .breakingItemOrder(true)
@@ -323,7 +317,6 @@ public class ProseTest {
 
         final ItemResult r6 = ItemResult.builder(Arrays.asList("XXXXX", "YYYYY", "ZZZZZZZZZZZZZZ").toString())
             .withIndex(5)
-            .withMaxIndex(length)
             .matched(false)
             .breakingSortOrder(true)
             .breakingItemOrder(false)
@@ -334,7 +327,6 @@ public class ProseTest {
 
         final ItemResult r7 = ItemResult.builder(Arrays.asList("XXXXX", "YYYYY", "ZZZZZZZZZZZZZZ").toString())
             .withIndex(6)
-            .withMaxIndex(length)
             .matched(true)
             .breakingSortOrder(true)
             .breakingItemOrder(true)
@@ -344,12 +336,12 @@ public class ProseTest {
             .build();
 
 
-        System.out.println(prose.line(r1));
-        System.out.println(prose.line(r2));
-        System.out.println(prose.line(r3));
-        System.out.println(prose.line(r4));
-        System.out.println(prose.line(r5));
-        System.out.println(prose.line(r6));
-        System.out.println(prose.line(r7));
+        System.out.println(prose.line(r1, 100));
+        System.out.println(prose.line(r2, 100));
+        System.out.println(prose.line(r3, 100));
+        System.out.println(prose.line(r4, 100));
+        System.out.println(prose.line(r5, 100));
+        System.out.println(prose.line(r6, 100));
+        System.out.println(prose.line(r7, 100));
     }
 }

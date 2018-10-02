@@ -1,7 +1,7 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
@@ -82,7 +82,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult = itemResults.get(0);
         assertThat(itemResult.getActual(), is("item"));
         assertThat(itemResult.getIndex(), is(0));
-        assertThat(itemResult.getLength(), is(1));
         assertThat(itemResult.isMatched(), is(false));
         assertThat(itemResult.isBreakingItemOrder(), is(false));
         assertThat(itemResult.isBreakingSortOrder(), is(false));
@@ -155,7 +154,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult = itemResults.get(0);
         assertThat(itemResult.getActual(), is("item"));
         assertThat(itemResult.getIndex(), is(0));
-        assertThat(itemResult.getLength(), is(1));
         assertThat(itemResult.isMatched(), is(true));
         assertThat(itemResult.isBreakingItemOrder(), is(false));
         assertThat(itemResult.isBreakingSortOrder(), is(false));
@@ -225,7 +223,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult = itemResults.get(0);
         assertThat(itemResult.getActual(), is("item"));
         assertThat(itemResult.getIndex(), is(0));
-        assertThat(itemResult.getLength(), is(1));
         assertThat(itemResult.isMatched(), is(true));
         assertThat(itemResult.isBreakingItemOrder(), is(false));
         assertThat(itemResult.isBreakingSortOrder(), is(false));
@@ -314,7 +311,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("item"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(2));
         assertThat(itemResult1.isMatched(), is(false));
         assertThat(itemResult1.isBreakingItemOrder(), is(false));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -324,7 +320,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult2 = itemResults.get(1);
         assertThat(itemResult2.getActual(), is("element"));
         assertThat(itemResult2.getIndex(), is(1));
-        assertThat(itemResult2.getLength(), is(2));
         assertThat(itemResult2.isMatched(), is(false));
         assertThat(itemResult2.isBreakingItemOrder(), is(false));
         assertThat(itemResult2.isBreakingSortOrder(), is(false));
@@ -378,7 +373,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("item"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(1));
         assertThat(itemResult1.isMatched(), is(true));
         assertThat(itemResult1.isBreakingItemOrder(), is(false));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -452,7 +446,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("item"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(3));
         assertThat(itemResult1.isMatched(), is(true));
         assertThat(itemResult1.isBreakingItemOrder(), is(false));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -462,7 +455,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult2 = itemResults.get(1);
         assertThat(itemResult2.getActual(), is("item"));
         assertThat(itemResult2.getIndex(), is(1));
-        assertThat(itemResult2.getLength(), is(3));
         assertThat(itemResult2.isMatched(), is(true));
         assertThat(itemResult2.isBreakingItemOrder(), is(false));
         assertThat(itemResult2.isBreakingSortOrder(), is(false));
@@ -472,7 +464,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult3 = itemResults.get(2);
         assertThat(itemResult3.getActual(), is("item"));
         assertThat(itemResult3.getIndex(), is(2));
-        assertThat(itemResult3.getLength(), is(3));
         assertThat(itemResult3.isMatched(), is(true));
         assertThat(itemResult3.isBreakingItemOrder(), is(false));
         assertThat(itemResult3.isBreakingSortOrder(), is(false));
@@ -530,7 +521,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("element"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(3));
         assertThat(itemResult1.isMatched(), is(false));
         assertThat(itemResult1.isBreakingItemOrder(), is(false));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -540,7 +530,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult2 = itemResults.get(1);
         assertThat(itemResult2.getActual(), is("element"));
         assertThat(itemResult2.getIndex(), is(1));
-        assertThat(itemResult2.getLength(), is(3));
         assertThat(itemResult2.isMatched(), is(false));
         assertThat(itemResult2.isBreakingItemOrder(), is(false));
         assertThat(itemResult2.isBreakingSortOrder(), is(false));
@@ -550,7 +539,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult3 = itemResults.get(2);
         assertThat(itemResult3.getActual(), is("item"));
         assertThat(itemResult3.getIndex(), is(2));
-        assertThat(itemResult3.getLength(), is(3));
         assertThat(itemResult3.isMatched(), is(true));
         assertThat(itemResult3.isBreakingItemOrder(), is(false));
         assertThat(itemResult3.isBreakingSortOrder(), is(false));
@@ -591,7 +579,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("element"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(3));
         assertThat(itemResult1.isMatched(), is(false));
         assertThat(itemResult1.isBreakingItemOrder(), is(false));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -601,7 +588,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult2 = itemResults.get(1);
         assertThat(itemResult2.getActual(), is("element"));
         assertThat(itemResult2.getIndex(), is(1));
-        assertThat(itemResult2.getLength(), is(3));
         assertThat(itemResult2.isMatched(), is(false));
         assertThat(itemResult2.isBreakingItemOrder(), is(false));
         assertThat(itemResult2.isBreakingSortOrder(), is(false));
@@ -611,7 +597,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult3 = itemResults.get(2);
         assertThat(itemResult3.getActual(), is("element"));
         assertThat(itemResult3.getIndex(), is(2));
-        assertThat(itemResult3.getLength(), is(3));
         assertThat(itemResult3.isMatched(), is(false));
         assertThat(itemResult3.isBreakingItemOrder(), is(false));
         assertThat(itemResult3.isBreakingSortOrder(), is(false));
@@ -713,7 +698,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("item"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(3));
         assertThat(itemResult1.isMatched(), is(true));
         assertThat(itemResult1.isBreakingItemOrder(), is(false));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -723,7 +707,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult2 = itemResults.get(1);
         assertThat(itemResult2.getActual(), is("element"));
         assertThat(itemResult2.getIndex(), is(1));
-        assertThat(itemResult2.getLength(), is(3));
         assertThat(itemResult2.isMatched(), is(false));
         assertThat(itemResult2.isBreakingItemOrder(), is(false));
         assertThat(itemResult2.isBreakingSortOrder(), is(false));
@@ -733,7 +716,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult3 = itemResults.get(2);
         assertThat(itemResult3.getActual(), is("object"));
         assertThat(itemResult3.getIndex(), is(2));
-        assertThat(itemResult3.getLength(), is(3));
         assertThat(itemResult3.isMatched(), is(true));
         assertThat(itemResult3.isBreakingItemOrder(), is(false));
         assertThat(itemResult3.isBreakingSortOrder(), is(false));
@@ -776,7 +758,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("it"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(3));
         assertThat(itemResult1.isMatched(), is(false));
         assertThat(itemResult1.isBreakingItemOrder(), is(false));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -786,7 +767,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult2 = itemResults.get(1);
         assertThat(itemResult2.getActual(), is("element"));
         assertThat(itemResult2.getIndex(), is(1));
-        assertThat(itemResult2.getLength(), is(3));
         assertThat(itemResult2.isMatched(), is(false));
         assertThat(itemResult2.isBreakingItemOrder(), is(false));
         assertThat(itemResult2.isBreakingSortOrder(), is(false));
@@ -796,7 +776,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult3 = itemResults.get(2);
         assertThat(itemResult3.getActual(), is("objection"));
         assertThat(itemResult3.getIndex(), is(2));
-        assertThat(itemResult3.getLength(), is(3));
         assertThat(itemResult3.isMatched(), is(false));
         assertThat(itemResult3.isBreakingItemOrder(), is(false));
         assertThat(itemResult3.isBreakingSortOrder(), is(false));
@@ -890,7 +869,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("fake"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(5));
         assertThat(itemResult1.isMatched(), is(true));
         assertThat(itemResult1.isBreakingItemOrder(), is(false));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -900,7 +878,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult2 = itemResults.get(1);
         assertThat(itemResult2.getActual(), is("news"));
         assertThat(itemResult2.getIndex(), is(1));
-        assertThat(itemResult2.getLength(), is(5));
         assertThat(itemResult2.isMatched(), is(true));
         assertThat(itemResult2.isBreakingItemOrder(), is(false));
         assertThat(itemResult2.isBreakingSortOrder(), is(false));
@@ -910,7 +887,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult3 = itemResults.get(2);
         assertThat(itemResult3.getActual(), is("impeachment"));
         assertThat(itemResult3.getIndex(), is(2));
-        assertThat(itemResult3.getLength(), is(5));
         assertThat(itemResult3.isMatched(), is(true));
         assertThat(itemResult3.isBreakingItemOrder(), is(false));
         assertThat(itemResult3.isBreakingSortOrder(), is(false));
@@ -920,7 +896,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult4 = itemResults.get(3);
         assertThat(itemResult4.getActual(), is("Donald"));
         assertThat(itemResult4.getIndex(), is(3));
-        assertThat(itemResult4.getLength(), is(5));
         assertThat(itemResult4.isMatched(), is(true));
         assertThat(itemResult4.isBreakingItemOrder(), is(false));
         assertThat(itemResult4.isBreakingSortOrder(), is(false));
@@ -930,7 +905,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult5 = itemResults.get(4);
         assertThat(itemResult5.getActual(), is("Trump"));
         assertThat(itemResult5.getIndex(), is(4));
-        assertThat(itemResult5.getLength(), is(5));
         assertThat(itemResult5.isMatched(), is(false));
         assertThat(itemResult5.isBreakingItemOrder(), is(false));
         assertThat(itemResult5.isBreakingSortOrder(), is(false));
@@ -1025,7 +999,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("fake"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(7));
         assertThat(itemResult1.isMatched(), is(true));
         assertThat(itemResult1.isBreakingItemOrder(), is(false));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -1035,7 +1008,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult2 = itemResults.get(1);
         assertThat(itemResult2.getActual(), is("news"));
         assertThat(itemResult2.getIndex(), is(1));
-        assertThat(itemResult2.getLength(), is(7));
         assertThat(itemResult2.isMatched(), is(true));
         assertThat(itemResult2.isBreakingItemOrder(), is(false));
         assertThat(itemResult2.isBreakingSortOrder(), is(false));
@@ -1045,7 +1017,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult3 = itemResults.get(2);
         assertThat(itemResult3.getActual(), is("impeachment"));
         assertThat(itemResult3.getIndex(), is(2));
-        assertThat(itemResult3.getLength(), is(7));
         assertThat(itemResult3.isMatched(), is(true));
         assertThat(itemResult3.isBreakingItemOrder(), is(false));
         assertThat(itemResult3.isBreakingSortOrder(), is(false));
@@ -1055,7 +1026,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult4 = itemResults.get(3);
         assertThat(itemResult4.getActual(), is("Donald"));
         assertThat(itemResult4.getIndex(), is(3));
-        assertThat(itemResult4.getLength(), is(7));
         assertThat(itemResult4.isMatched(), is(true));
         assertThat(itemResult4.isBreakingItemOrder(), is(false));
         assertThat(itemResult4.isBreakingSortOrder(), is(false));
@@ -1065,7 +1035,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult5 = itemResults.get(4);
         assertThat(itemResult5.getActual(), is("Trump"));
         assertThat(itemResult5.getIndex(), is(4));
-        assertThat(itemResult5.getLength(), is(7));
         assertThat(itemResult5.isMatched(), is(true));
         assertThat(itemResult5.isBreakingItemOrder(), is(false));
         assertThat(itemResult5.isBreakingSortOrder(), is(false));
@@ -1075,7 +1044,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult6 = itemResults.get(5);
         assertThat(itemResult6.getActual(), is("alternative"));
         assertThat(itemResult6.getIndex(), is(5));
-        assertThat(itemResult6.getLength(), is(7));
         assertThat(itemResult6.isMatched(), is(false));
         assertThat(itemResult6.isBreakingItemOrder(), is(false));
         assertThat(itemResult6.isBreakingSortOrder(), is(false));
@@ -1085,7 +1053,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult7 = itemResults.get(6);
         assertThat(itemResult7.getActual(), is("facts"));
         assertThat(itemResult7.getIndex(), is(6));
-        assertThat(itemResult7.getLength(), is(7));
         assertThat(itemResult7.isMatched(), is(false));
         assertThat(itemResult7.isBreakingItemOrder(), is(false));
         assertThat(itemResult7.isBreakingSortOrder(), is(false));
@@ -1200,7 +1167,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("fake"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(5));
         assertThat(itemResult1.isMatched(), is(true));
         assertThat(itemResult1.isBreakingItemOrder(), is(false));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -1210,7 +1176,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult2 = itemResults.get(1);
         assertThat(itemResult2.getActual(), is("news"));
         assertThat(itemResult2.getIndex(), is(1));
-        assertThat(itemResult2.getLength(), is(5));
         assertThat(itemResult2.isMatched(), is(true));
         assertThat(itemResult2.isBreakingItemOrder(), is(false));
         assertThat(itemResult2.isBreakingSortOrder(), is(false));
@@ -1220,7 +1185,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult3 = itemResults.get(2);
         assertThat(itemResult3.getActual(), is("Donald"));
         assertThat(itemResult3.getIndex(), is(2));
-        assertThat(itemResult3.getLength(), is(5));
         assertThat(itemResult3.isMatched(), is(true));
         assertThat(itemResult3.isBreakingItemOrder(), is(true));
         assertThat(itemResult3.isBreakingSortOrder(), is(false));
@@ -1230,7 +1194,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult4 = itemResults.get(3);
         assertThat(itemResult4.getActual(), is("Trump"));
         assertThat(itemResult4.getIndex(), is(3));
-        assertThat(itemResult4.getLength(), is(5));
         assertThat(itemResult4.isMatched(), is(true));
         assertThat(itemResult4.isBreakingItemOrder(), is(true));
         assertThat(itemResult4.isBreakingSortOrder(), is(false));
@@ -1240,7 +1203,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult5 = itemResults.get(4);
         assertThat(itemResult5.getActual(), is("impeachment"));
         assertThat(itemResult5.getIndex(), is(4));
-        assertThat(itemResult5.getLength(), is(5));
         assertThat(itemResult5.isMatched(), is(true));
         assertThat(itemResult5.isBreakingItemOrder(), is(false));
         assertThat(itemResult5.isBreakingSortOrder(), is(false));
@@ -1294,7 +1256,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("Donald"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(5));
         assertThat(itemResult1.isMatched(), is(true));
         assertThat(itemResult1.isBreakingItemOrder(), is(true));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -1304,7 +1265,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult2 = itemResults.get(1);
         assertThat(itemResult2.getActual(), is("Trump"));
         assertThat(itemResult2.getIndex(), is(1));
-        assertThat(itemResult2.getLength(), is(5));
         assertThat(itemResult2.isMatched(), is(true));
         assertThat(itemResult2.isBreakingItemOrder(), is(true));
         assertThat(itemResult2.isBreakingSortOrder(), is(false));
@@ -1313,8 +1273,6 @@ public class FluentCollectionMatcherTest {
         assertThat(itemResult2.getMismatchedItemMatchers().size(), is(0));
         final ItemResult itemResult3 = itemResults.get(2);
         assertThat(itemResult3.getActual(), is("fake"));
-        assertThat(itemResult3.getIndex(), is(2));
-        assertThat(itemResult3.getLength(), is(5));
         assertThat(itemResult3.isMatched(), is(true));
         assertThat(itemResult3.isBreakingItemOrder(), is(false));
         assertThat(itemResult3.isBreakingSortOrder(), is(false));
@@ -1324,7 +1282,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult4 = itemResults.get(3);
         assertThat(itemResult4.getActual(), is("news"));
         assertThat(itemResult4.getIndex(), is(3));
-        assertThat(itemResult4.getLength(), is(5));
         assertThat(itemResult4.isMatched(), is(true));
         assertThat(itemResult4.isBreakingItemOrder(), is(false));
         assertThat(itemResult4.isBreakingSortOrder(), is(false));
@@ -1334,7 +1291,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult5 = itemResults.get(4);
         assertThat(itemResult5.getActual(), is("impeachment"));
         assertThat(itemResult5.getIndex(), is(4));
-        assertThat(itemResult5.getLength(), is(5));
         assertThat(itemResult5.isMatched(), is(true));
         assertThat(itemResult5.isBreakingItemOrder(), is(false));
         assertThat(itemResult5.isBreakingSortOrder(), is(false));
@@ -1387,7 +1343,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("impeachment"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(5));
         assertThat(itemResult1.isMatched(), is(true));
         assertThat(itemResult1.isBreakingItemOrder(), is(true));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -1397,7 +1352,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult2 = itemResults.get(1);
         assertThat(itemResult2.getActual(), is("Donald"));
         assertThat(itemResult2.getIndex(), is(1));
-        assertThat(itemResult2.getLength(), is(5));
         assertThat(itemResult2.isMatched(), is(true));
         assertThat(itemResult2.isBreakingItemOrder(), is(false));
         assertThat(itemResult2.isBreakingSortOrder(), is(false));
@@ -1407,7 +1361,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult3 = itemResults.get(2);
         assertThat(itemResult3.getActual(), is("Trump"));
         assertThat(itemResult3.getIndex(), is(2));
-        assertThat(itemResult3.getLength(), is(5));
         assertThat(itemResult3.isMatched(), is(true));
         assertThat(itemResult3.isBreakingItemOrder(), is(false));
         assertThat(itemResult3.isBreakingSortOrder(), is(false));
@@ -1417,7 +1370,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult4 = itemResults.get(3);
         assertThat(itemResult4.getActual(), is("fake"));
         assertThat(itemResult4.getIndex(), is(3));
-        assertThat(itemResult4.getLength(), is(5));
         assertThat(itemResult4.isMatched(), is(true));
         assertThat(itemResult4.isBreakingItemOrder(), is(false));
         assertThat(itemResult4.isBreakingSortOrder(), is(false));
@@ -1427,7 +1379,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult5 = itemResults.get(4);
         assertThat(itemResult5.getActual(), is("news"));
         assertThat(itemResult5.getIndex(), is(4));
-        assertThat(itemResult5.getLength(), is(5));
         assertThat(itemResult5.isMatched(), is(true));
         assertThat(itemResult5.isBreakingItemOrder(), is(false));
         assertThat(itemResult5.isBreakingSortOrder(), is(false));
@@ -1482,7 +1433,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult1 = itemResults.get(0);
         assertThat(itemResult1.getActual(), is("impeachment"));
         assertThat(itemResult1.getIndex(), is(0));
-        assertThat(itemResult1.getLength(), is(5));
         assertThat(itemResult1.isMatched(), is(true));
         assertThat(itemResult1.isBreakingItemOrder(), is(true));
         assertThat(itemResult1.isBreakingSortOrder(), is(false));
@@ -1492,7 +1442,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult2 = itemResults.get(1);
         assertThat(itemResult2.getActual(), is("Donald"));
         assertThat(itemResult2.getIndex(), is(1));
-        assertThat(itemResult2.getLength(), is(5));
         assertThat(itemResult2.isMatched(), is(true));
         assertThat(itemResult2.isBreakingItemOrder(), is(false));
         assertThat(itemResult2.isBreakingSortOrder(), is(false));
@@ -1502,7 +1451,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult3 = itemResults.get(2);
         assertThat(itemResult3.getActual(), is("fake"));
         assertThat(itemResult3.getIndex(), is(2));
-        assertThat(itemResult3.getLength(), is(5));
         assertThat(itemResult3.isMatched(), is(true));
         assertThat(itemResult3.isBreakingItemOrder(), is(true));
         assertThat(itemResult3.isBreakingSortOrder(), is(false));
@@ -1512,7 +1460,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult4 = itemResults.get(3);
         assertThat(itemResult4.getActual(), is("news"));
         assertThat(itemResult4.getIndex(), is(3));
-        assertThat(itemResult4.getLength(), is(5));
         assertThat(itemResult4.isMatched(), is(true));
         assertThat(itemResult4.isBreakingItemOrder(), is(true));
         assertThat(itemResult4.isBreakingSortOrder(), is(false));
@@ -1522,7 +1469,6 @@ public class FluentCollectionMatcherTest {
         final ItemResult itemResult5 = itemResults.get(4);
         assertThat(itemResult5.getActual(), is("Trump"));
         assertThat(itemResult5.getIndex(), is(4));
-        assertThat(itemResult5.getLength(), is(5));
         assertThat(itemResult5.isMatched(), is(true));
         assertThat(itemResult5.isBreakingItemOrder(), is(false));
         assertThat(itemResult5.isBreakingSortOrder(), is(false));
@@ -2310,4 +2256,120 @@ public class FluentCollectionMatcherTest {
         assertThat(strings, not(is(matching)));
         assertThat(strings2, is(matching));
     }
+
+    @Test
+    public void test__matchesSafely__resets__also_IssueResults() {
+
+        final List<String> strings = asList("x", "wzx", "yy", "yy", "åå");
+        final List<String> strings2 = asList("x", "yy", "zzz");
+        final FluentCollectionMatcher<String, Collection<String>> matching = aCollectionOf(String.class)
+            .exactly()
+            .sorted()
+            .ordered()
+            .unique()
+            .withItems("x", "yy", "zzz");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            matching
+        );
+
+        assertThat(itemResults, hasSize(5));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("x"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.isMatched(), is(true));
+        assertThat(itemResult1.isBreakingItemOrder(), is(false));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("wzx"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.isMatched(), is(false));
+        assertThat(itemResult2.isBreakingItemOrder(), is(true));
+        assertThat(itemResult2.isBreakingSortOrder(), is(true));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(true));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(1));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("yy"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.isMatched(), is(true));
+        assertThat(itemResult3.isBreakingItemOrder(), is(true));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(true));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("yy"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.isMatched(), is(true));
+        assertThat(itemResult4.isBreakingItemOrder(), is(false));
+        assertThat(itemResult4.isBreakingSortOrder(), is(false));
+        assertThat(itemResult4.isDuplicate(), is(true));
+        assertThat(itemResult4.isUnwanted(), is(false));
+        assertThat(itemResult4.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("åå"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.isMatched(), is(false));
+        assertThat(itemResult5.isBreakingItemOrder(), is(true));
+        assertThat(itemResult5.isBreakingSortOrder(), is(false));
+        assertThat(itemResult5.isDuplicate(), is(false));
+        assertThat(itemResult5.isUnwanted(), is(true));
+        assertThat(itemResult5.getMismatchedItemMatchers().size(), is(0));
+
+
+        final List<ItemResult> itemResults2 = matchResults(strings2,
+            matching
+        );
+
+        assertThat(itemResults2, hasSize(3));
+        final ItemResult itemResult21 = itemResults2.get(0);
+        assertThat(itemResult21.getActual(), is("x"));
+        assertThat(itemResult21.getIndex(), is(0));
+        assertThat(itemResult21.isMatched(), is(true));
+        assertThat(itemResult21.isBreakingItemOrder(), is(false));
+        assertThat(itemResult21.isBreakingSortOrder(), is(false));
+        assertThat(itemResult21.isDuplicate(), is(false));
+        assertThat(itemResult21.isUnwanted(), is(false));
+        assertThat(itemResult21.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult22 = itemResults2.get(1);
+        assertThat(itemResult22.getActual(), is("yy"));
+        assertThat(itemResult22.getIndex(), is(1));
+        assertThat(itemResult22.isMatched(), is(true));
+        assertThat(itemResult22.isBreakingItemOrder(), is(false));
+        assertThat(itemResult22.isBreakingSortOrder(), is(false));
+        assertThat(itemResult22.isDuplicate(), is(false));
+        assertThat(itemResult22.isUnwanted(), is(false));
+        assertThat(itemResult22.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult23 = itemResults2.get(2);
+        assertThat(itemResult23.getActual(), is("zzz"));
+        assertThat(itemResult23.getIndex(), is(2));
+        assertThat(itemResult23.isMatched(), is(true));
+        assertThat(itemResult23.isBreakingItemOrder(), is(false));
+        assertThat(itemResult23.isBreakingSortOrder(), is(false));
+        assertThat(itemResult23.isDuplicate(), is(false));
+        assertThat(itemResult23.isUnwanted(), is(false));
+        assertThat(itemResult23.getMismatchedItemMatchers().size(), is(0));
+    }
+
+    @Test
+    public void test__no_ArrayIndexOutOfBoundsException__on_getIssueResults() {
+
+        final List<String> strings = asList("x", "wzx", "yy", "yy", "åå");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .exactly()
+                .sorted()
+                .ordered()
+                .unique()
+                .withItems("x", "yy", "zzz")
+        );
+
+        assertThat(itemResults, hasSize(5));
+    }
+
 }

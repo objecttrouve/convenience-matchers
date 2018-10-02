@@ -1,7 +1,7 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
@@ -255,7 +255,7 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
         mismatchDescription.appendText("\n");
         //noinspection unchecked
         mismatchDescription.appendText(itemResults.stream()
-            .map(prose::line)
+            .map(result -> prose.line(result, actual.length))
             .collect(joining("\n")
             ));
         mismatchDescription.appendText("\n");
@@ -265,7 +265,6 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
     }
 
     List<ItemResult> getItemResults() {
-        final int maxIndex = actual.length;
         final List<ItemResult> itemResults = new LinkedList<>();
         for (int j = 0; j < actual.length; j++) {
             if (matchedActual.contains(j)) {
@@ -275,15 +274,17 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
                     .breakingItemOrder(this.unordered.contains(j))
                     .duplicate(this.duplicates.contains(j))
                     .breakingSortOrder(this.unsorted.contains(j))
-                    .withMaxIndex(maxIndex)
                     .build());
             } else if (settings.mustNotHaveUnexpectedItems && settings.ordered) {
                 this.unwanted.add(j);
-                itemResults.add(ItemResult.builder(actual[j])
+                final ItemResult.Builder<X> builder = ItemResult.builder(actual[j]);
+                if (j < settings.expectations.length) {
+                    builder
+                        .withMatchers(singletonList(settings.expectations[j]));
+                }
+                itemResults.add(builder
                     .matched(false)
                     .withIndex(j)
-                    .withMaxIndex(maxIndex)
-                    .withMatchers(singletonList(settings.expectations[j]))
                     .breakingItemOrder(true)
                     .duplicate(this.duplicates.contains(j))
                     .obsolete(true)
@@ -303,7 +304,6 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
                 itemResults.add(ItemResult.builder(actual[j])
                     .matched(false)
                     .withIndex(j)
-                    .withMaxIndex(maxIndex)
                     .withMatchers(unmatched.stream().map(sm -> settings.expectations[sm.matcher]).collect(toList()))
                     .breakingItemOrder(this.unordered.contains(j))
                     .duplicate(this.duplicates.contains(j))

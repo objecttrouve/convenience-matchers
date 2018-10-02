@@ -1,7 +1,7 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
@@ -67,9 +67,9 @@ class Prose<X> {
         return (self + " " + mismatch).replaceAll("\n", " ");
     }
 
-    String line(final ItemResult<X> result) {
+    String line(final ItemResult<X> result, final int collectionLength) {
         final StringBuilder line = new StringBuilder();
-        final int digits = Double.valueOf(Math.log10(result.getLength())).intValue() + 1;
+        final int digits = Double.valueOf(Math.log10(collectionLength)).intValue() + 1;
         final String ix = format("%1$" + digits + "." + digits + "s", result.getIndex());
         line.append("[").append(ix).append("]");
         final X actual = result.getActual();
