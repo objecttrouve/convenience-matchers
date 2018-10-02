@@ -8,7 +8,10 @@
 package org.objecttrouve.testing.matchers.fluentatts;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
@@ -29,7 +32,7 @@ class TrackingTree {
         this(null);
     }
 
-    TrackingTree(final Method m) {
+    private TrackingTree(final Method m) {
         this.m = m;
     }
 

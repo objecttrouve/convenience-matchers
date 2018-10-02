@@ -22,7 +22,7 @@ class Result<O> {
     }
 
 
-    boolean isMatched() {
+    private boolean isMatched() {
         return matched;
     }
 
@@ -30,11 +30,11 @@ class Result<O> {
         return !isMatched();
     }
 
-    public TrackingTree getCalled() {
+    TrackingTree getCalled() {
         return called;
     }
 
-    public Expectation getExpectation() {
+    Expectation getExpectation() {
         return expectation;
     }
 

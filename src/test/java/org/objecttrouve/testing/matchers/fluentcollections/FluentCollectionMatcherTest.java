@@ -17,13 +17,14 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparingInt;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.aCollectionOf;
 
 public class FluentCollectionMatcherTest {
 
     @Test
-    public void test__matchesSafely__match__empty_expectation__no_requirements__empty_actual(){
+    public void test__matchesSafely__match__empty_expectation__no_requirements__empty_actual() {
 
         final List<String> strings = emptyList();
 
@@ -31,15 +32,31 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__empty_expectation__no_requirements__null_actual(){
+    public void test__matchesSafely__mismatch__empty_expectation__no_requirements__null_actual() {
 
         final List<String> strings = null;
 
         assertThat(strings, not(is(aCollectionOf(String.class))));
     }
 
+
     @Test
-    public void test__matchesSafely__match__empty_expectation__no_requirements__non_empty_actual(){
+    public void test__matchesSafely__mismatch__empty_expectation__no_requirements__null_actual__empty_IssueResult_list() {
+
+        final List<String> strings = null;
+
+        final List<ItemResult> itemResults = matchResults(strings, aCollectionOf(String.class));
+
+        assertThat(itemResults, hasSize(0));
+    }
+
+    private static List<ItemResult> matchResults(final List<String> strings, final FluentCollectionMatcher<String, Collection<String>> matcher) {
+        matcher.matches(strings);
+        return matcher.getItemResults();
+    }
+
+    @Test
+    public void test__matchesSafely__match__empty_expectation__no_requirements__non_empty_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -47,18 +64,37 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__empty_expectation__exactly__non_empty_actual(){
+    public void test__matchesSafely__mismatch__empty_expectation__exactly__non_empty_actual() {
 
         final List<String> strings = singletonList("item");
 
-        assertThat(strings, not(is(
-            aCollectionOf(String.class)
-                .exactly()
-        )));
+        assertThat(strings, not(is(aCollectionOf(String.class).exactly())));
     }
 
     @Test
-    public void test__matchesSafely__match__matcher_expectation__exactly__non_empty_actual(){
+    public void test__matchesSafely__mismatch__empty_expectation__exactly__non_empty_actual__has_ItemResule() {
+
+        final List<String> strings = singletonList("item");
+
+        final List<ItemResult> itemResults = matchResults(strings, aCollectionOf(String.class).exactly());
+
+        assertThat(itemResults, hasSize(1));
+        final ItemResult itemResult = itemResults.get(0);
+        assertThat(itemResult.getActual(), is("item"));
+        assertThat(itemResult.getIndex(), is(0));
+        assertThat(itemResult.getLength(), is(1));
+        assertThat(itemResult.isMatched(), is(false));
+        assertThat(itemResult.isBreakingItemOrder(), is(false));
+        assertThat(itemResult.isBreakingSortOrder(), is(false));
+        assertThat(itemResult.isDuplicate(), is(false));
+        assertThat(itemResult.isUnwanted(), is(true));
+        assertThat(itemResult.getMismatchedItemMatchers().size(), is(0));
+
+    }
+
+
+    @Test
+    public void test__matchesSafely__match__matcher_expectation__exactly__non_empty_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -70,7 +106,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__matcher_expectation__no_requirements__non_empty_actual(){
+    public void test__matchesSafely__match__matcher_expectation__no_requirements__non_empty_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -81,7 +117,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__1_matcher_expectation__ofSize_1__1_actual(){
+    public void test__matchesSafely__match__1_matcher_expectation__ofSize_1__1_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -93,7 +129,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__1_matcher_expectation__ofSize_2__1_actual(){
+    public void test__matchesSafely__mismatch__1_matcher_expectation__ofSize_2__1_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -105,7 +141,31 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__1_matcher_expectation__ofSize_1__1_actual__consistent_with__exactly(){
+    public void test__matchesSafely__mismatch__1_matcher_expectation__ofSize_2__1_actual__has_ItemResult() {
+
+        final List<String> strings = singletonList("item");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItemsMatching(containsString("it"))
+                .ofSize(2)
+            );
+
+        assertThat(itemResults, hasSize(1));
+        final ItemResult itemResult = itemResults.get(0);
+        assertThat(itemResult.getActual(), is("item"));
+        assertThat(itemResult.getIndex(), is(0));
+        assertThat(itemResult.getLength(), is(1));
+        assertThat(itemResult.isMatched(), is(true));
+        assertThat(itemResult.isBreakingItemOrder(), is(false));
+        assertThat(itemResult.isBreakingSortOrder(), is(false));
+        assertThat(itemResult.isDuplicate(), is(false));
+        assertThat(itemResult.isUnwanted(), is(false));
+        assertThat(itemResult.getMismatchedItemMatchers().size(), is(0));
+    }
+
+    @Test
+    public void test__matchesSafely__match__1_matcher_expectation__ofSize_1__1_actual__consistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
 
@@ -118,7 +178,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__matchesSafely__error__1_matcher_expectation__ofSize_2__1_actual__inconsistent_with__exactly(){
+    public void test__matchesSafely__error__1_matcher_expectation__ofSize_2__1_actual__inconsistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
         final FluentCollectionMatcher<String, Collection<String>> matcher = aCollectionOf(String.class)
@@ -131,7 +191,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__ofSize_2__1_actual__consistent_with__exactly(){
+    public void test__matchesSafely__mismatch__2_matcher_expectations__ofSize_2__1_actual__consistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
 
@@ -146,8 +206,36 @@ public class FluentCollectionMatcherTest {
         )));
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void test__matchesSafely__error__3_matcher_expectations__ofSize_2__1_actual__inconsistent_with__exactly(){
+    @Test
+    public void test__matchesSafely__mismatch__2_matcher_expectations__ofSize_2__1_actual__consistent_with__exactly__has_ItemResult() {
+
+        final List<String> strings = singletonList("item");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItemsMatching(
+                    containsString("it"),
+                    containsString("tem")
+                )
+                .ofSize(2)
+                .exactly()
+        );
+
+        assertThat(itemResults, hasSize(1));
+        final ItemResult itemResult = itemResults.get(0);
+        assertThat(itemResult.getActual(), is("item"));
+        assertThat(itemResult.getIndex(), is(0));
+        assertThat(itemResult.getLength(), is(1));
+        assertThat(itemResult.isMatched(), is(true));
+        assertThat(itemResult.isBreakingItemOrder(), is(false));
+        assertThat(itemResult.isBreakingSortOrder(), is(false));
+        assertThat(itemResult.isDuplicate(), is(false));
+        assertThat(itemResult.isUnwanted(), is(false));
+        assertThat(itemResult.getMismatchedItemMatchers().size(), is(0));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test__matchesSafely__error__3_matcher_expectations__ofSize_2__1_actual__inconsistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
         final FluentCollectionMatcher<String, Collection<String>> matcher = aCollectionOf(String.class)
@@ -161,8 +249,8 @@ public class FluentCollectionMatcherTest {
         matcher.matchesSafely(strings);
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void test__matchesSafely__error__2_matcher_expectations__ofSize_1__1_actual__inconsistent_with__exactly(){
+    @Test(expected = IllegalArgumentException.class)
+    public void test__matchesSafely__error__2_matcher_expectations__ofSize_1__1_actual__inconsistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
         final FluentCollectionMatcher<String, Collection<String>> matcher = aCollectionOf(String.class)
@@ -176,8 +264,8 @@ public class FluentCollectionMatcherTest {
         matcher.matchesSafely(strings);
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void test__matchesSafely__error__2_matcher_expectations__ofSize_1__1_actual__inconsistent(){
+    @Test(expected = IllegalArgumentException.class)
+    public void test__matchesSafely__error__2_matcher_expectations__ofSize_1__1_actual__inconsistent() {
 
         final List<String> strings = singletonList("item");
         final FluentCollectionMatcher<String, Collection<String>> matcher = aCollectionOf(String.class)
@@ -191,7 +279,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__ofSize_1__1_actual(){
+    public void test__matchesSafely__match__ofSize_1__1_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -202,7 +290,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__ofSize_1__2_actual(){
+    public void test__matchesSafely__mismatch__ofSize_1__2_actual() {
 
         final List<String> strings = asList("item", "element");
 
@@ -213,7 +301,41 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__1_matcher_expectation__1_actual(){
+    public void test__matchesSafely__mismatch__ofSize_1__2_actual__has_ItemResult() {
+
+        final List<String> strings = asList("item", "element");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .ofSize(1)
+        );
+
+        assertThat(itemResults, hasSize(2));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("item"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(2));
+        assertThat(itemResult1.isMatched(), is(false));
+        assertThat(itemResult1.isBreakingItemOrder(), is(false));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("element"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.getLength(), is(2));
+        assertThat(itemResult2.isMatched(), is(false));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(0));
+
+    }
+
+    @Test
+    public void test__matchesSafely__match__1_matcher_expectation__1_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -224,7 +346,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__1_actual_matching(){
+    public void test__matchesSafely__mismatch__2_matcher_expectations__1_actual_matching() {
 
         final List<String> strings = singletonList("item");
 
@@ -236,10 +358,38 @@ public class FluentCollectionMatcherTest {
                     is("item")
                 ))
         ));
+
     }
 
     @Test
-    public void test__matchesSafely__match__2_matcher_expectations__2_actual_matching(){
+    public void test__matchesSafely__mismatch__2_matcher_expectations__1_actual_matching__has_ItemResult_list() {
+
+        final List<String> strings = singletonList("item");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItemsMatching(
+                    containsString("it"),
+                    is("item")
+                )
+        );
+
+        assertThat(itemResults, hasSize(1));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("item"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(1));
+        assertThat(itemResult1.isMatched(), is(true));
+        assertThat(itemResult1.isBreakingItemOrder(), is(false));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+
+    }
+
+    @Test
+    public void test__matchesSafely__match__2_matcher_expectations__2_actual_matching() {
 
         final List<String> strings = asList("item", "item");
 
@@ -254,7 +404,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__2_matcher_expectations__3_actual_matching(){
+    public void test__matchesSafely__match__2_matcher_expectations__3_actual_matching() {
 
         final List<String> strings = asList("item", "item", "item");
 
@@ -269,7 +419,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__3_actual_matching__for_exactly(){
+    public void test__matchesSafely__mismatch__2_matcher_expectations__3_actual_matching__for_exactly() {
 
         final List<String> strings = asList("item", "item", "item");
 
@@ -280,13 +430,61 @@ public class FluentCollectionMatcherTest {
                     containsString("it"),
                     is("item")
                 )
-            .exactly()
+                .exactly()
         )));
+    }
+
+    @Test
+    public void test__matchesSafely__mismatch__2_matcher_expectations__3_actual_matching__for_exactly__has_IssueResults() {
+
+        final List<String> strings = asList("item", "item", "item");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItemsMatching(
+                    containsString("it"),
+                    is("item")
+                )
+                .exactly()
+        );
+
+        assertThat(itemResults, hasSize(3));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("item"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(3));
+        assertThat(itemResult1.isMatched(), is(true));
+        assertThat(itemResult1.isBreakingItemOrder(), is(false));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("item"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.getLength(), is(3));
+        assertThat(itemResult2.isMatched(), is(true));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("item"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.getLength(), is(3));
+        assertThat(itemResult3.isMatched(), is(true));
+        assertThat(itemResult3.isBreakingItemOrder(), is(false));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(0));
+
     }
 
 
     @Test
-    public void test__matchesSafely__match__2_matcher_expectations__2_actual_matching__1_actual_not_matching(){
+    public void test__matchesSafely__match__2_matcher_expectations__2_actual_matching__1_actual_not_matching() {
 
         final List<String> strings = asList("item", "element", "item");
 
@@ -301,7 +499,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__1_actual_matching__2_actual_not_matching(){
+    public void test__matchesSafely__mismatch__2_matcher_expectations__1_actual_matching__2_actual_not_matching() {
 
         final List<String> strings = asList("element", "element", "item");
 
@@ -316,7 +514,53 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__3_actual_none_matching(){
+    public void test__matchesSafely__mismatch__2_matcher_expectations__1_actual_matching__2_actual_not_matching__has_ItemResults() {
+
+        final List<String> strings = asList("element", "element", "item");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItemsMatching(
+                    containsString("it"),
+                    is("item")
+                )
+        );
+
+        assertThat(itemResults, hasSize(3));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("element"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(3));
+        assertThat(itemResult1.isMatched(), is(false));
+        assertThat(itemResult1.isBreakingItemOrder(), is(false));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(2));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("element"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.getLength(), is(3));
+        assertThat(itemResult2.isMatched(), is(false));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(2));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("item"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.getLength(), is(3));
+        assertThat(itemResult3.isMatched(), is(true));
+        assertThat(itemResult3.isBreakingItemOrder(), is(false));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(0));
+    }
+
+    @Test
+    public void test__matchesSafely__mismatch__2_matcher_expectations__3_actual_none_matching() {
 
         final List<String> strings = asList("element", "element", "element");
 
@@ -331,7 +575,53 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__3_matcher_expectations__3_actual_all_matching(){
+    public void test__matchesSafely__mismatch__2_matcher_expectations__3_actual_none_matching__has_ItemResults() {
+
+        final List<String> strings = asList("element", "element", "element");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItemsMatching(
+                    containsString("it"),
+                    is("item")
+                )
+        );
+
+        assertThat(itemResults, hasSize(3));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("element"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(3));
+        assertThat(itemResult1.isMatched(), is(false));
+        assertThat(itemResult1.isBreakingItemOrder(), is(false));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(2));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("element"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.getLength(), is(3));
+        assertThat(itemResult2.isMatched(), is(false));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(2));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("element"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.getLength(), is(3));
+        assertThat(itemResult3.isMatched(), is(false));
+        assertThat(itemResult3.isBreakingItemOrder(), is(false));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(2));
+    }
+
+    @Test
+    public void test__matchesSafely__match__3_matcher_expectations__3_actual_all_matching() {
 
         final List<String> strings = asList("item", "element", "item");
 
@@ -347,34 +637,34 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__ofSize__error__negative_arg(){
+    public void test__ofSize__error__negative_arg() {
 
         aCollectionOf(String.class).ofSize(-1);
     }
 
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__sorted__error__requested_sorting_for_non_Comparable(){
+    public void test__sorted__error__requested_sorting_for_non_Comparable() {
 
         aCollectionOf(Object.class).sorted();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__withItemsMatching__error__null_arg(){
+    public void test__withItemsMatching__error__null_arg() {
 
         //noinspection ConfusingArgumentToVarargsMethod
         aCollectionOf(Object.class).withItemsMatching(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__withItems__error__null_arg(){
+    public void test__withItems__error__null_arg() {
 
         //noinspection ConfusingArgumentToVarargsMethod
         aCollectionOf(Object.class).withItems(null);
     }
 
     @Test
-    public void test__matchesSafely__match__3_item_expectations__3_actual_all_matching(){
+    public void test__matchesSafely__match__3_item_expectations__3_actual_all_matching() {
 
         final List<String> strings = asList("item", "element", "object");
 
@@ -390,7 +680,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__3_item_expectations__2_actual_matching__1_actual_non_matching(){
+    public void test__matchesSafely__mismatch__3_item_expectations__2_actual_matching__1_actual_non_matching() {
 
         final List<String> strings = asList("item", "element", "object");
 
@@ -406,7 +696,54 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__3_item_expectations__3_actual_none_matching(){
+    public void test__matchesSafely__mismatch__3_item_expectations__2_actual_matching__1_actual_non_matching__has_ItemResults() {
+
+        final List<String> strings = asList("item", "element", "object");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItems(
+                    "item",
+                    "mental",
+                    "object"
+                )
+        );
+
+        assertThat(itemResults, hasSize(3));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("item"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(3));
+        assertThat(itemResult1.isMatched(), is(true));
+        assertThat(itemResult1.isBreakingItemOrder(), is(false));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("element"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.getLength(), is(3));
+        assertThat(itemResult2.isMatched(), is(false));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(3));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("object"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.getLength(), is(3));
+        assertThat(itemResult3.isMatched(), is(true));
+        assertThat(itemResult3.isBreakingItemOrder(), is(false));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(0));
+    }
+
+    @Test
+    public void test__matchesSafely__mismatch__3_item_expectations__3_actual_none_matching() {
 
         final List<String> strings = asList("it", "element", "objection");
 
@@ -422,7 +759,54 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__all_matching__1(){
+    public void test__matchesSafely__mismatch__3_item_expectations__3_actual_none_matching__has_ItemResults() {
+
+        final List<String> strings = asList("it", "element", "objection");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItems(
+                    "item",
+                    "mental",
+                    "object"
+                )
+        );
+
+        assertThat(itemResults, hasSize(3));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("it"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(3));
+        assertThat(itemResult1.isMatched(), is(false));
+        assertThat(itemResult1.isBreakingItemOrder(), is(false));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(3));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("element"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.getLength(), is(3));
+        assertThat(itemResult2.isMatched(), is(false));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(3));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("objection"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.getLength(), is(3));
+        assertThat(itemResult3.isMatched(), is(false));
+        assertThat(itemResult3.isBreakingItemOrder(), is(false));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(3));
+    }
+
+    @Test
+    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__all_matching__1() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -442,7 +826,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__all_matching__2(){
+    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__all_matching__2() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -452,7 +836,7 @@ public class FluentCollectionMatcherTest {
                 .withItemsMatching(
                     endsWith("ump"),
                     startsWith("Don")
-                    )
+                )
                 .withItems(
                     "news",
                     "fake",
@@ -464,7 +848,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__1(){
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__1() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -481,10 +865,83 @@ public class FluentCollectionMatcherTest {
                     equalTo("not dump")
                 )
         )));
+
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__2(){
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__1__has_ItemResults() {
+
+        final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItems(
+                    "fake",
+                    "news",
+                    "impeachment"
+                )
+                .withItemsMatching(
+                    startsWith("Don"),
+                    equalTo("not dump")
+                )
+        );
+
+        assertThat(itemResults, hasSize(5));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("fake"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(5));
+        assertThat(itemResult1.isMatched(), is(true));
+        assertThat(itemResult1.isBreakingItemOrder(), is(false));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("news"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.getLength(), is(5));
+        assertThat(itemResult2.isMatched(), is(true));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("impeachment"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.getLength(), is(5));
+        assertThat(itemResult3.isMatched(), is(true));
+        assertThat(itemResult3.isBreakingItemOrder(), is(false));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("Donald"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.getLength(), is(5));
+        assertThat(itemResult4.isMatched(), is(true));
+        assertThat(itemResult4.isBreakingItemOrder(), is(false));
+        assertThat(itemResult4.isBreakingSortOrder(), is(false));
+        assertThat(itemResult4.isDuplicate(), is(false));
+        assertThat(itemResult4.isUnwanted(), is(false));
+        assertThat(itemResult4.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("Trump"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.getLength(), is(5));
+        assertThat(itemResult5.isMatched(), is(false));
+        assertThat(itemResult5.isBreakingItemOrder(), is(false));
+        assertThat(itemResult5.isBreakingSortOrder(), is(false));
+        assertThat(itemResult5.isDuplicate(), is(false));
+        assertThat(itemResult5.isUnwanted(), is(false));
+        assertThat(itemResult5.getMismatchedItemMatchers().size(), is(5));
+
+    }
+
+    @Test
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__2() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -504,7 +961,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__3(){
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__3() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -525,7 +982,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__all_matching__but_not_exactly(){
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__all_matching__but_not_exactly() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump", "alternative", "facts");
 
@@ -541,12 +998,104 @@ public class FluentCollectionMatcherTest {
                     startsWith("Don"),
                     endsWith("ump")
                 )
-            .exactly()
+                .exactly()
         )));
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered(){
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__all_matching__but_not_exactly__has_ItemResults() {
+
+        final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump", "alternative", "facts");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItems(
+                    "fake",
+                    "news",
+                    "impeachment"
+                )
+                .withItemsMatching(
+                    startsWith("Don"),
+                    endsWith("ump")
+                )
+                .exactly()
+        );
+
+        assertThat(itemResults, hasSize(7));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("fake"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(7));
+        assertThat(itemResult1.isMatched(), is(true));
+        assertThat(itemResult1.isBreakingItemOrder(), is(false));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("news"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.getLength(), is(7));
+        assertThat(itemResult2.isMatched(), is(true));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("impeachment"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.getLength(), is(7));
+        assertThat(itemResult3.isMatched(), is(true));
+        assertThat(itemResult3.isBreakingItemOrder(), is(false));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("Donald"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.getLength(), is(7));
+        assertThat(itemResult4.isMatched(), is(true));
+        assertThat(itemResult4.isBreakingItemOrder(), is(false));
+        assertThat(itemResult4.isBreakingSortOrder(), is(false));
+        assertThat(itemResult4.isDuplicate(), is(false));
+        assertThat(itemResult4.isUnwanted(), is(false));
+        assertThat(itemResult4.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("Trump"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.getLength(), is(7));
+        assertThat(itemResult5.isMatched(), is(true));
+        assertThat(itemResult5.isBreakingItemOrder(), is(false));
+        assertThat(itemResult5.isBreakingSortOrder(), is(false));
+        assertThat(itemResult5.isDuplicate(), is(false));
+        assertThat(itemResult5.isUnwanted(), is(false));
+        assertThat(itemResult5.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult6 = itemResults.get(5);
+        assertThat(itemResult6.getActual(), is("alternative"));
+        assertThat(itemResult6.getIndex(), is(5));
+        assertThat(itemResult6.getLength(), is(7));
+        assertThat(itemResult6.isMatched(), is(false));
+        assertThat(itemResult6.isBreakingItemOrder(), is(false));
+        assertThat(itemResult6.isBreakingSortOrder(), is(false));
+        assertThat(itemResult6.isDuplicate(), is(false));
+        assertThat(itemResult6.isUnwanted(), is(true));
+        assertThat(itemResult6.getMismatchedItemMatchers().size(), is(5));
+        final ItemResult itemResult7 = itemResults.get(6);
+        assertThat(itemResult7.getActual(), is("facts"));
+        assertThat(itemResult7.getIndex(), is(6));
+        assertThat(itemResult7.getLength(), is(7));
+        assertThat(itemResult7.isMatched(), is(false));
+        assertThat(itemResult7.isBreakingItemOrder(), is(false));
+        assertThat(itemResult7.isBreakingSortOrder(), is(false));
+        assertThat(itemResult7.isDuplicate(), is(false));
+        assertThat(itemResult7.isUnwanted(), is(true));
+        assertThat(itemResult7.getMismatchedItemMatchers().size(), is(5));
+    }
+
+    @Test
+    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -567,7 +1116,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__and_matchers_match_multiple_items__1(){
+    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__and_matchers_match_multiple_items__1() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -587,7 +1136,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__and_matchers_match_multiple_items__2(){
+    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__and_matchers_match_multiple_items__2() {
 
         final List<String> strings = asList("faake", "neeeews", "impeaaaachment", "Doneeld", "Trump");
 
@@ -608,7 +1157,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__1(){
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__1() {
 
         final List<String> strings = asList("fake", "news", "Donald", "Trump", "impeachment");
 
@@ -629,7 +1178,80 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__2(){
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__1__has_ItemResults() {
+
+        final List<String> strings = asList("fake", "news", "Donald", "Trump", "impeachment");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItems(
+                    "fake",
+                    "news",
+                    "impeachment"
+                )
+                .withItemsMatching(
+                    startsWith("Don"),
+                    endsWith("ump")
+                )
+                .ordered()
+        );
+
+        assertThat(itemResults, hasSize(5));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("fake"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(5));
+        assertThat(itemResult1.isMatched(), is(true));
+        assertThat(itemResult1.isBreakingItemOrder(), is(false));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("news"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.getLength(), is(5));
+        assertThat(itemResult2.isMatched(), is(true));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("Donald"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.getLength(), is(5));
+        assertThat(itemResult3.isMatched(), is(true));
+        assertThat(itemResult3.isBreakingItemOrder(), is(true));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("Trump"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.getLength(), is(5));
+        assertThat(itemResult4.isMatched(), is(true));
+        assertThat(itemResult4.isBreakingItemOrder(), is(true));
+        assertThat(itemResult4.isBreakingSortOrder(), is(false));
+        assertThat(itemResult4.isDuplicate(), is(false));
+        assertThat(itemResult4.isUnwanted(), is(false));
+        assertThat(itemResult4.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("impeachment"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.getLength(), is(5));
+        assertThat(itemResult5.isMatched(), is(true));
+        assertThat(itemResult5.isBreakingItemOrder(), is(false));
+        assertThat(itemResult5.isBreakingSortOrder(), is(false));
+        assertThat(itemResult5.isDuplicate(), is(false));
+        assertThat(itemResult5.isUnwanted(), is(false));
+        assertThat(itemResult5.getMismatchedItemMatchers().size(), is(0));
+
+    }
+
+    @Test
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__2() {
 
         final List<String> strings = asList("Donald", "Trump", "fake", "news", "impeachment");
 
@@ -650,7 +1272,79 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__3(){
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__2__has_ItemResults() {
+
+        final List<String> strings = asList("Donald", "Trump", "fake", "news", "impeachment");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItems(
+                    "fake",
+                    "news",
+                    "impeachment"
+                )
+                .withItemsMatching(
+                    startsWith("Don"),
+                    endsWith("ump")
+                )
+                .ordered()
+        );
+
+        assertThat(itemResults, hasSize(5));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("Donald"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(5));
+        assertThat(itemResult1.isMatched(), is(true));
+        assertThat(itemResult1.isBreakingItemOrder(), is(true));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("Trump"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.getLength(), is(5));
+        assertThat(itemResult2.isMatched(), is(true));
+        assertThat(itemResult2.isBreakingItemOrder(), is(true));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("fake"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.getLength(), is(5));
+        assertThat(itemResult3.isMatched(), is(true));
+        assertThat(itemResult3.isBreakingItemOrder(), is(false));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("news"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.getLength(), is(5));
+        assertThat(itemResult4.isMatched(), is(true));
+        assertThat(itemResult4.isBreakingItemOrder(), is(false));
+        assertThat(itemResult4.isBreakingSortOrder(), is(false));
+        assertThat(itemResult4.isDuplicate(), is(false));
+        assertThat(itemResult4.isUnwanted(), is(false));
+        assertThat(itemResult4.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("impeachment"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.getLength(), is(5));
+        assertThat(itemResult5.isMatched(), is(true));
+        assertThat(itemResult5.isBreakingItemOrder(), is(false));
+        assertThat(itemResult5.isBreakingSortOrder(), is(false));
+        assertThat(itemResult5.isDuplicate(), is(false));
+        assertThat(itemResult5.isUnwanted(), is(false));
+        assertThat(itemResult5.getMismatchedItemMatchers().size(), is(0));
+    }
+
+    @Test
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__3() {
 
         final List<String> strings = asList("impeachment", "Donald", "Trump", "fake", "news");
 
@@ -670,9 +1364,81 @@ public class FluentCollectionMatcherTest {
         )));
     }
 
+    @Test
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__3__has_ItemResults() {
+
+        final List<String> strings = asList("impeachment", "Donald", "Trump", "fake", "news");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItemsMatching(
+                    startsWith("Don"),
+                    endsWith("ump")
+                )
+                .withItems(
+                    "fake",
+                    "news",
+                    "impeachment"
+                )
+                .ordered()
+        );
+
+        assertThat(itemResults, hasSize(5));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("impeachment"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(5));
+        assertThat(itemResult1.isMatched(), is(true));
+        assertThat(itemResult1.isBreakingItemOrder(), is(true));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("Donald"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.getLength(), is(5));
+        assertThat(itemResult2.isMatched(), is(true));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("Trump"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.getLength(), is(5));
+        assertThat(itemResult3.isMatched(), is(true));
+        assertThat(itemResult3.isBreakingItemOrder(), is(false));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("fake"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.getLength(), is(5));
+        assertThat(itemResult4.isMatched(), is(true));
+        assertThat(itemResult4.isBreakingItemOrder(), is(false));
+        assertThat(itemResult4.isBreakingSortOrder(), is(false));
+        assertThat(itemResult4.isDuplicate(), is(false));
+        assertThat(itemResult4.isUnwanted(), is(false));
+        assertThat(itemResult4.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("news"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.getLength(), is(5));
+        assertThat(itemResult5.isMatched(), is(true));
+        assertThat(itemResult5.isBreakingItemOrder(), is(false));
+        assertThat(itemResult5.isBreakingSortOrder(), is(false));
+        assertThat(itemResult5.isDuplicate(), is(false));
+        assertThat(itemResult5.isUnwanted(), is(false));
+        assertThat(itemResult5.getMismatchedItemMatchers().size(), is(0));
+    }
+
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__4(){
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__4() {
 
         final List<String> strings = asList("impeachment", "Donald", "fake", "news", "Trump");
 
@@ -690,13 +1456,87 @@ public class FluentCollectionMatcherTest {
                 )
                 .ordered()
         )));
+
+    }
+
+    @Test
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__4__has_ItemResults() {
+
+        final List<String> strings = asList("impeachment", "Donald", "fake", "news", "Trump");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItemsMatching(
+                    startsWith("Don"),
+                    endsWith("ump")
+                )
+                .withItems(
+                    "fake",
+                    "news",
+                    "impeachment"
+                )
+                .ordered()
+        );
+
+        assertThat(itemResults, hasSize(5));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("impeachment"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.getLength(), is(5));
+        assertThat(itemResult1.isMatched(), is(true));
+        assertThat(itemResult1.isBreakingItemOrder(), is(true));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("Donald"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.getLength(), is(5));
+        assertThat(itemResult2.isMatched(), is(true));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("fake"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.getLength(), is(5));
+        assertThat(itemResult3.isMatched(), is(true));
+        assertThat(itemResult3.isBreakingItemOrder(), is(true));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("news"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.getLength(), is(5));
+        assertThat(itemResult4.isMatched(), is(true));
+        assertThat(itemResult4.isBreakingItemOrder(), is(true));
+        assertThat(itemResult4.isBreakingSortOrder(), is(false));
+        assertThat(itemResult4.isDuplicate(), is(false));
+        assertThat(itemResult4.isUnwanted(), is(false));
+        assertThat(itemResult4.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("Trump"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.getLength(), is(5));
+        assertThat(itemResult5.isMatched(), is(true));
+        assertThat(itemResult5.isBreakingItemOrder(), is(false));
+        assertThat(itemResult5.isBreakingSortOrder(), is(false));
+        assertThat(itemResult5.isDuplicate(), is(false));
+        assertThat(itemResult5.isUnwanted(), is(false));
+        assertThat(itemResult5.getMismatchedItemMatchers().size(), is(0));
+
     }
 
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__1(){
+    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__1() {
 
-        final List<String> strings = asList("fake", "news",  "alternative", "facts", "impeachment", "Donald", "Trump");
+        final List<String> strings = asList("fake", "news", "alternative", "facts", "impeachment", "Donald", "Trump");
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
@@ -715,9 +1555,9 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__2(){
+    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__2() {
 
-        final List<String> strings = asList("alternative", "fake", "news",  "facts", "impeachment", "Donald", "Trump");
+        final List<String> strings = asList("alternative", "fake", "news", "facts", "impeachment", "Donald", "Trump");
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
@@ -736,9 +1576,9 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__exactly(){
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__exactly() {
 
-        final List<String> strings = asList("alternative", "fake", "news",  "facts", "impeachment", "Donald", "Trump");
+        final List<String> strings = asList("alternative", "fake", "news", "facts", "impeachment", "Donald", "Trump");
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
@@ -754,14 +1594,100 @@ public class FluentCollectionMatcherTest {
                 )
                 .ordered()
                 .exactly()
-
         )));
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__3(){
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__exactly__has_ItemResults() {
 
-        final List<String> strings = asList("alternative", "fake", "news", "impeachment", "Donald", "Trump",  "facts");
+        final List<String> strings = asList("alternative", "fake", "news", "facts", "impeachment", "Donald", "Trump");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItems(
+                    "fake",
+                    "news",
+                    "impeachment"
+                )
+                .withItemsMatching(
+                    startsWith("Don"),
+                    endsWith("ump")
+                )
+                .ordered()
+                .exactly()
+        );
+
+        assertThat(itemResults, hasSize(7));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("alternative"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.isMatched(), is(false));
+        assertThat(itemResult1.isBreakingItemOrder(), is(true));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(true));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(1));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("fake"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.isMatched(), is(true));
+        assertThat(itemResult2.isBreakingItemOrder(), is(true));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("news"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.isMatched(), is(true));
+        assertThat(itemResult3.isBreakingItemOrder(), is(true));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("facts"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.isMatched(), is(false));
+        assertThat(itemResult4.isBreakingItemOrder(), is(true));
+        assertThat(itemResult4.isBreakingSortOrder(), is(false));
+        assertThat(itemResult4.isDuplicate(), is(false));
+        assertThat(itemResult4.isUnwanted(), is(true));
+        assertThat(itemResult4.getMismatchedItemMatchers().size(), is(1));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("impeachment"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.isMatched(), is(true));
+        assertThat(itemResult5.isBreakingItemOrder(), is(true));
+        assertThat(itemResult5.isBreakingSortOrder(), is(false));
+        assertThat(itemResult5.isDuplicate(), is(false));
+        assertThat(itemResult5.isUnwanted(), is(false));
+        assertThat(itemResult5.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult6 = itemResults.get(5);
+        assertThat(itemResult6.getActual(), is("Donald"));
+        assertThat(itemResult6.getIndex(), is(5));
+        assertThat(itemResult6.isMatched(), is(true));
+        assertThat(itemResult6.isBreakingItemOrder(), is(false));
+        assertThat(itemResult6.isBreakingSortOrder(), is(false));
+        assertThat(itemResult6.isDuplicate(), is(false));
+        assertThat(itemResult6.isUnwanted(), is(false));
+        assertThat(itemResult6.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult7 = itemResults.get(6);
+        assertThat(itemResult7.getActual(), is("Trump"));
+        assertThat(itemResult7.getIndex(), is(6));
+        assertThat(itemResult7.isMatched(), is(true));
+        assertThat(itemResult7.isBreakingItemOrder(), is(false));
+        assertThat(itemResult7.isBreakingSortOrder(), is(false));
+        assertThat(itemResult7.isDuplicate(), is(false));
+        assertThat(itemResult7.isUnwanted(), is(false));
+        assertThat(itemResult7.getMismatchedItemMatchers().size(), is(0));
+
+    }
+
+    @Test
+    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__3() {
+
+        final List<String> strings = asList("alternative", "fake", "news", "impeachment", "Donald", "Trump", "facts");
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
@@ -780,7 +1706,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__with_more_actuals_than_expected__1(){
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__with_more_actuals_than_expected__1() {
 
         final List<String> strings = asList("news", "fake", "alternative", "facts", "impeachment", "Donald", "Trump");
 
@@ -798,11 +1724,97 @@ public class FluentCollectionMatcherTest {
                 )
                 .ordered()
         )));
+
+    }
+
+    @Test
+    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__with_more_actuals_than_expected__1__has_ItemResults() {
+
+        final List<String> strings = asList("news", "fake", "alternative", "facts", "impeachment", "Donald", "Trump");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItems(
+                    "fake",
+                    "news",
+                    "impeachment"
+                )
+                .withItemsMatching(
+                    startsWith("Don"),
+                    endsWith("ump")
+                )
+                .ordered()
+        );
+
+        assertThat(itemResults, hasSize(7));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("news"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.isMatched(), is(true));
+        assertThat(itemResult1.isBreakingItemOrder(), is(true));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("fake"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.isMatched(), is(true));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(false));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("alternative"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.isMatched(), is(false));
+        assertThat(itemResult3.isBreakingItemOrder(), is(true));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(5));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("facts"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.isMatched(), is(false));
+        assertThat(itemResult4.isBreakingItemOrder(), is(true));
+        assertThat(itemResult4.isBreakingSortOrder(), is(false));
+        assertThat(itemResult4.isDuplicate(), is(false));
+        assertThat(itemResult4.isUnwanted(), is(false));
+        assertThat(itemResult4.getMismatchedItemMatchers().size(), is(5));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("impeachment"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.isMatched(), is(true));
+        assertThat(itemResult5.isBreakingItemOrder(), is(true));
+        assertThat(itemResult5.isBreakingSortOrder(), is(false));
+        assertThat(itemResult5.isDuplicate(), is(false));
+        assertThat(itemResult5.isUnwanted(), is(false));
+        assertThat(itemResult5.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult6 = itemResults.get(5);
+        assertThat(itemResult6.getActual(), is("Donald"));
+        assertThat(itemResult6.getIndex(), is(5));
+        assertThat(itemResult6.isMatched(), is(true));
+        assertThat(itemResult6.isBreakingItemOrder(), is(true));
+        assertThat(itemResult6.isBreakingSortOrder(), is(false));
+        assertThat(itemResult6.isDuplicate(), is(false));
+        assertThat(itemResult6.isUnwanted(), is(false));
+        assertThat(itemResult6.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult7 = itemResults.get(6);
+        assertThat(itemResult7.getActual(), is("Trump"));
+        assertThat(itemResult7.getIndex(), is(6));
+        assertThat(itemResult7.isMatched(), is(true));
+        assertThat(itemResult7.isBreakingItemOrder(), is(true));
+        assertThat(itemResult7.isBreakingSortOrder(), is(false));
+        assertThat(itemResult7.isDuplicate(), is(false));
+        assertThat(itemResult7.isUnwanted(), is(false));
+        assertThat(itemResult7.getMismatchedItemMatchers().size(), is(0));
     }
 
 
     @Test
-    public void test__matchesSafely__mismatch__items_expected_missing(){
+    public void test__matchesSafely__mismatch__items_expected_missing() {
 
         final List<String> strings = asList("alternative", "facts", "impeachment", "Trump");
 
@@ -822,7 +1834,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__all_items_expected_missing(){
+    public void test__matchesSafely__mismatch__all_items_expected_missing() {
 
         final List<String> strings = emptyList();
 
@@ -842,7 +1854,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__empty_Collection(){
+    public void test__matchesSafely__match__sorted__empty_Collection() {
 
         final List<String> strings = emptyList();
 
@@ -852,7 +1864,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__Collection_with_1_element(){
+    public void test__matchesSafely__match__sorted__Collection_with_1_element() {
 
         final List<String> strings = singletonList("B");
 
@@ -862,7 +1874,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__sorted_Collection__1(){
+    public void test__matchesSafely__match__sorted__sorted_Collection__1() {
 
         final List<String> strings = asList("A", "B", "C");
 
@@ -872,9 +1884,9 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__sorted_Collection__2(){
+    public void test__matchesSafely__match__sorted__sorted_Collection__2() {
 
-        final List<String> strings = asList("A", "A", "B", "C","C", "D", "E", "F", "F");
+        final List<String> strings = asList("A", "A", "B", "C", "C", "D", "E", "F", "F");
 
         assertThat(strings, is(
             aCollectionOf(String.class).sorted()
@@ -882,7 +1894,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__1(){
+    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__1() {
 
         final List<String> strings = asList("D", "B", "C");
 
@@ -892,9 +1904,48 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__2(){
+    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__1__has_ItemResults() {
 
-        final List<String> strings = asList("B", "A", "A",  "C","C", "D", "E", "F", "F");
+        final List<String> strings = asList("D", "B", "C");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class).sorted()
+        );
+
+        assertThat(itemResults, hasSize(3));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("D"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.isMatched(), is(false));
+        assertThat(itemResult1.isBreakingItemOrder(), is(false));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        assertThat(itemResult1.isDuplicate(), is(false));
+        assertThat(itemResult1.isUnwanted(), is(false));
+        assertThat(itemResult1.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("B"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.isMatched(), is(false));
+        assertThat(itemResult2.isBreakingItemOrder(), is(false));
+        assertThat(itemResult2.isBreakingSortOrder(), is(true));
+        assertThat(itemResult2.isDuplicate(), is(false));
+        assertThat(itemResult2.isUnwanted(), is(false));
+        assertThat(itemResult2.getMismatchedItemMatchers().size(), is(0));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("C"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.isMatched(), is(false));
+        assertThat(itemResult3.isBreakingItemOrder(), is(false));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        assertThat(itemResult3.isUnwanted(), is(false));
+        assertThat(itemResult3.getMismatchedItemMatchers().size(), is(0));
+    }
+
+    @Test
+    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__2() {
+
+        final List<String> strings = asList("B", "A", "A", "C", "C", "D", "E", "F", "F");
 
         assertThat(strings, not(is(
             aCollectionOf(String.class).sorted()
@@ -902,19 +1953,9 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__3(){
+    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__3() {
 
-        final List<String> strings = asList( "A", "B", "A", "C","C", "D", "E", "F", "F");
-
-        assertThat(strings, not(is(
-            aCollectionOf(String.class).sorted()
-        )));
-    }
-
-    @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__4(){
-
-        final List<String> strings = asList( "A",  "A", "C","C", "D", "E", "F", "F", "B");
+        final List<String> strings = asList("A", "B", "A", "C", "C", "D", "E", "F", "F");
 
         assertThat(strings, not(is(
             aCollectionOf(String.class).sorted()
@@ -922,7 +1963,50 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__empty_Collection__using_Comparator(){
+    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__4() {
+
+        final List<String> strings = asList("A", "A", "C", "C", "D", "E", "F", "F", "B");
+
+        assertThat(strings, not(is(
+            aCollectionOf(String.class).sorted()
+        )));
+    }
+
+    @Test
+    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__5__has_ItemResults() {
+
+        final List<String> strings = asList("B", "A", "A", "C", "B");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class).sorted()
+        );
+
+        assertThat(itemResults, hasSize(5));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("B"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("A"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.isBreakingSortOrder(), is(true));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("A"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("C"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.isBreakingSortOrder(), is(false));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("B"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.isBreakingSortOrder(), is(true));
+    }
+
+
+    @Test
+    public void test__matchesSafely__match__sorted__empty_Collection__using_Comparator() {
 
         final List<String> strings = emptyList();
 
@@ -932,7 +2016,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__Collection_with_1_element__using_Comparator(){
+    public void test__matchesSafely__match__sorted__Collection_with_1_element__using_Comparator() {
 
         final List<String> strings = singletonList("B");
 
@@ -942,7 +2026,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__sorted_Collection__using_Comparator_1(){
+    public void test__matchesSafely__match__sorted__sorted_Collection__using_Comparator_1() {
 
         final List<String> strings = asList("A", "B", "C");
 
@@ -952,7 +2036,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__sorted_Collection__using_Comparator_2(){
+    public void test__matchesSafely__match__sorted__sorted_Collection__using_Comparator_2() {
 
         final List<String> strings = asList("A", "BB", "CCC");
 
@@ -962,7 +2046,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__sorted_Collection__using_Comparator_3(){
+    public void test__matchesSafely__match__sorted__sorted_Collection__using_Comparator_3() {
 
         final List<String> strings = asList("AA", "BB", "CCC", "DDD", "EEEE");
 
@@ -972,7 +2056,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_1(){
+    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_1() {
 
         final List<String> strings = asList("AAA", "BB", "CCC", "DDD", "EEEE");
 
@@ -982,7 +2066,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_2(){
+    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_2() {
 
         final List<String> strings = asList("AA", "BB", "CCC", "DDD", "EE");
 
@@ -992,7 +2076,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_3(){
+    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_3() {
 
         final List<String> strings = asList("A", "BB", "CCCC", "DDD", "EEEE");
 
@@ -1002,7 +2086,39 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__unique__empty_Collection(){
+    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_4__hasItemResults() {
+
+        final List<String> strings = asList("BBB", "AA", "AA", "CCC", "D");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class).sorted(comparingInt(String::length))
+        );
+
+        assertThat(itemResults, hasSize(5));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("BBB"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.isBreakingSortOrder(), is(false));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("AA"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.isBreakingSortOrder(), is(true));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("AA"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.isBreakingSortOrder(), is(false));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("CCC"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.isBreakingSortOrder(), is(false));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("D"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.isBreakingSortOrder(), is(true));
+    }
+
+    @Test
+    public void test__matchesSafely__match__unique__empty_Collection() {
 
         final List<String> strings = emptyList();
 
@@ -1012,7 +2128,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__unique__Collection_with_1_item(){
+    public void test__matchesSafely__match__unique__Collection_with_1_item() {
 
         final List<String> strings = singletonList("singleton");
 
@@ -1023,7 +2139,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__match__unique__Collection_with_3_unique_items(){
+    public void test__matchesSafely__match__unique__Collection_with_3_unique_items() {
 
         final List<String> strings = asList("singleton", "doubleton", "tripleton");
 
@@ -1034,7 +2150,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__1(){
+    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__1() {
 
         final List<String> strings = asList("doubleton", "doubleton");
 
@@ -1044,7 +2160,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__2(){
+    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__2() {
 
         final List<String> strings = asList("singleton", "doubleton", "doubleton", "tripleton");
 
@@ -1054,7 +2170,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__3(){
+    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__3() {
 
         final List<String> strings = asList("singleton", "singleton", "doubleton", "tripleton");
 
@@ -1064,7 +2180,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__4(){
+    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__4() {
 
         final List<String> strings = asList("singleton", "singleton", "doubleton", "tripleton", "tripleton");
 
@@ -1073,9 +2189,41 @@ public class FluentCollectionMatcherTest {
         )));
     }
 
+    @Test
+    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__5__has_ItemResults() {
+
+        final List<String> strings = asList("B", "A", "D", "A", "B");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class).unique()
+        );
+
+        assertThat(itemResults, hasSize(5));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("B"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.isDuplicate(), is(true));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("A"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.isDuplicate(), is(true));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("D"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("A"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.isDuplicate(), is(true));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("B"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.isDuplicate(), is(true));
+    }
+
 
     @Test
-    public void test__matchesSafely__match__unique__empty_Collection__with_equator_function(){
+    public void test__matchesSafely__match__unique__empty_Collection__with_equator_function() {
 
         final List<String> strings = emptyList();
 
@@ -1085,7 +2233,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__unique__Collection_with_1_item__with_equator_function(){
+    public void test__matchesSafely__match__unique__Collection_with_1_item__with_equator_function() {
 
         final List<String> strings = singletonList("x");
 
@@ -1095,7 +2243,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__unique__Collection_without_duplicates__with_equator_function(){
+    public void test__matchesSafely__match__unique__Collection_without_duplicates__with_equator_function() {
 
         final List<String> strings = asList("x", "yy", "zzz");
 
@@ -1105,7 +2253,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__with_equator_function(){
+    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__with_equator_function() {
 
         final List<String> strings = asList("x", "yy", "zzz", "åå");
 
@@ -1114,9 +2262,41 @@ public class FluentCollectionMatcherTest {
         )));
     }
 
+    @Test
+    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__with_equator_function__2__has_ItemResults() {
+
+        final List<String> strings = asList("B", "a", "D", "A", "b");
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class).unique(String::equalsIgnoreCase)
+        );
+
+        assertThat(itemResults, hasSize(5));
+        final ItemResult itemResult1 = itemResults.get(0);
+        assertThat(itemResult1.getActual(), is("B"));
+        assertThat(itemResult1.getIndex(), is(0));
+        assertThat(itemResult1.isDuplicate(), is(true));
+        final ItemResult itemResult2 = itemResults.get(1);
+        assertThat(itemResult2.getActual(), is("a"));
+        assertThat(itemResult2.getIndex(), is(1));
+        assertThat(itemResult2.isDuplicate(), is(true));
+        final ItemResult itemResult3 = itemResults.get(2);
+        assertThat(itemResult3.getActual(), is("D"));
+        assertThat(itemResult3.getIndex(), is(2));
+        assertThat(itemResult3.isDuplicate(), is(false));
+        final ItemResult itemResult4 = itemResults.get(3);
+        assertThat(itemResult4.getActual(), is("A"));
+        assertThat(itemResult4.getIndex(), is(3));
+        assertThat(itemResult4.isDuplicate(), is(true));
+        final ItemResult itemResult5 = itemResults.get(4);
+        assertThat(itemResult5.getActual(), is("b"));
+        assertThat(itemResult5.getIndex(), is(4));
+        assertThat(itemResult5.isDuplicate(), is(true));
+    }
+
 
     @Test
-    public void test__matchesSafely__resets(){
+    public void test__matchesSafely__resets() {
 
         final List<String> strings = asList("x", "zzz", "yy", "yy", "åå");
         final List<String> strings2 = asList("x", "yy", "zzz");
