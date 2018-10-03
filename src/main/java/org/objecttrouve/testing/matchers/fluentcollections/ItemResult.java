@@ -57,12 +57,12 @@ class ItemResult<X> {
             return new ItemResult<>(this);
         }
 
-        Builder withIndex(final int index) {
+        Builder<X> withIndex(final int index) {
             this.index = index;
             return this;
         }
 
-        Builder matched(final boolean matched) {
+        Builder<X> matched(final boolean matched) {
             this.matched = matched;
             return this;
         }
@@ -87,7 +87,7 @@ class ItemResult<X> {
             return this;
         }
 
-        Builder<X> obsolete(final boolean obsolete) {
+        Builder<X> unwanted(final boolean obsolete) {
             this.obsolete = obsolete;
             return this;
         }

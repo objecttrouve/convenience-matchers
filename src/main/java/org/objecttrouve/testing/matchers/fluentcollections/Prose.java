@@ -11,7 +11,6 @@ import org.hamcrest.StringDescription;
 
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
@@ -25,16 +24,9 @@ class Prose<X> {
     private static final String breakingItemOrder = "⇆";
     private static final String duplicate = "\uD83D\uDC6F";
     private static final String obsolete = "\uD83D\uDEAF";
-    private final Function<X, String> stringifier;
+    private static final int actualItemMaxLength = 30;
 
-    Prose(final Function<X, String> stringifier) {
-        this.stringifier = stringifier;
-    }
-
-    Prose() {
-        this(o -> format("%1$-15.15s", Objects.toString(o).replaceAll("\n", " ")));
-    }
-
+    Prose() {}
     void describeExpectations(final Settings settings, final Consumer<String> description) {
         description.accept("a collection with the following properties:\n");
         description.accept("- collection of " + ofNullable(settings.klass).map(Class::getSimpleName).orElse(Object.class.getSimpleName()) + "\n");
@@ -59,21 +51,21 @@ class Prose<X> {
         description.accept("\n");
     }
 
-    String actualItemString(final X actual) {
-        return stringifier.apply(actual);
+    String actualItemString(final X actual, final int limit) {
+        return format("%1$-"+limit+"."+limit+"s", Objects.toString(actual).replaceAll("\n", " "));
     }
 
     String matcherSaying(final String self, final String mismatch) {
         return (self + " " + mismatch).replaceAll("\n", " ");
     }
 
-    String line(final ItemResult<X> result, final int collectionLength) {
+    String line(final ItemResult<X> result, final int collectionLength, final int longestActual) {
         final StringBuilder line = new StringBuilder();
         final int digits = Double.valueOf(Math.log10(collectionLength)).intValue() + 1;
         final String ix = format("%1$" + digits + "." + digits + "s", result.getIndex());
         line.append("[").append(ix).append("]");
         final X actual = result.getActual();
-        line.append("[").append(actualItemString(actual)).append("]");
+        line.append("[").append(actualItemString(actual, Math.min(longestActual, actualItemMaxLength))).append("]");
         appendSymbol(line, result.isMatched(), match);
         appendSymbol(line, result.isBreakingSortOrder(), breakingSortOrder);
         appendSymbol(line, result.isBreakingItemOrder(), breakingItemOrder);

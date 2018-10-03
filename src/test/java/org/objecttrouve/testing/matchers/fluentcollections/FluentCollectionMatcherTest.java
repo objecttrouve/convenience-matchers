@@ -8,6 +8,8 @@
 package org.objecttrouve.testing.matchers.fluentcollections;
 
 import org.junit.Test;
+import org.objecttrouve.testing.matchers.fluentatts.Attribute;
+import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,12 +21,15 @@ import static java.util.Comparator.comparingInt;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.aCollectionOf;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 public class FluentCollectionMatcherTest {
 
     @Test
-    public void test__matchesSafely__match__empty_expectation__no_requirements__empty_actual() {
+    public void matchesSafely__match__empty_expectation__no_requirements__empty_actual() {
 
         final List<String> strings = emptyList();
 
@@ -32,7 +37,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__empty_expectation__no_requirements__null_actual() {
+    public void matchesSafely__mismatch__empty_expectation__no_requirements__null_actual() {
 
         final List<String> strings = null;
 
@@ -41,7 +46,19 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__mismatch__empty_expectation__no_requirements__null_actual__empty_IssueResult_list() {
+    public void matchesSafely__mismatch__empty_expectation__no_requirements__null_actual__plain_matchesSafely_call() {
+
+        final List<String> strings = null;
+
+        final boolean matches = aCollectionOf(String.class).matches(strings);
+
+        //noinspection ConstantConditions
+        assertThat(matches, is(false));
+    }
+
+
+    @Test
+    public void matchesSafely__mismatch__empty_expectation__no_requirements__null_actual__empty_IssueResult_list() {
 
         final List<String> strings = null;
 
@@ -56,7 +73,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__empty_expectation__no_requirements__non_empty_actual() {
+    public void matchesSafely__match__empty_expectation__no_requirements__non_empty_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -64,7 +81,15 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__empty_expectation__exactly__non_empty_actual() {
+    public void matchesSafely__match__null_item() {
+
+        final List<String> strings = singletonList(null);
+
+        assertThat(strings, is(aCollectionOf(String.class).withItemsMatching(nullValue())));
+    }
+
+    @Test
+    public void matchesSafely__mismatch__empty_expectation__exactly__non_empty_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -72,7 +97,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__empty_expectation__exactly__non_empty_actual__has_ItemResule() {
+    public void matchesSafely__mismatch__empty_expectation__exactly__non_empty_actual__has_ItemResule() {
 
         final List<String> strings = singletonList("item");
 
@@ -93,7 +118,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__match__matcher_expectation__exactly__non_empty_actual() {
+    public void matchesSafely__match__matcher_expectation__exactly__non_empty_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -105,7 +130,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__matcher_expectation__no_requirements__non_empty_actual() {
+    public void matchesSafely__match__matcher_expectation__no_requirements__non_empty_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -116,7 +141,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__1_matcher_expectation__ofSize_1__1_actual() {
+    public void matchesSafely__match__1_matcher_expectation__ofSize_1__1_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -128,7 +153,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__1_matcher_expectation__ofSize_2__1_actual() {
+    public void matchesSafely__mismatch__1_matcher_expectation__ofSize_2__1_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -140,7 +165,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__1_matcher_expectation__ofSize_2__1_actual__has_ItemResult() {
+    public void matchesSafely__mismatch__1_matcher_expectation__ofSize_2__1_actual__has_ItemResult() {
 
         final List<String> strings = singletonList("item");
 
@@ -163,7 +188,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__1_matcher_expectation__ofSize_1__1_actual__consistent_with__exactly() {
+    public void matchesSafely__match__1_matcher_expectation__ofSize_1__1_actual__consistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
 
@@ -176,7 +201,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__matchesSafely__error__1_matcher_expectation__ofSize_2__1_actual__inconsistent_with__exactly() {
+    public void matchesSafely__error__1_matcher_expectation__ofSize_2__1_actual__inconsistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
         final FluentCollectionMatcher<String, Collection<String>> matcher = aCollectionOf(String.class)
@@ -189,7 +214,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__ofSize_2__1_actual__consistent_with__exactly() {
+    public void matchesSafely__mismatch__2_matcher_expectations__ofSize_2__1_actual__consistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
 
@@ -205,7 +230,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__ofSize_2__1_actual__consistent_with__exactly__has_ItemResult() {
+    public void matchesSafely__mismatch__2_matcher_expectations__ofSize_2__1_actual__consistent_with__exactly__has_ItemResult() {
 
         final List<String> strings = singletonList("item");
 
@@ -232,7 +257,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__matchesSafely__error__3_matcher_expectations__ofSize_2__1_actual__inconsistent_with__exactly() {
+    public void matchesSafely__error__3_matcher_expectations__ofSize_2__1_actual__inconsistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
         final FluentCollectionMatcher<String, Collection<String>> matcher = aCollectionOf(String.class)
@@ -247,7 +272,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__matchesSafely__error__2_matcher_expectations__ofSize_1__1_actual__inconsistent_with__exactly() {
+    public void matchesSafely__error__2_matcher_expectations__ofSize_1__1_actual__inconsistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
         final FluentCollectionMatcher<String, Collection<String>> matcher = aCollectionOf(String.class)
@@ -262,7 +287,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__matchesSafely__error__2_matcher_expectations__ofSize_1__1_actual__inconsistent() {
+    public void matchesSafely__error__2_matcher_expectations__ofSize_1__1_actual__inconsistent() {
 
         final List<String> strings = singletonList("item");
         final FluentCollectionMatcher<String, Collection<String>> matcher = aCollectionOf(String.class)
@@ -276,7 +301,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__ofSize_1__1_actual() {
+    public void matchesSafely__match__ofSize_1__1_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -287,7 +312,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__ofSize_1__2_actual() {
+    public void matchesSafely__mismatch__ofSize_1__2_actual() {
 
         final List<String> strings = asList("item", "element");
 
@@ -298,7 +323,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__ofSize_1__2_actual__has_ItemResult() {
+    public void matchesSafely__mismatch__ofSize_1__2_actual__has_ItemResult() {
 
         final List<String> strings = asList("item", "element");
 
@@ -330,7 +355,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__1_matcher_expectation__1_actual() {
+    public void matchesSafely__match__1_matcher_expectation__1_actual() {
 
         final List<String> strings = singletonList("item");
 
@@ -341,7 +366,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__1_actual_matching() {
+    public void matchesSafely__mismatch__2_matcher_expectations__1_actual_matching() {
 
         final List<String> strings = singletonList("item");
 
@@ -357,7 +382,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__1_actual_matching__has_ItemResult_list() {
+    public void matchesSafely__mismatch__2_matcher_expectations__1_actual_matching__has_ItemResult_list() {
 
         final List<String> strings = singletonList("item");
 
@@ -383,7 +408,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__2_matcher_expectations__2_actual_matching() {
+    public void matchesSafely__match__2_matcher_expectations__2_actual_matching() {
 
         final List<String> strings = asList("item", "item");
 
@@ -398,7 +423,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__2_matcher_expectations__3_actual_matching() {
+    public void matchesSafely__match__2_matcher_expectations__3_actual_matching() {
 
         final List<String> strings = asList("item", "item", "item");
 
@@ -413,7 +438,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__3_actual_matching__for_exactly() {
+    public void matchesSafely__mismatch__2_matcher_expectations__3_actual_matching__for_exactly() {
 
         final List<String> strings = asList("item", "item", "item");
 
@@ -429,7 +454,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__3_actual_matching__for_exactly__has_IssueResults() {
+    public void matchesSafely__mismatch__2_matcher_expectations__3_actual_matching__for_exactly__has_IssueResults() {
 
         final List<String> strings = asList("item", "item", "item");
 
@@ -475,7 +500,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__match__2_matcher_expectations__2_actual_matching__1_actual_not_matching() {
+    public void matchesSafely__match__2_matcher_expectations__2_actual_matching__1_actual_not_matching() {
 
         final List<String> strings = asList("item", "element", "item");
 
@@ -490,7 +515,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__1_actual_matching__2_actual_not_matching() {
+    public void matchesSafely__mismatch__2_matcher_expectations__1_actual_matching__2_actual_not_matching() {
 
         final List<String> strings = asList("element", "element", "item");
 
@@ -505,7 +530,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__1_actual_matching__2_actual_not_matching__has_ItemResults() {
+    public void matchesSafely__mismatch__2_matcher_expectations__1_actual_matching__2_actual_not_matching__has_ItemResults() {
 
         final List<String> strings = asList("element", "element", "item");
 
@@ -548,7 +573,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__3_actual_none_matching() {
+    public void matchesSafely__mismatch__2_matcher_expectations__3_actual_none_matching() {
 
         final List<String> strings = asList("element", "element", "element");
 
@@ -563,7 +588,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__2_matcher_expectations__3_actual_none_matching__has_ItemResults() {
+    public void matchesSafely__mismatch__2_matcher_expectations__3_actual_none_matching__has_ItemResults() {
 
         final List<String> strings = asList("element", "element", "element");
 
@@ -606,7 +631,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__3_matcher_expectations__3_actual_all_matching() {
+    public void matchesSafely__match__3_matcher_expectations__3_actual_all_matching() {
 
         final List<String> strings = asList("item", "element", "item");
 
@@ -622,34 +647,34 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__ofSize__error__negative_arg() {
+    public void ofSize__error__negative_arg() {
 
         aCollectionOf(String.class).ofSize(-1);
     }
 
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__sorted__error__requested_sorting_for_non_Comparable() {
+    public void sorted__error__requested_sorting_for_non_Comparable() {
 
         aCollectionOf(Object.class).sorted();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__withItemsMatching__error__null_arg() {
+    public void withItemsMatching__error__null_arg() {
 
         //noinspection ConfusingArgumentToVarargsMethod
         aCollectionOf(Object.class).withItemsMatching(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test__withItems__error__null_arg() {
+    public void withItems__error__null_arg() {
 
         //noinspection ConfusingArgumentToVarargsMethod
         aCollectionOf(Object.class).withItems(null);
     }
 
     @Test
-    public void test__matchesSafely__match__3_item_expectations__3_actual_all_matching() {
+    public void matchesSafely__match__3_item_expectations__3_actual_all_matching() {
 
         final List<String> strings = asList("item", "element", "object");
 
@@ -665,7 +690,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__3_item_expectations__2_actual_matching__1_actual_non_matching() {
+    public void matchesSafely__mismatch__3_item_expectations__2_actual_matching__1_actual_non_matching() {
 
         final List<String> strings = asList("item", "element", "object");
 
@@ -681,7 +706,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__3_item_expectations__2_actual_matching__1_actual_non_matching__has_ItemResults() {
+    public void matchesSafely__mismatch__3_item_expectations__2_actual_matching__1_actual_non_matching__has_ItemResults() {
 
         final List<String> strings = asList("item", "element", "object");
 
@@ -725,7 +750,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__3_item_expectations__3_actual_none_matching() {
+    public void matchesSafely__mismatch__3_item_expectations__3_actual_none_matching() {
 
         final List<String> strings = asList("it", "element", "objection");
 
@@ -741,7 +766,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__3_item_expectations__3_actual_none_matching__has_ItemResults() {
+    public void matchesSafely__mismatch__3_item_expectations__3_actual_none_matching__has_ItemResults() {
 
         final List<String> strings = asList("it", "element", "objection");
 
@@ -785,7 +810,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__all_matching__1() {
+    public void matchesSafely__match__mixed_item_and_matcher_expectations__all_matching__1() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -805,7 +830,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__all_matching__2() {
+    public void matchesSafely__match__mixed_item_and_matcher_expectations__all_matching__2() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -827,7 +852,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__1() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__1() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -848,7 +873,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__1__has_ItemResults() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__1__has_ItemResults() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -915,7 +940,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__2() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__2() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -935,7 +960,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__3() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__1_not_matching__3() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -956,7 +981,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__all_matching__but_not_exactly() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__all_matching__but_not_exactly() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump", "alternative", "facts");
 
@@ -977,7 +1002,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__all_matching__but_not_exactly__has_ItemResults() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__all_matching__but_not_exactly__has_ItemResults() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump", "alternative", "facts");
 
@@ -1062,7 +1087,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered() {
+    public void matchesSafely__match__mixed_item_and_matcher_expectations__ordered() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -1083,7 +1108,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__and_matchers_match_multiple_items__1() {
+    public void matchesSafely__match__mixed_item_and_matcher_expectations__ordered__and_matchers_match_multiple_items__1() {
 
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
@@ -1103,7 +1128,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__and_matchers_match_multiple_items__2() {
+    public void matchesSafely__match__mixed_item_and_matcher_expectations__ordered__and_matchers_match_multiple_items__2() {
 
         final List<String> strings = asList("faake", "neeeews", "impeaaaachment", "Doneeld", "Trump");
 
@@ -1124,7 +1149,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__1() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__1() {
 
         final List<String> strings = asList("fake", "news", "Donald", "Trump", "impeachment");
 
@@ -1145,7 +1170,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__1__has_ItemResults() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__1__has_ItemResults() {
 
         final List<String> strings = asList("fake", "news", "Donald", "Trump", "impeachment");
 
@@ -1213,7 +1238,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__2() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__2() {
 
         final List<String> strings = asList("Donald", "Trump", "fake", "news", "impeachment");
 
@@ -1234,7 +1259,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__2__has_ItemResults() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__2__has_ItemResults() {
 
         final List<String> strings = asList("Donald", "Trump", "fake", "news", "impeachment");
 
@@ -1300,7 +1325,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__3() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__3() {
 
         final List<String> strings = asList("impeachment", "Donald", "Trump", "fake", "news");
 
@@ -1321,7 +1346,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__3__has_ItemResults() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__3__has_ItemResults() {
 
         final List<String> strings = asList("impeachment", "Donald", "Trump", "fake", "news");
 
@@ -1389,7 +1414,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__4() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__4() {
 
         final List<String> strings = asList("impeachment", "Donald", "fake", "news", "Trump");
 
@@ -1411,7 +1436,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__4__has_ItemResults() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__4__has_ItemResults() {
 
         final List<String> strings = asList("impeachment", "Donald", "fake", "news", "Trump");
 
@@ -1480,7 +1505,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__1() {
+    public void matchesSafely__match__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__1() {
 
         final List<String> strings = asList("fake", "news", "alternative", "facts", "impeachment", "Donald", "Trump");
 
@@ -1501,7 +1526,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__2() {
+    public void matchesSafely__match__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__2() {
 
         final List<String> strings = asList("alternative", "fake", "news", "facts", "impeachment", "Donald", "Trump");
 
@@ -1522,7 +1547,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__exactly() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__exactly() {
 
         final List<String> strings = asList("alternative", "fake", "news", "facts", "impeachment", "Donald", "Trump");
 
@@ -1544,7 +1569,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__exactly__has_ItemResults() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__exactly__has_ItemResults() {
 
         final List<String> strings = asList("alternative", "fake", "news", "facts", "impeachment", "Donald", "Trump");
 
@@ -1631,7 +1656,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__3() {
+    public void matchesSafely__match__mixed_item_and_matcher_expectations__ordered__with_more_actuals_than_expected__3() {
 
         final List<String> strings = asList("alternative", "fake", "news", "impeachment", "Donald", "Trump", "facts");
 
@@ -1652,7 +1677,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__with_more_actuals_than_expected__1() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__with_more_actuals_than_expected__1() {
 
         final List<String> strings = asList("news", "fake", "alternative", "facts", "impeachment", "Donald", "Trump");
 
@@ -1674,7 +1699,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__with_more_actuals_than_expected__1__has_ItemResults() {
+    public void matchesSafely__mismatch__mixed_item_and_matcher_expectations__ordered__differently__with_more_actuals_than_expected__1__has_ItemResults() {
 
         final List<String> strings = asList("news", "fake", "alternative", "facts", "impeachment", "Donald", "Trump");
 
@@ -1760,7 +1785,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__mismatch__items_expected_missing() {
+    public void matchesSafely__mismatch__items_expected_missing() {
 
         final List<String> strings = asList("alternative", "facts", "impeachment", "Trump");
 
@@ -1780,7 +1805,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__all_items_expected_missing() {
+    public void matchesSafely__mismatch__all_items_expected_missing() {
 
         final List<String> strings = emptyList();
 
@@ -1800,7 +1825,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__empty_Collection() {
+    public void matchesSafely__match__sorted__empty_Collection() {
 
         final List<String> strings = emptyList();
 
@@ -1810,7 +1835,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__Collection_with_1_element() {
+    public void matchesSafely__match__sorted__Collection_with_1_element() {
 
         final List<String> strings = singletonList("B");
 
@@ -1820,7 +1845,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__sorted_Collection__1() {
+    public void matchesSafely__match__sorted__sorted_Collection__1() {
 
         final List<String> strings = asList("A", "B", "C");
 
@@ -1830,7 +1855,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__sorted_Collection__2() {
+    public void matchesSafely__match__sorted__sorted_Collection__2() {
 
         final List<String> strings = asList("A", "A", "B", "C", "C", "D", "E", "F", "F");
 
@@ -1840,7 +1865,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__1() {
+    public void matchesSafely__mismatch__sorted__unsorted_Collection__1() {
 
         final List<String> strings = asList("D", "B", "C");
 
@@ -1850,7 +1875,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__1__has_ItemResults() {
+    public void matchesSafely__mismatch__sorted__unsorted_Collection__1__has_ItemResults() {
 
         final List<String> strings = asList("D", "B", "C");
 
@@ -1889,7 +1914,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__2() {
+    public void matchesSafely__mismatch__sorted__unsorted_Collection__2() {
 
         final List<String> strings = asList("B", "A", "A", "C", "C", "D", "E", "F", "F");
 
@@ -1899,7 +1924,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__3() {
+    public void matchesSafely__mismatch__sorted__unsorted_Collection__3() {
 
         final List<String> strings = asList("A", "B", "A", "C", "C", "D", "E", "F", "F");
 
@@ -1909,7 +1934,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__4() {
+    public void matchesSafely__mismatch__sorted__unsorted_Collection__4() {
 
         final List<String> strings = asList("A", "A", "C", "C", "D", "E", "F", "F", "B");
 
@@ -1919,7 +1944,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__5__has_ItemResults() {
+    public void matchesSafely__mismatch__sorted__unsorted_Collection__5__has_ItemResults() {
 
         final List<String> strings = asList("B", "A", "A", "C", "B");
 
@@ -1952,7 +1977,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__match__sorted__empty_Collection__using_Comparator() {
+    public void matchesSafely__match__sorted__empty_Collection__using_Comparator() {
 
         final List<String> strings = emptyList();
 
@@ -1962,7 +1987,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__Collection_with_1_element__using_Comparator() {
+    public void matchesSafely__match__sorted__Collection_with_1_element__using_Comparator() {
 
         final List<String> strings = singletonList("B");
 
@@ -1972,7 +1997,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__sorted_Collection__using_Comparator_1() {
+    public void matchesSafely__match__sorted__sorted_Collection__using_Comparator_1() {
 
         final List<String> strings = asList("A", "B", "C");
 
@@ -1982,7 +2007,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__sorted_Collection__using_Comparator_2() {
+    public void matchesSafely__match__sorted__sorted_Collection__using_Comparator_2() {
 
         final List<String> strings = asList("A", "BB", "CCC");
 
@@ -1992,7 +2017,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__sorted__sorted_Collection__using_Comparator_3() {
+    public void matchesSafely__match__sorted__sorted_Collection__using_Comparator_3() {
 
         final List<String> strings = asList("AA", "BB", "CCC", "DDD", "EEEE");
 
@@ -2002,7 +2027,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_1() {
+    public void matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_1() {
 
         final List<String> strings = asList("AAA", "BB", "CCC", "DDD", "EEEE");
 
@@ -2012,7 +2037,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_2() {
+    public void matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_2() {
 
         final List<String> strings = asList("AA", "BB", "CCC", "DDD", "EE");
 
@@ -2022,7 +2047,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_3() {
+    public void matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_3() {
 
         final List<String> strings = asList("A", "BB", "CCCC", "DDD", "EEEE");
 
@@ -2032,7 +2057,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_4__hasItemResults() {
+    public void matchesSafely__mismatch__sorted__unsorted_Collection__using_Comparator_4__hasItemResults() {
 
         final List<String> strings = asList("BBB", "AA", "AA", "CCC", "D");
 
@@ -2064,7 +2089,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__unique__empty_Collection() {
+    public void matchesSafely__match__unique__empty_Collection() {
 
         final List<String> strings = emptyList();
 
@@ -2074,7 +2099,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__unique__Collection_with_1_item() {
+    public void matchesSafely__match__unique__Collection_with_1_item() {
 
         final List<String> strings = singletonList("singleton");
 
@@ -2085,7 +2110,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__match__unique__Collection_with_3_unique_items() {
+    public void matchesSafely__match__unique__Collection_with_3_unique_items() {
 
         final List<String> strings = asList("singleton", "doubleton", "tripleton");
 
@@ -2096,7 +2121,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__1() {
+    public void matchesSafely__mismatch__unique__Collection_with_duplicates__1() {
 
         final List<String> strings = asList("doubleton", "doubleton");
 
@@ -2106,7 +2131,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__2() {
+    public void matchesSafely__mismatch__unique__Collection_with_duplicates__2() {
 
         final List<String> strings = asList("singleton", "doubleton", "doubleton", "tripleton");
 
@@ -2116,7 +2141,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__3() {
+    public void matchesSafely__mismatch__unique__Collection_with_duplicates__3() {
 
         final List<String> strings = asList("singleton", "singleton", "doubleton", "tripleton");
 
@@ -2126,7 +2151,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__4() {
+    public void matchesSafely__mismatch__unique__Collection_with_duplicates__4() {
 
         final List<String> strings = asList("singleton", "singleton", "doubleton", "tripleton", "tripleton");
 
@@ -2136,7 +2161,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__5__has_ItemResults() {
+    public void matchesSafely__mismatch__unique__Collection_with_duplicates__5__has_ItemResults() {
 
         final List<String> strings = asList("B", "A", "D", "A", "B");
 
@@ -2169,7 +2194,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__match__unique__empty_Collection__with_equator_function() {
+    public void matchesSafely__match__unique__empty_Collection__with_equator_function() {
 
         final List<String> strings = emptyList();
 
@@ -2179,7 +2204,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__unique__Collection_with_1_item__with_equator_function() {
+    public void matchesSafely__match__unique__Collection_with_1_item__with_equator_function() {
 
         final List<String> strings = singletonList("x");
 
@@ -2189,7 +2214,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__match__unique__Collection_without_duplicates__with_equator_function() {
+    public void matchesSafely__match__unique__Collection_without_duplicates__with_equator_function() {
 
         final List<String> strings = asList("x", "yy", "zzz");
 
@@ -2199,7 +2224,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__with_equator_function() {
+    public void matchesSafely__mismatch__unique__Collection_with_duplicates__with_equator_function() {
 
         final List<String> strings = asList("x", "yy", "zzz", "åå");
 
@@ -2209,7 +2234,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__mismatch__unique__Collection_with_duplicates__with_equator_function__2__has_ItemResults() {
+    public void matchesSafely__mismatch__unique__Collection_with_duplicates__with_equator_function__2__has_ItemResults() {
 
         final List<String> strings = asList("B", "a", "D", "A", "b");
 
@@ -2242,7 +2267,7 @@ public class FluentCollectionMatcherTest {
 
 
     @Test
-    public void test__matchesSafely__resets() {
+    public void matchesSafely__resets() {
 
         final List<String> strings = asList("x", "zzz", "yy", "yy", "åå");
         final List<String> strings2 = asList("x", "yy", "zzz");
@@ -2258,7 +2283,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__matchesSafely__resets__also_IssueResults() {
+    public void matchesSafely__resets__also_IssueResults() {
 
         final List<String> strings = asList("x", "wzx", "yy", "yy", "åå");
         final List<String> strings2 = asList("x", "yy", "zzz");
@@ -2356,7 +2381,7 @@ public class FluentCollectionMatcherTest {
     }
 
     @Test
-    public void test__no_ArrayIndexOutOfBoundsException__on_getIssueResults() {
+    public void no_ArrayIndexOutOfBoundsException__on_getIssueResults() {
 
         final List<String> strings = asList("x", "wzx", "yy", "yy", "åå");
 
@@ -2372,4 +2397,96 @@ public class FluentCollectionMatcherTest {
         assertThat(itemResults, hasSize(5));
     }
 
+    @Test
+    public void matchesSafely__mismatch__sorts_mismatching_matchers() {
+
+        final List<String> strings = singletonList("AAA");
+        final Attribute<String, Integer> length = attribute("length", String::length);
+        final Attribute<String, Boolean> firstCharUpper = attribute("fcu", s -> s.substring(0,1).toUpperCase().equals(s.substring(0,1)));
+        final Attribute<String, Boolean> secondCharUpper = attribute("fcu", s -> s.substring(1,2).toUpperCase().equals(s.substring(1,2)));
+        final FluentAttributeMatcher<String> m1 = a(String.class)
+            .with(length, 4)
+            .with(firstCharUpper, false)
+            .with(secondCharUpper, false);
+        final FluentAttributeMatcher<String> m2 = a(String.class)
+            .with(length, 3)
+            .with(firstCharUpper, false)
+            .with(secondCharUpper, true);
+        final FluentAttributeMatcher<String> m3 = a(String.class)
+            .with(length, 5)
+            .with(firstCharUpper, true)
+            .with(secondCharUpper, false);
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItemsMatching(m1, m2, m3)
+        );
+
+        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(0) == m2);
+        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(1) == m3);
+        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(2) == m1);
+    }
+
+    @Test
+    public void matchesSafely__mismatch__sorts_mismatching_matchers__2() {
+
+        final List<String> strings = singletonList("aAAA");
+        final Attribute<String, Integer> length = attribute("length", String::length);
+        final Attribute<String, Boolean> firstCharUpper = attribute("fcu", s -> s.substring(0,1).toUpperCase().equals(s.substring(0,1)));
+        final Attribute<String, Boolean> secondCharUpper = attribute("fcu", s -> s.substring(1,2).toUpperCase().equals(s.substring(1,2)));
+        final FluentAttributeMatcher<String> m1 = a(String.class)
+            .with(length, 4)
+            .with(firstCharUpper, false)
+            .with(secondCharUpper, false);
+        final FluentAttributeMatcher<String> m2 = a(String.class)
+            .with(length, 3)
+            .with(firstCharUpper, false)
+            .with(secondCharUpper, true);
+        final FluentAttributeMatcher<String> m3 = a(String.class)
+            .with(length, 5)
+            .with(firstCharUpper, true)
+            .with(secondCharUpper, false);
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItemsMatching(m1, m2, m3)
+        );
+
+        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(0) == m1);
+        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(1) == m2);
+        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(2) == m3);
+    }
+
+    @Test
+    public void matchesSafely__mismatch__sorts_mismatching_matchers__3() {
+
+        final List<String> strings = singletonList("AAAAa");
+        final Attribute<String, Integer> length = attribute("length", String::length);
+        final Attribute<String, Boolean> firstCharUpper = attribute("fcu", s -> s.substring(0,1).toUpperCase().equals(s.substring(0,1)));
+        final Attribute<String, Boolean> secondCharUpper = attribute("fcu", s -> s.substring(1,2).toUpperCase().equals(s.substring(1,2)));
+        final FluentAttributeMatcher<String> m1 = a(String.class)
+            .with(length, 4)
+            .with(firstCharUpper, false)
+            .with(secondCharUpper, false);
+        final FluentAttributeMatcher<String> m2 = a(String.class)
+            .with(length, 3)
+            .with(firstCharUpper, false)
+            .with(secondCharUpper, true);
+        final FluentAttributeMatcher<String> m3 = a(String.class)
+            .with(length, 5)
+            .with(firstCharUpper, true)
+            .with(secondCharUpper, false);
+
+        final List<ItemResult> itemResults = matchResults(strings,
+            aCollectionOf(String.class)
+                .withItemsMatching(m1, m2, m3)
+        );
+
+        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(0) == m3);
+        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(1) == m2);
+        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(2) == m1);
+    }
+
+    
+    
 }

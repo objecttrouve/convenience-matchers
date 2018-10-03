@@ -249,13 +249,14 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
             .collect(toList());
         mismatchDescription.appendList("Findings:\n", "\n", "\n", fs);
 
+        final int longestActual = Arrays.stream(actual).map(Objects::toString).mapToInt(String::length).max().orElse(1);
         final List<ItemResult> itemResults = getItemResults();
 
         final Prose prose = new Prose();
         mismatchDescription.appendText("\n");
         //noinspection unchecked
         mismatchDescription.appendText(itemResults.stream()
-            .map(result -> prose.line(result, actual.length))
+            .map(result -> prose.line(result, actual.length, longestActual))
             .collect(joining("\n")
             ));
         mismatchDescription.appendText("\n");
@@ -287,7 +288,7 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
                     .withIndex(j)
                     .breakingItemOrder(true)
                     .duplicate(this.duplicates.contains(j))
-                    .obsolete(true)
+                    .unwanted(true)
                     .breakingSortOrder(this.unsorted.contains(j))
                     .build());
             } else {
@@ -308,7 +309,7 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
                     .breakingItemOrder(this.unordered.contains(j))
                     .duplicate(this.duplicates.contains(j))
                     .breakingSortOrder(this.unsorted.contains(j))
-                    .obsolete(this.unwanted.contains(j))
+                    .unwanted(this.unwanted.contains(j))
                     .build());
             }
         }
