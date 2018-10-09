@@ -20,6 +20,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparingInt;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
@@ -67,10 +68,16 @@ public class FluentCollectionMatcherTest {
         assertThat(itemResults, hasSize(0));
     }
 
-    private static List<ItemResult> matchResults(final List<String> strings, final FluentCollectionMatcher<String, Collection<String>> matcher) {
-        matcher.matches(strings);
+    private static <X> List<ItemResult> matchResults(final List<X> xs, final FluentCollectionMatcher<X, Collection<X>> matcher) {
+        matcher.matchesSafely(xs);
         return matcher.getItemResults();
     }
+
+    private static <X> double matchScore(final List<X> xs, final FluentCollectionMatcher<X, Collection<X>> matcher) {
+        matcher.matchesSafely(xs);
+        return matcher.getScore();
+    }
+
 
     @Test
     public void matchesSafely__match__empty_expectation__no_requirements__non_empty_actual() {
@@ -173,7 +180,7 @@ public class FluentCollectionMatcherTest {
             aCollectionOf(String.class)
                 .withItemsMatching(containsString("it"))
                 .ofSize(2)
-            );
+        );
 
         assertThat(itemResults, hasSize(1));
         final ItemResult itemResult = itemResults.get(0);
@@ -2402,8 +2409,8 @@ public class FluentCollectionMatcherTest {
 
         final List<String> strings = singletonList("AAA");
         final Attribute<String, Integer> length = attribute("length", String::length);
-        final Attribute<String, Boolean> firstCharUpper = attribute("fcu", s -> s.substring(0,1).toUpperCase().equals(s.substring(0,1)));
-        final Attribute<String, Boolean> secondCharUpper = attribute("fcu", s -> s.substring(1,2).toUpperCase().equals(s.substring(1,2)));
+        final Attribute<String, Boolean> firstCharUpper = attribute("fcu", s -> s.substring(0, 1).toUpperCase().equals(s.substring(0, 1)));
+        final Attribute<String, Boolean> secondCharUpper = attribute("fcu", s -> s.substring(1, 2).toUpperCase().equals(s.substring(1, 2)));
         final FluentAttributeMatcher<String> m1 = a(String.class)
             .with(length, 4)
             .with(firstCharUpper, false)
@@ -2432,8 +2439,8 @@ public class FluentCollectionMatcherTest {
 
         final List<String> strings = singletonList("aAAA");
         final Attribute<String, Integer> length = attribute("length", String::length);
-        final Attribute<String, Boolean> firstCharUpper = attribute("fcu", s -> s.substring(0,1).toUpperCase().equals(s.substring(0,1)));
-        final Attribute<String, Boolean> secondCharUpper = attribute("fcu", s -> s.substring(1,2).toUpperCase().equals(s.substring(1,2)));
+        final Attribute<String, Boolean> firstCharUpper = attribute("fcu", s -> s.substring(0, 1).toUpperCase().equals(s.substring(0, 1)));
+        final Attribute<String, Boolean> secondCharUpper = attribute("fcu", s -> s.substring(1, 2).toUpperCase().equals(s.substring(1, 2)));
         final FluentAttributeMatcher<String> m1 = a(String.class)
             .with(length, 4)
             .with(firstCharUpper, false)
@@ -2462,8 +2469,8 @@ public class FluentCollectionMatcherTest {
 
         final List<String> strings = singletonList("AAAAa");
         final Attribute<String, Integer> length = attribute("length", String::length);
-        final Attribute<String, Boolean> firstCharUpper = attribute("fcu", s -> s.substring(0,1).toUpperCase().equals(s.substring(0,1)));
-        final Attribute<String, Boolean> secondCharUpper = attribute("fcu", s -> s.substring(1,2).toUpperCase().equals(s.substring(1,2)));
+        final Attribute<String, Boolean> firstCharUpper = attribute("fcu", s -> s.substring(0, 1).toUpperCase().equals(s.substring(0, 1)));
+        final Attribute<String, Boolean> secondCharUpper = attribute("fcu", s -> s.substring(1, 2).toUpperCase().equals(s.substring(1, 2)));
         final FluentAttributeMatcher<String> m1 = a(String.class)
             .with(length, 4)
             .with(firstCharUpper, false)
@@ -2487,6 +2494,318 @@ public class FluentCollectionMatcherTest {
         assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(2) == m1);
     }
 
-    
-    
+    @Test
+    public void matchesSafely__match__getScore__max___1() {
+
+        final List<Integer> numbers = asList(1, 2, 3);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class));
+
+        assertThat(score, closeTo(1.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__match__getScore__max___2__sorted() {
+
+        final List<Integer> numbers = asList(1, 2, 3);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class).sorted());
+
+        assertThat(score, closeTo(1.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__match__getScore__max___2__ordered() {
+
+        final List<Integer> numbers = asList(1, 2, 3);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .ordered()
+        );
+
+        assertThat(score, closeTo(1.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__match__getScore__max___3__ordered__withItems() {
+
+        final List<Integer> numbers = asList(1, 2, 3);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .ordered()
+            .withItems(1)
+        );
+
+        assertThat(score, closeTo(1.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__match__getScore__max___4__ordered__withItems() {
+
+        final List<Integer> numbers = asList(1, 2, 3);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .ordered()
+            .withItems(2, 3)
+        );
+
+        assertThat(score, closeTo(1.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__match__getScore__max___5__unique() {
+
+        final List<Integer> numbers = asList(1, 2, 3);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class).unique());
+
+        assertThat(score, closeTo(1.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__match__getScore__max___6__ofSize() {
+
+        final List<Integer> numbers = asList(1, 2, 3);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class).ofSize(3));
+
+        assertThat(score, closeTo(1.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__match__getScore__max___7__exactly__withItems() {
+
+        final List<Integer> numbers = asList(1, 2, 3);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .exactly()
+            .withItems(3, 2, 1)
+        );
+
+        assertThat(score, closeTo(1.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__match__getScore__max___8__exactly__withItems__ordered() {
+
+        final List<Integer> numbers = asList(1, 2, 3);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .exactly()
+            .withItems(1, 2, 3)
+            .ordered()
+        );
+
+        assertThat(score, closeTo(1.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__match__getScore__max___9__exactly__withItems__ordered__ofSize() {
+
+        final List<Integer> numbers = asList(1, 2, 3);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .ofSize(3)
+            .exactly()
+            .withItems(1, 2, 3)
+            .ordered()
+        );
+
+        assertThat(score, closeTo(1.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__match__getScore__max__10__exactly__withItems__ordered__ofSize__sorted() {
+
+        final List<Integer> numbers = asList(1, 2, 3);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .ofSize(3)
+            .exactly()
+            .withItems(1, 2, 3)
+            .ordered()
+            .sorted()
+        );
+
+        assertThat(score, closeTo(1.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__match__getScore__max__11__exactly__withItems__ordered__ofSize__sorted__unique() {
+
+        final List<Integer> numbers = asList(1, 2, 3);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .ofSize(3)
+            .exactly()
+            .withItems(1, 2, 3)
+            .ordered()
+            .sorted()
+            .unique()
+        );
+
+        assertThat(score, closeTo(1.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__mismatch__getScore__min__null_Collection_arg() {
+
+        final List<Integer> numbers = null;
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class));
+
+        assertThat(score, closeTo(0.0, 0.00001));
+    }
+
+
+    @Test
+    public void matchesSafely__mismatch__getScore__min__ofSize_doesnt_match__null() {
+
+        final List<Integer> numbers = null;
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class).ofSize(1));
+
+        assertThat(score, closeTo(0.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__mismatch__getScore__min__ofSize_doesnt_match() {
+
+        final List<Integer> numbers = emptyList();
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class).ofSize(1));
+
+        assertThat(score, closeTo(1.0/2.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__mismatch__getScore__partial__exactly_isnt_the_case() {
+
+        final List<Integer> numbers = singletonList(9);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class).exactly());
+
+        assertThat(score, closeTo(1.0/2.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__mismatch__getScore__partial__sorted_isnt_the_case() {
+
+        final List<Integer> numbers = asList(9, 8);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class).sorted());
+
+        assertThat(score, closeTo(1.0/2.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__mismatch__getScore__partial__unique_isnt_the_case() {
+
+        final List<Integer> numbers = asList(9, 9);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class).unique());
+
+        assertThat(score, closeTo(1.0/2.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__mismatch__getScore__partial__ordered_isnt_the_case__and_no_item_matches() {
+
+        final List<Integer> numbers = asList(9, 8);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .ordered()
+            .withItems(6, 7)
+        );
+
+        assertThat(score, closeTo(1.0/5.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__mismatch__getScore__partial__ordered_isnt_the_case__but_all_items_match() {
+
+        final List<Integer> numbers = asList(9, 8);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .ordered()
+            .withItems(8, 9)
+        );
+
+        assertThat(score, closeTo(4.0/5.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__mismatch__getScore__partial__ordered_isnt_the_case__but_some_items_match() {
+
+        final List<Integer> numbers = asList(9, 8);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .ordered()
+            .withItems(7, 9)
+        );
+
+        assertThat(score, closeTo(2.0/5.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__mismatch__getScore__partial__ordered_isnt_really_the_case__but_some_items_match__but_not_exactly() {
+
+        final List<Integer> numbers = asList(9, 8);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .ordered()
+            .withItems(7, 9, 10)
+            .exactly()
+        );
+
+        assertThat(score, closeTo(3.0/7.0, 0.00001));
+    }
+
+
+    @Test
+    public void matchesSafely__mismatch__getScore__partial__sorted_isnt_the_case__but_some_items_match__but_not_exactly() {
+
+        final List<Integer> numbers = asList(9, 8);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .sorted()
+            .withItems(10, 9, 7)
+            .exactly()
+        );
+
+        assertThat(score, closeTo(3.0/7.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__mismatch__getScore__partial__sorted_isnt_the_case__but_some_items_match__but_not_exactly__and_with_wrong_size() {
+
+        final List<Integer> numbers = asList(9, 8, 11, 13);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .sorted()
+            .withItems(10, 9, 7)
+            .exactly()
+            .ofSize(3)
+        );
+
+        assertThat(score, closeTo(2.0/8.0, 0.00001));
+    }
+
+    @Test
+    public void matchesSafely__mismatch__getScore__partial__sorted_isnt_the_case__but_some_items_match__but_not_exactly__and_with_wrong_size__unique() {
+
+        final List<Integer> numbers = asList(9, 8, 11, 13);
+
+        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+            .sorted()
+            .withItems(10, 9, 7)
+            .exactly()
+            .ofSize(3)
+            .unique()
+        );
+
+        assertThat(score, closeTo(3.0/9.0, 0.00001));
+    }
+
+
 }

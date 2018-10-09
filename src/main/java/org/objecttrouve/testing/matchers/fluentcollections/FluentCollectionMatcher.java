@@ -16,6 +16,7 @@ import org.objecttrouve.testing.matchers.api.ScorableMatcher;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.stream.Stream;
 
 import static java.lang.System.arraycopy;
 import static java.util.Collections.singletonList;
@@ -23,8 +24,9 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSafeMatcher<C> {
+public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSafeMatcher<C> implements ScorableMatcher {
 
+    private static final Finding theNullCollectionFinding = new Finding("Actual collection was null.");
     // Config.
     private final Settings<X> settings = new Settings<>();
 
@@ -37,7 +39,7 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
     private final Set<Integer> matchedActual = new HashSet<>();
     private final Set<Integer> unsorted = new HashSet<>();
     private final Set<Integer> unordered = new HashSet<>();
-    private final Set<Integer> duplicates =new HashSet<>();
+    private final Set<Integer> duplicates = new HashSet<>();
     private final Set<Integer> unwanted = new HashSet<>();
     private final List<Finding> findings = new LinkedList<>();
 
@@ -55,7 +57,7 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
         reset();
         validateSetup();
         if (collection == null) {
-            findings.add(new Finding("Actual collection was null."));
+            findings.add(theNullCollectionFinding);
             return false;
         }
 
@@ -70,6 +72,70 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
 
         return findings.isEmpty();
 
+    }
+
+    @Override
+    public void describeTo(final Description description) {
+
+        final Prose<X> prose = new Prose<>();
+        prose.describeExpectations(settings, description::appendText);
+
+    }
+
+    @Override
+    protected void describeMismatchSafely(final C item, final Description mismatchDescription) {
+
+        final List<SelfDescribing> fs = findings.stream()
+            .map(Finding::getDescription)
+            .map(s -> (SelfDescribing) description1 -> description1.appendValue(s))
+            .collect(toList());
+        mismatchDescription.appendList("Findings:\n", "\n", "\n", fs);
+
+        final int longestActual = Arrays.stream(actual).map(Objects::toString).mapToInt(String::length).max().orElse(1);
+        final List<ItemResult> itemResults = getItemResults();
+
+        final Prose prose = new Prose();
+        mismatchDescription.appendText("\n");
+        //noinspection unchecked
+        mismatchDescription.appendText(itemResults.stream()
+            .map(result -> prose.line(result, actual.length, longestActual))
+            .collect(joining("\n")
+            ));
+        mismatchDescription.appendText("\n");
+
+
+        super.describeMismatchSafely(item, mismatchDescription);
+    }
+
+    @Override
+    public double getScore() {
+        if (findings.isEmpty()) {
+            return 1.0;
+        }
+        if (findings.get(0) == theNullCollectionFinding){
+            return 0.0;
+        }
+        final int generalExpectations = Stream.of(
+            settings.expectedSize >= 0,
+            settings.mustNotHaveUnexpectedItems,
+            settings.ordered,
+            settings.sorted,
+            settings.unique,
+            settings.expectations.length > 0
+        ).mapToInt(b -> b ? 1 : 0)
+            .sum()
+            + 1 // Input collection not null
+            ;
+        final double allExpectations = generalExpectations + settings.expectations.length;
+        final int generalMatched = generalExpectations - findings.size();
+        if (generalMatched < 0) {
+            throw new IllegalStateException("There should be at least as many expectations as findings.");
+        }
+        final double allMatched = generalMatched + matchedExpected.size();
+        if (allMatched > allExpectations) {
+            throw new IllegalStateException("There should not be more matched expectations than expectations.");
+        }
+        return allMatched/allExpectations;
     }
 
     private void validateSetup() {
@@ -199,14 +265,6 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
     }
 
 
-    @Override
-    public void describeTo(final Description description) {
-
-        final Prose<X> prose = new Prose<>();
-        prose.describeExpectations(settings, description::appendText);
-
-    }
-
     private static class ScoredMismatch implements Comparable<ScoredMismatch> {
         private final int actual;
         private final int matcher;
@@ -240,30 +298,6 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
         }
     }
 
-    @Override
-    protected void describeMismatchSafely(final C item, final Description mismatchDescription) {
-
-        final List<SelfDescribing> fs = findings.stream()
-            .map(Finding::getDescription)
-            .map(s -> (SelfDescribing) description1 -> description1.appendValue(s))
-            .collect(toList());
-        mismatchDescription.appendList("Findings:\n", "\n", "\n", fs);
-
-        final int longestActual = Arrays.stream(actual).map(Objects::toString).mapToInt(String::length).max().orElse(1);
-        final List<ItemResult> itemResults = getItemResults();
-
-        final Prose prose = new Prose();
-        mismatchDescription.appendText("\n");
-        //noinspection unchecked
-        mismatchDescription.appendText(itemResults.stream()
-            .map(result -> prose.line(result, actual.length, longestActual))
-            .collect(joining("\n")
-            ));
-        mismatchDescription.appendText("\n");
-
-
-        super.describeMismatchSafely(item, mismatchDescription);
-    }
 
     List<ItemResult> getItemResults() {
         final List<ItemResult> itemResults = new LinkedList<>();
@@ -292,7 +326,7 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
                     .breakingSortOrder(this.unsorted.contains(j))
                     .build());
             } else {
-                if (settings.mustNotHaveUnexpectedItems){
+                if (settings.mustNotHaveUnexpectedItems) {
                     this.unwanted.add(j);
                 }
                 final Set<ScoredMismatch> unmatched = new TreeSet<>();

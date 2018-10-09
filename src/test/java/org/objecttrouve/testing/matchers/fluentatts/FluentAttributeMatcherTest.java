@@ -1,7 +1,7 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
@@ -26,7 +26,7 @@ import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 
 @SuppressWarnings({"ResultOfMethodCallIgnored", "deprecation"})
-public class FluentAttributeMatcherMatcherTest {
+public class FluentAttributeMatcherTest {
 
 
     private static class Thing {
