@@ -1,7 +1,7 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
@@ -74,7 +74,7 @@ fixJmhMetaInf.dependsOn(removeJmhDuplicates)
 
 jmh {
     //noinspection GroovyAccessibility
-    duplicateClassesStrategy = 'fail'
+    duplicateClassesStrategy = 'warn'
     failOnError = true
 }
 
