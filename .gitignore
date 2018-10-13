@@ -5,3 +5,4 @@ build/
 sandbox.iml
 convenience-matchers.iml
 /out
+/docSrc/**
