@@ -128,7 +128,7 @@ public class Examples {
 }
 ```
 
-(See also the [full example](https://github.com/objecttrouve/convenience-matchers/blob/master/src/test/java/org/objecttrouve/testing/matchers/fluentcollections/Examples.java).)
+(See also the [full example](https://github.com/objecttrouve/convenience-matchers/blob/master/src/test/java/org/objecttrouve/testing/matchers/fluentits/Examples.java).)
 
 You can fluently express the basic requirements you might have about an `Iterable`: 
 
