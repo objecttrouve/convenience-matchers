@@ -1,16 +1,14 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
 package org.objecttrouve.testing.matchers;
 
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
-import org.objecttrouve.testing.matchers.fluentcollections.FluentCollectionMatcher;
-
-import java.util.Collection;
+import org.objecttrouve.testing.matchers.fluentits.FluentIterableMatcher;
 
 /**
  * <p>
@@ -94,8 +92,8 @@ public class ConvenientMatchers {
 
 
 
-    public static <X, C extends Collection<X>> FluentCollectionMatcher<X, C> aCollectionOf(final Class<X> klass){
-        return new FluentCollectionMatcher<>(klass);
+    public static <X, C extends Iterable<X>> FluentIterableMatcher<X, C> anIterableOf(final Class<X> klass){
+        return new FluentIterableMatcher<>(klass);
     }
 
 }

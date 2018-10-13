@@ -5,13 +5,13 @@
  *
  */
 
-package org.objecttrouve.testing.matchers.fluentcollections;
+package org.objecttrouve.testing.matchers.fluentits;
 
+import org.hamcrest.StringDescription;
 import org.junit.Test;
 import org.objecttrouve.testing.matchers.fluentatts.Attribute;
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
 
-import java.util.Collection;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -24,17 +24,17 @@ import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
-import static org.objecttrouve.testing.matchers.ConvenientMatchers.aCollectionOf;
+import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableOf;
 import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
-public class FluentCollectionMatcherTest {
+public class FluentIterableMatcherTest {
 
     @Test
     public void matchesSafely__match__empty_expectation__no_requirements__empty_actual() {
 
         final List<String> strings = emptyList();
 
-        assertThat(strings, is(aCollectionOf(String.class)));
+        assertThat(strings, is(anIterableOf(String.class)));
     }
 
     @Test
@@ -42,7 +42,7 @@ public class FluentCollectionMatcherTest {
 
         final List<String> strings = null;
 
-        assertThat(strings, not(is(aCollectionOf(String.class))));
+        assertThat(strings, not(is(anIterableOf(String.class))));
     }
 
 
@@ -51,7 +51,7 @@ public class FluentCollectionMatcherTest {
 
         final List<String> strings = null;
 
-        final boolean matches = aCollectionOf(String.class).matches(strings);
+        final boolean matches = anIterableOf(String.class).matches(strings);
 
         //noinspection ConstantConditions
         assertThat(matches, is(false));
@@ -63,17 +63,17 @@ public class FluentCollectionMatcherTest {
 
         final List<String> strings = null;
 
-        final List<ItemResult> itemResults = matchResults(strings, aCollectionOf(String.class));
+        final List<ItemResult> itemResults = matchResults(strings, anIterableOf(String.class));
 
         assertThat(itemResults, hasSize(0));
     }
 
-    private static <X> List<ItemResult> matchResults(final List<X> xs, final FluentCollectionMatcher<X, Collection<X>> matcher) {
+    private static <X> List<ItemResult> matchResults(final List<X> xs, final FluentIterableMatcher<X, Iterable<X>> matcher) {
         matcher.matchesSafely(xs);
         return matcher.getItemResults();
     }
 
-    private static <X> double matchScore(final List<X> xs, final FluentCollectionMatcher<X, Collection<X>> matcher) {
+    private static <X> double matchScore(final List<X> xs, final FluentIterableMatcher<X, Iterable<X>> matcher) {
         matcher.matchesSafely(xs);
         return matcher.getScore();
     }
@@ -84,7 +84,7 @@ public class FluentCollectionMatcherTest {
 
         final List<String> strings = singletonList("item");
 
-        assertThat(strings, is(aCollectionOf(String.class)));
+        assertThat(strings, is(anIterableOf(String.class)));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class FluentCollectionMatcherTest {
 
         final List<String> strings = singletonList(null);
 
-        assertThat(strings, is(aCollectionOf(String.class).withItemsMatching(nullValue())));
+        assertThat(strings, is(anIterableOf(String.class).withItemsMatching(nullValue())));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class FluentCollectionMatcherTest {
 
         final List<String> strings = singletonList("item");
 
-        assertThat(strings, not(is(aCollectionOf(String.class).exactly())));
+        assertThat(strings, not(is(anIterableOf(String.class).exactly())));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class FluentCollectionMatcherTest {
 
         final List<String> strings = singletonList("item");
 
-        final List<ItemResult> itemResults = matchResults(strings, aCollectionOf(String.class).exactly());
+        final List<ItemResult> itemResults = matchResults(strings, anIterableOf(String.class).exactly());
 
         assertThat(itemResults, hasSize(1));
         final ItemResult itemResult = itemResults.get(0);
@@ -130,7 +130,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("item");
 
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(containsString("it"))
                 .exactly()
         ));
@@ -142,7 +142,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("item");
 
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(containsString("it"))
         ));
     }
@@ -153,7 +153,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("item");
 
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(containsString("it"))
                 .ofSize(1)
         ));
@@ -165,7 +165,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("item");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(containsString("it"))
                 .ofSize(2)
         )));
@@ -177,7 +177,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("item");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(containsString("it"))
                 .ofSize(2)
         );
@@ -200,7 +200,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("item");
 
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(containsString("it"))
                 .ofSize(1)
                 .exactly()
@@ -211,7 +211,7 @@ public class FluentCollectionMatcherTest {
     public void matchesSafely__error__1_matcher_expectation__ofSize_2__1_actual__inconsistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
-        final FluentCollectionMatcher<String, Collection<String>> matcher = aCollectionOf(String.class)
+        final FluentIterableMatcher<String, Iterable<String>> matcher = anIterableOf(String.class)
             .withItemsMatching(containsString("it"))
             .ofSize(2)
             .exactly();
@@ -226,7 +226,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("item");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     containsString("tem")
@@ -242,7 +242,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("item");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     containsString("tem")
@@ -267,7 +267,7 @@ public class FluentCollectionMatcherTest {
     public void matchesSafely__error__3_matcher_expectations__ofSize_2__1_actual__inconsistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
-        final FluentCollectionMatcher<String, Collection<String>> matcher = aCollectionOf(String.class)
+        final FluentIterableMatcher<String, Iterable<String>> matcher = anIterableOf(String.class)
             .withItemsMatching(
                 containsString("it"),
                 containsString("tem")
@@ -282,7 +282,7 @@ public class FluentCollectionMatcherTest {
     public void matchesSafely__error__2_matcher_expectations__ofSize_1__1_actual__inconsistent_with__exactly() {
 
         final List<String> strings = singletonList("item");
-        final FluentCollectionMatcher<String, Collection<String>> matcher = aCollectionOf(String.class)
+        final FluentIterableMatcher<String, Iterable<String>> matcher = anIterableOf(String.class)
             .withItemsMatching(
                 containsString("it"),
                 containsString("tem")
@@ -297,7 +297,7 @@ public class FluentCollectionMatcherTest {
     public void matchesSafely__error__2_matcher_expectations__ofSize_1__1_actual__inconsistent() {
 
         final List<String> strings = singletonList("item");
-        final FluentCollectionMatcher<String, Collection<String>> matcher = aCollectionOf(String.class)
+        final FluentIterableMatcher<String, Iterable<String>> matcher = anIterableOf(String.class)
             .withItemsMatching(
                 containsString("it"),
                 containsString("tem")
@@ -313,7 +313,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("item");
 
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .ofSize(1)
         ));
     }
@@ -324,7 +324,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("item", "element");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .ofSize(1)
         )));
     }
@@ -335,7 +335,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("item", "element");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .ofSize(1)
         );
 
@@ -367,7 +367,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("item");
 
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(containsString("it"))
         ));
     }
@@ -379,7 +379,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     is("item")
@@ -394,7 +394,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("item");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     is("item")
@@ -421,7 +421,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     is("item")
@@ -436,7 +436,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     is("item")
@@ -451,7 +451,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     is("item")
@@ -466,7 +466,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("item", "item", "item");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     is("item")
@@ -513,7 +513,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     is("item")
@@ -528,7 +528,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     is("item")
@@ -542,7 +542,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("element", "element", "item");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     is("item")
@@ -586,7 +586,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     is("item")
@@ -600,7 +600,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("element", "element", "element");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     is("item")
@@ -644,7 +644,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     containsString("it"),
                     containsString("l"),
@@ -656,28 +656,28 @@ public class FluentCollectionMatcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void ofSize__error__negative_arg() {
 
-        aCollectionOf(String.class).ofSize(-1);
+        anIterableOf(String.class).ofSize(-1);
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void sorted__error__requested_sorting_for_non_Comparable() {
 
-        aCollectionOf(Object.class).sorted();
+        anIterableOf(Object.class).sorted();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void withItemsMatching__error__null_arg() {
 
         //noinspection ConfusingArgumentToVarargsMethod
-        aCollectionOf(Object.class).withItemsMatching(null);
+        anIterableOf(Object.class).withItemsMatching(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void withItems__error__null_arg() {
 
         //noinspection ConfusingArgumentToVarargsMethod
-        aCollectionOf(Object.class).withItems(null);
+        anIterableOf(Object.class).withItems(null);
     }
 
     @Test
@@ -687,7 +687,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "item",
                     "element",
@@ -703,7 +703,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "item",
                     "mental",
@@ -718,7 +718,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("item", "element", "object");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "item",
                     "mental",
@@ -763,7 +763,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "item",
                     "mental",
@@ -778,7 +778,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("it", "element", "objection");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "item",
                     "mental",
@@ -823,7 +823,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -843,7 +843,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     endsWith("ump"),
                     startsWith("Don")
@@ -865,7 +865,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -885,7 +885,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -953,7 +953,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -973,7 +973,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     startsWith("Don"),
                     endsWith("ump")
@@ -994,7 +994,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1014,7 +1014,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("fake", "news", "impeachment", "Donald", "Trump", "alternative", "facts");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1100,7 +1100,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1121,7 +1121,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
 
                 .withItemsMatching(
                     containsString("a"),
@@ -1141,7 +1141,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
 
                 .withItemsMatching(
                     containsString("aa"),
@@ -1162,7 +1162,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1182,7 +1182,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("fake", "news", "Donald", "Trump", "impeachment");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1251,7 +1251,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1271,7 +1271,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("Donald", "Trump", "fake", "news", "impeachment");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1338,7 +1338,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     startsWith("Don"),
                     endsWith("ump")
@@ -1358,7 +1358,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("impeachment", "Donald", "Trump", "fake", "news");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     startsWith("Don"),
                     endsWith("ump")
@@ -1427,7 +1427,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     startsWith("Don"),
                     endsWith("ump")
@@ -1448,7 +1448,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("impeachment", "Donald", "fake", "news", "Trump");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(
                     startsWith("Don"),
                     endsWith("ump")
@@ -1518,7 +1518,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1539,7 +1539,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1560,7 +1560,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1581,7 +1581,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("alternative", "fake", "news", "facts", "impeachment", "Donald", "Trump");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1669,7 +1669,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1690,7 +1690,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1711,7 +1711,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("news", "fake", "alternative", "facts", "impeachment", "Donald", "Trump");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1798,7 +1798,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1818,7 +1818,7 @@ public class FluentCollectionMatcherTest {
 
         /* There must be at least one matching item for every matcher. */
         assertThat(strings, not(is(
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItems(
                     "fake",
                     "news",
@@ -1837,7 +1837,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = emptyList();
 
         assertThat(strings, is(
-            aCollectionOf(String.class).sorted()
+            anIterableOf(String.class).sorted()
         ));
     }
 
@@ -1847,7 +1847,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("B");
 
         assertThat(strings, is(
-            aCollectionOf(String.class).sorted()
+            anIterableOf(String.class).sorted()
         ));
     }
 
@@ -1857,7 +1857,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("A", "B", "C");
 
         assertThat(strings, is(
-            aCollectionOf(String.class).sorted()
+            anIterableOf(String.class).sorted()
         ));
     }
 
@@ -1867,7 +1867,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("A", "A", "B", "C", "C", "D", "E", "F", "F");
 
         assertThat(strings, is(
-            aCollectionOf(String.class).sorted()
+            anIterableOf(String.class).sorted()
         ));
     }
 
@@ -1877,7 +1877,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("D", "B", "C");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class).sorted()
+            anIterableOf(String.class).sorted()
         )));
     }
 
@@ -1887,7 +1887,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("D", "B", "C");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class).sorted()
+            anIterableOf(String.class).sorted()
         );
 
         assertThat(itemResults, hasSize(3));
@@ -1926,7 +1926,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("B", "A", "A", "C", "C", "D", "E", "F", "F");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class).sorted()
+            anIterableOf(String.class).sorted()
         )));
     }
 
@@ -1936,7 +1936,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("A", "B", "A", "C", "C", "D", "E", "F", "F");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class).sorted()
+            anIterableOf(String.class).sorted()
         )));
     }
 
@@ -1946,7 +1946,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("A", "A", "C", "C", "D", "E", "F", "F", "B");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class).sorted()
+            anIterableOf(String.class).sorted()
         )));
     }
 
@@ -1956,7 +1956,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("B", "A", "A", "C", "B");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class).sorted()
+            anIterableOf(String.class).sorted()
         );
 
         assertThat(itemResults, hasSize(5));
@@ -1989,7 +1989,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = emptyList();
 
         assertThat(strings, is(
-            aCollectionOf(String.class).sorted(comparingInt(String::length))
+            anIterableOf(String.class).sorted(comparingInt(String::length))
         ));
     }
 
@@ -1999,7 +1999,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("B");
 
         assertThat(strings, is(
-            aCollectionOf(String.class).sorted(comparingInt(String::length))
+            anIterableOf(String.class).sorted(comparingInt(String::length))
         ));
     }
 
@@ -2009,7 +2009,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("A", "B", "C");
 
         assertThat(strings, is(
-            aCollectionOf(String.class).sorted(comparingInt(String::length))
+            anIterableOf(String.class).sorted(comparingInt(String::length))
         ));
     }
 
@@ -2019,7 +2019,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("A", "BB", "CCC");
 
         assertThat(strings, is(
-            aCollectionOf(String.class).sorted(comparingInt(String::length))
+            anIterableOf(String.class).sorted(comparingInt(String::length))
         ));
     }
 
@@ -2029,7 +2029,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("AA", "BB", "CCC", "DDD", "EEEE");
 
         assertThat(strings, is(
-            aCollectionOf(String.class).sorted(comparingInt(String::length))
+            anIterableOf(String.class).sorted(comparingInt(String::length))
         ));
     }
 
@@ -2039,7 +2039,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("AAA", "BB", "CCC", "DDD", "EEEE");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class).sorted(comparingInt(String::length))
+            anIterableOf(String.class).sorted(comparingInt(String::length))
         )));
     }
 
@@ -2049,7 +2049,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("AA", "BB", "CCC", "DDD", "EE");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class).sorted(comparingInt(String::length))
+            anIterableOf(String.class).sorted(comparingInt(String::length))
         )));
     }
 
@@ -2059,7 +2059,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("A", "BB", "CCCC", "DDD", "EEEE");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class).sorted(comparingInt(String::length))
+            anIterableOf(String.class).sorted(comparingInt(String::length))
         )));
     }
 
@@ -2069,7 +2069,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("BBB", "AA", "AA", "CCC", "D");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class).sorted(comparingInt(String::length))
+            anIterableOf(String.class).sorted(comparingInt(String::length))
         );
 
         assertThat(itemResults, hasSize(5));
@@ -2101,7 +2101,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = emptyList();
 
         assertThat(strings, is(
-            aCollectionOf(String.class).unique()
+            anIterableOf(String.class).unique()
         ));
     }
 
@@ -2111,7 +2111,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("singleton");
 
         assertThat(strings, is(
-            aCollectionOf(String.class).unique()
+            anIterableOf(String.class).unique()
         ));
     }
 
@@ -2122,7 +2122,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("singleton", "doubleton", "tripleton");
 
         assertThat(strings, is(
-            aCollectionOf(String.class).unique()
+            anIterableOf(String.class).unique()
         ));
     }
 
@@ -2133,7 +2133,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("doubleton", "doubleton");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class).unique()
+            anIterableOf(String.class).unique()
         )));
     }
 
@@ -2143,7 +2143,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("singleton", "doubleton", "doubleton", "tripleton");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class).unique()
+            anIterableOf(String.class).unique()
         )));
     }
 
@@ -2153,7 +2153,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("singleton", "singleton", "doubleton", "tripleton");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class).unique()
+            anIterableOf(String.class).unique()
         )));
     }
 
@@ -2163,7 +2163,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("singleton", "singleton", "doubleton", "tripleton", "tripleton");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class).unique()
+            anIterableOf(String.class).unique()
         )));
     }
 
@@ -2173,7 +2173,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("B", "A", "D", "A", "B");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class).unique()
+            anIterableOf(String.class).unique()
         );
 
         assertThat(itemResults, hasSize(5));
@@ -2206,7 +2206,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = emptyList();
 
         assertThat(strings, is(
-            aCollectionOf(String.class).unique((x1, x2) -> x1.length() == x2.length())
+            anIterableOf(String.class).unique((x1, x2) -> x1.length() == x2.length())
         ));
     }
 
@@ -2216,7 +2216,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = singletonList("x");
 
         assertThat(strings, is(
-            aCollectionOf(String.class).unique((x1, x2) -> x1.length() == x2.length())
+            anIterableOf(String.class).unique((x1, x2) -> x1.length() == x2.length())
         ));
     }
 
@@ -2226,7 +2226,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("x", "yy", "zzz");
 
         assertThat(strings, is(
-            aCollectionOf(String.class).unique((x1, x2) -> x1.length() == x2.length())
+            anIterableOf(String.class).unique((x1, x2) -> x1.length() == x2.length())
         ));
     }
 
@@ -2236,7 +2236,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("x", "yy", "zzz", "åå");
 
         assertThat(strings, not(is(
-            aCollectionOf(String.class).unique((x1, x2) -> x1.length() == x2.length())
+            anIterableOf(String.class).unique((x1, x2) -> x1.length() == x2.length())
         )));
     }
 
@@ -2246,7 +2246,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("B", "a", "D", "A", "b");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class).unique(String::equalsIgnoreCase)
+            anIterableOf(String.class).unique(String::equalsIgnoreCase)
         );
 
         assertThat(itemResults, hasSize(5));
@@ -2278,7 +2278,7 @@ public class FluentCollectionMatcherTest {
 
         final List<String> strings = asList("x", "zzz", "yy", "yy", "åå");
         final List<String> strings2 = asList("x", "yy", "zzz");
-        final FluentCollectionMatcher<String, Collection<String>> matching = aCollectionOf(String.class)
+        final FluentIterableMatcher<String, Iterable<String>> matching = anIterableOf(String.class)
             .exactly()
             .sorted()
             .ordered()
@@ -2294,7 +2294,7 @@ public class FluentCollectionMatcherTest {
 
         final List<String> strings = asList("x", "wzx", "yy", "yy", "åå");
         final List<String> strings2 = asList("x", "yy", "zzz");
-        final FluentCollectionMatcher<String, Collection<String>> matching = aCollectionOf(String.class)
+        final FluentIterableMatcher<String, Iterable<String>> matching = anIterableOf(String.class)
             .exactly()
             .sorted()
             .ordered()
@@ -2393,7 +2393,7 @@ public class FluentCollectionMatcherTest {
         final List<String> strings = asList("x", "wzx", "yy", "yy", "åå");
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .exactly()
                 .sorted()
                 .ordered()
@@ -2425,7 +2425,7 @@ public class FluentCollectionMatcherTest {
             .with(secondCharUpper, false);
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(m1, m2, m3)
         );
 
@@ -2455,7 +2455,7 @@ public class FluentCollectionMatcherTest {
             .with(secondCharUpper, false);
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(m1, m2, m3)
         );
 
@@ -2485,7 +2485,7 @@ public class FluentCollectionMatcherTest {
             .with(secondCharUpper, false);
 
         final List<ItemResult> itemResults = matchResults(strings,
-            aCollectionOf(String.class)
+            anIterableOf(String.class)
                 .withItemsMatching(m1, m2, m3)
         );
 
@@ -2499,7 +2499,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(1, 2, 3);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class));
+        final double score = matchScore(numbers, anIterableOf(Integer.class));
 
         assertThat(score, closeTo(1.0, 0.00001));
     }
@@ -2509,7 +2509,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(1, 2, 3);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class).sorted());
+        final double score = matchScore(numbers, anIterableOf(Integer.class).sorted());
 
         assertThat(score, closeTo(1.0, 0.00001));
     }
@@ -2519,7 +2519,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(1, 2, 3);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .ordered()
         );
 
@@ -2531,7 +2531,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(1, 2, 3);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .ordered()
             .withItems(1)
         );
@@ -2544,7 +2544,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(1, 2, 3);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .ordered()
             .withItems(2, 3)
         );
@@ -2557,7 +2557,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(1, 2, 3);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class).unique());
+        final double score = matchScore(numbers, anIterableOf(Integer.class).unique());
 
         assertThat(score, closeTo(1.0, 0.00001));
     }
@@ -2567,7 +2567,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(1, 2, 3);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class).ofSize(3));
+        final double score = matchScore(numbers, anIterableOf(Integer.class).ofSize(3));
 
         assertThat(score, closeTo(1.0, 0.00001));
     }
@@ -2577,7 +2577,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(1, 2, 3);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .exactly()
             .withItems(3, 2, 1)
         );
@@ -2590,7 +2590,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(1, 2, 3);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .exactly()
             .withItems(1, 2, 3)
             .ordered()
@@ -2604,7 +2604,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(1, 2, 3);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .ofSize(3)
             .exactly()
             .withItems(1, 2, 3)
@@ -2619,7 +2619,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(1, 2, 3);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .ofSize(3)
             .exactly()
             .withItems(1, 2, 3)
@@ -2635,7 +2635,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(1, 2, 3);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .ofSize(3)
             .exactly()
             .withItems(1, 2, 3)
@@ -2652,7 +2652,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = null;
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class));
+        final double score = matchScore(numbers, anIterableOf(Integer.class));
 
         assertThat(score, closeTo(0.0, 0.00001));
     }
@@ -2663,7 +2663,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = null;
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class).ofSize(1));
+        final double score = matchScore(numbers, anIterableOf(Integer.class).ofSize(1));
 
         assertThat(score, closeTo(0.0, 0.00001));
     }
@@ -2673,7 +2673,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = emptyList();
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class).ofSize(1));
+        final double score = matchScore(numbers, anIterableOf(Integer.class).ofSize(1));
 
         assertThat(score, closeTo(1.0/2.0, 0.00001));
     }
@@ -2683,7 +2683,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = singletonList(9);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class).exactly());
+        final double score = matchScore(numbers, anIterableOf(Integer.class).exactly());
 
         assertThat(score, closeTo(1.0/2.0, 0.00001));
     }
@@ -2693,7 +2693,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(9, 8);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class).sorted());
+        final double score = matchScore(numbers, anIterableOf(Integer.class).sorted());
 
         assertThat(score, closeTo(1.0/2.0, 0.00001));
     }
@@ -2703,7 +2703,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(9, 9);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class).unique());
+        final double score = matchScore(numbers, anIterableOf(Integer.class).unique());
 
         assertThat(score, closeTo(1.0/2.0, 0.00001));
     }
@@ -2713,7 +2713,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(9, 8);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .ordered()
             .withItems(6, 7)
         );
@@ -2726,7 +2726,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(9, 8);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .ordered()
             .withItems(8, 9)
         );
@@ -2739,7 +2739,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(9, 8);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .ordered()
             .withItems(7, 9)
         );
@@ -2752,7 +2752,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(9, 8);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .ordered()
             .withItems(7, 9, 10)
             .exactly()
@@ -2767,7 +2767,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(9, 8);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .sorted()
             .withItems(10, 9, 7)
             .exactly()
@@ -2781,7 +2781,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(9, 8, 11, 13);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .sorted()
             .withItems(10, 9, 7)
             .exactly()
@@ -2796,7 +2796,7 @@ public class FluentCollectionMatcherTest {
 
         final List<Integer> numbers = asList(9, 8, 11, 13);
 
-        final double score = matchScore(numbers, aCollectionOf(Integer.class)
+        final double score = matchScore(numbers, anIterableOf(Integer.class)
             .sorted()
             .withItems(10, 9, 7)
             .exactly()
@@ -2808,4 +2808,133 @@ public class FluentCollectionMatcherTest {
     }
 
 
+    private static class Paper{
+        private final String text;
+        private final int pages;
+
+        private Paper(final String text, final int pages) {
+            this.text = text;
+            this.pages = pages;
+        }
+        int getPages() {
+            return pages;
+        }
+
+        String getText() {
+            return text;
+        }
+
+        @Override
+        public String toString() {
+            return "Paper{" +
+                "text='" + text + '\'' +
+                ", pages=" + pages +
+                '}';
+        }
+    }
+
+    private static Paper pap(final String text){return new Paper(text, text.length()*10);}
+    private static final Attribute<Paper, String> txt = Attribute.attribute("text", Paper::getText);
+    private static final Attribute<Paper, Integer> pages = Attribute.attribute("pages", Paper::getPages);
+
+    @Test
+    public void matchesSafely__mismatch__describeTo__describeMismatchSafely__with_full_force(){
+        final StringDescription self = new StringDescription();
+        final StringDescription issues = new StringDescription();
+        final Iterable<Paper> input = asList(pap("PAP!"), pap("The Law Of Gravity"), pap("Booh!"), pap("PAP!"));
+        final FluentIterableMatcher<Paper, Iterable<Paper>> matcher = anIterableOf(Paper.class)
+            .exactly()
+            .ordered()
+            .sorted(comparingInt(Paper::getPages))
+            .unique((p1, p2) -> p1.text.equals(p2.text))
+            .withItemsMatching(
+                a(Paper.class).with(txt, "Booh!").with(pages, 3),
+                a(Paper.class).with(txt, "PAP!").with(pages, 40),
+                a(Paper.class).with(txt, "Grave").with(pages, 0)
+            );
+
+        final boolean matches = matcher.matchesSafely(input);
+
+        assertThat(matches, is(false));
+
+        matcher.describeTo(self);
+
+        assertThat(self.toString(), is( "" +
+            "an Iterable with the following properties:\n" +
+            "- Iterable of Paper\n" +
+            "- at least 3 matching item(s)\n" +
+            "- no unexpected items\n" +
+            "- sorted\n" +
+            "- ordered\n" +
+            "- no duplicates\n" +
+            "\n"));
+
+        matcher.describeMismatchSafely(input, issues);
+
+        assertThat(issues.toString(), is("" +
+            "Findings:\n" +
+            "\"Not all expectations were fulfilled.\"\n" +
+            "\"Unexpected actual items.\"\n" +
+            "\"Items did not appear in the expected order.\"\n" +
+            "\"Collection is not sorted.\"\n" +
+            "\"Detected duplicates.\"\n" +
+            "\n" +
+            "[0][Paper{text='PAP!', pages=40}  ]💕  ↔ 👯  \n" +
+            "[1][Paper{text='The Law Of Gravity]    ↔   🚯 💔[ \ttext = \"PAP!\" <> \"The Law Of Gravity\" \tpages = <40> <> <180> \t]\n" +
+            "[2][Paper{text='Booh!', pages=50} ]  ↕ ↔   🚯 💔[ \ttext = \"Grave\" <> \"Booh!\" \tpages = <0> <> <50> \t]\n" +
+            "[3][Paper{text='PAP!', pages=40}  ]💕↕   👯  \n" +
+            "was <[Paper{text='PAP!', pages=40}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='Booh!', pages=50}, Paper{text='PAP!', pages=40}]>"
+        ));
+    }
+
+
+    @Test
+    public void matchesSafely__mismatch__describeTo__describeMismatchSafely__with_full_force_2(){
+        final StringDescription self = new StringDescription();
+        final StringDescription issues = new StringDescription();
+        final Iterable<Paper> input = asList(pap("PAP!"), pap("The Law Of Gravity"), pap("Booh!"), pap("PAP!"));
+        final FluentIterableMatcher<Paper, Iterable<Paper>> matcher = anIterableOf(Paper.class)
+            .ofSize(9)
+            .ordered()
+            .sorted(comparingInt(Paper::getPages))
+            .unique((p1, p2) -> p1.text.equals(p2.text))
+            .withItemsMatching(
+                a(Paper.class).with(txt, "Booh!").with(pages, 3),
+                a(Paper.class).with(txt, "PAP!").with(pages, 40),
+                a(Paper.class).with(txt, "Grave").with(pages, 0)
+            );
+
+        final boolean matches = matcher.matchesSafely(input);
+
+        assertThat(matches, is(false));
+
+        matcher.describeTo(self);
+
+        assertThat(self.toString(), is( "" +
+            "an Iterable with the following properties:\n" +
+            "- Iterable of Paper\n" +
+            "- exactly 9 item(s)\n" +
+            "- at least 3 matching item(s)\n" +
+            "- sorted\n" +
+            "- ordered\n" +
+            "- no duplicates\n\n"
+        ));
+
+        matcher.describeMismatchSafely(input, issues);
+
+        assertThat(issues.toString(), is("" +
+            "Findings:\n" +
+            "\"Size mismatch. Expected: 9. Actual was: 4.\"\n" +
+            "\"Not all expectations were fulfilled.\"\n" +
+            "\"Items did not appear in the expected order.\"\n" +
+            "\"Collection is not sorted.\"\n" +
+            "\"Detected duplicates.\"\n" +
+            "\n" +
+            "[0][Paper{text='PAP!', pages=40}  ]💕  ↔ 👯  \n" +
+            "[1][Paper{text='The Law Of Gravity]    ↔      💔[ \ttext = \"Booh!\" <> \"The Law Of Gravity\" \tpages = <3> <> <180> \t] 💔[ \ttext = \"PAP!\" <> \"The Law Of Gravity\" \tpages = <40> <> <180> \t] 💔[ \ttext = \"Grave\" <> \"The Law Of Gravity\" \tpages = <0> <> <180> \t]\n" +
+            "[2][Paper{text='Booh!', pages=50} ]  ↕ ↔      💔[ \tpages = <3> <> <50> \t] 💔[ \ttext = \"PAP!\" <> \"Booh!\" \tpages = <40> <> <50> \t] 💔[ \ttext = \"Grave\" <> \"Booh!\" \tpages = <0> <> <50> \t]\n" +
+            "[3][Paper{text='PAP!', pages=40}  ]💕↕ ↔ 👯  \n" +
+            "was <[Paper{text='PAP!', pages=40}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='Booh!', pages=50}, Paper{text='PAP!', pages=40}]>"
+        ));
+    }
 }

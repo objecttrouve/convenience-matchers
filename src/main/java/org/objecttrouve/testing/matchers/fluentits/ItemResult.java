@@ -5,7 +5,7 @@
  *
  */
 
-package org.objecttrouve.testing.matchers.fluentcollections;
+package org.objecttrouve.testing.matchers.fluentits;
 
 import org.hamcrest.Matcher;
 

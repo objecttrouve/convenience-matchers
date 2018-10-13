@@ -5,7 +5,7 @@
  *
  */
 
-package org.objecttrouve.testing.matchers.fluentcollections;
+package org.objecttrouve.testing.matchers.fluentits;
 
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
@@ -32,8 +32,8 @@ public class ProseTest {
         stringProse.describeExpectations(new Settings(), description::append);
 
         assertThat(description.toString(), is("" +
-            "a collection with the following properties:\n" +
-            "- collection of Object\n\n" +
+            "an Iterable with the following properties:\n" +
+            "- Iterable of Object\n\n" +
             ""));
     }
 
@@ -48,8 +48,8 @@ public class ProseTest {
         stringProse.describeExpectations(settings, description::append);
 
         assertThat(description.toString(), is("" +
-            "a collection with the following properties:\n" +
-            "- collection of Integer\n\n" +
+            "an Iterable with the following properties:\n" +
+            "- Iterable of Integer\n\n" +
             ""));
     }
 
@@ -63,8 +63,8 @@ public class ProseTest {
         stringProse.describeExpectations(settings, description::append);
 
         assertThat(description.toString(), is("" +
-            "a collection with the following properties:\n" +
-            "- collection of Object\n" +
+            "an Iterable with the following properties:\n" +
+            "- Iterable of Object\n" +
             "- exactly 0 item(s)\n\n"));
     }
 
@@ -78,8 +78,8 @@ public class ProseTest {
         stringProse.describeExpectations(settings, description::append);
 
         assertThat(description.toString(), is("" +
-            "a collection with the following properties:\n" +
-            "- collection of Object\n" +
+            "an Iterable with the following properties:\n" +
+            "- Iterable of Object\n" +
             "- at least 3 matching item(s)\n\n"));
     }
 
@@ -93,8 +93,8 @@ public class ProseTest {
 
         stringProse.describeExpectations(settings, description::append);
 
-        assertThat(description.toString(), is("a collection with the following properties:\n" +
-            "- collection of Object\n" +
+        assertThat(description.toString(), is("an Iterable with the following properties:\n" +
+            "- Iterable of Object\n" +
             "- no unexpected items\n" +
             "\n"));
     }
@@ -109,8 +109,8 @@ public class ProseTest {
 
         stringProse.describeExpectations(settings, description::append);
 
-        assertThat(description.toString(), is("a collection with the following properties:\n" +
-            "- collection of Object\n" +
+        assertThat(description.toString(), is("an Iterable with the following properties:\n" +
+            "- Iterable of Object\n" +
             "- ordered\n" +
             "\n"));
     }
@@ -124,8 +124,8 @@ public class ProseTest {
 
         stringProse.describeExpectations(settings, description::append);
 
-        assertThat(description.toString(), is("a collection with the following properties:\n" +
-            "- collection of Object\n" +
+        assertThat(description.toString(), is("an Iterable with the following properties:\n" +
+            "- Iterable of Object\n" +
             "- sorted\n" +
             "\n"));
     }
@@ -139,8 +139,8 @@ public class ProseTest {
 
         stringProse.describeExpectations(settings, description::append);
 
-        assertThat(description.toString(), is("a collection with the following properties:\n" +
-            "- collection of Object\n" +
+        assertThat(description.toString(), is("an Iterable with the following properties:\n" +
+            "- Iterable of Object\n" +
             "- no duplicates\n" +
             "\n"));
     }
@@ -162,8 +162,8 @@ public class ProseTest {
         stringProse.describeExpectations(settings, description::append);
 
         assertThat(description.toString(), is("" +
-            "a collection with the following properties:\n" +
-            "- collection of String\n" +
+            "an Iterable with the following properties:\n" +
+            "- Iterable of String\n" +
             "- exactly 3 item(s)\n" +
             "- at least 3 matching item(s)\n" +
             "- no unexpected items\n" +
@@ -233,7 +233,7 @@ public class ProseTest {
 
         final String matcherSaying = stringProse.matcherSaying(self.toString(), mismatch.toString());
 
-        assertThat(matcherSaying, is("\"Y\" was \"X\""));
+        assertThat(matcherSaying, is("\"Y\""));
     }
 
     private static class MatcherWithNewLines implements Matcher<Object> {
@@ -268,7 +268,7 @@ public class ProseTest {
 
         final String matcherSaying = stringProse.matcherSaying(self.toString(), mismatch.toString());
 
-        assertThat(matcherSaying, is("y y x x"));
+        assertThat(matcherSaying, is("y y"));
     }
 
     @Test
@@ -320,7 +320,7 @@ public class ProseTest {
         //noinspection unchecked
         final String line = boolProse.line(r1, 1, 4);
 
-        assertThat(line, is("[0][true]    ⇆     "));
+        assertThat(line, is("[0][true]    ↔     "));
     }
 
     @Test
@@ -333,7 +333,7 @@ public class ProseTest {
         //noinspection unchecked
         final String line = boolProse.line(r1, 1, 4);
 
-        assertThat(line, is("[1][true]  ⇅       "));
+        assertThat(line, is("[1][true]  ↕       "));
     }
 
     @Test
@@ -373,7 +373,7 @@ public class ProseTest {
         //noinspection unchecked
         final String line = boolProse.line(r, 1000, 3);
 
-        assertThat(line, is("[  22][tru]           💔[null was <true>]"));
+        assertThat(line, is("[  22][tru]           💔[null]"));
     }
 
     @Test
@@ -414,10 +414,10 @@ public class ProseTest {
         final String line3 = stringProse.line(r3, 100, 15);
         final String line4 = stringProse.line(r4, 100, 15);
 
-        assertThat(line1, is("[  0][scene de menage]           💔[\"scène de ménage\" was \"scene de menage\"]"));
-        assertThat(line2, is("[  1][scene de manège]  ⇅ ⇆      💔[\"scène de ménage\" was \"scene de manège\"] 💔[a string ending with \"age\" was \"scene de manège\"]"));
-        assertThat(line3, is("[ 99][le mariage     ]  ⇅ ⇆ 👯🚯 💔[\"scène de ménage\" was \"le mariage\"]"));
-        assertThat(line4, is("[999][scène de ménage]💕⇅ ⇆ 👯🚯"));
+        assertThat(line1, is("[  0][scene de menage]           💔[\"scène de ménage\"]"));
+        assertThat(line2, is("[  1][scene de manège]  ↕ ↔      💔[\"scène de ménage\"] 💔[a string ending with \"age\"]"));
+        assertThat(line3, is("[ 99][le mariage     ]  ↕ ↔ 👯🚯 💔[\"scène de ménage\"]"));
+        assertThat(line4, is("[999][scène de ménage]💕↕ ↔ 👯🚯"));
     }
 
 }

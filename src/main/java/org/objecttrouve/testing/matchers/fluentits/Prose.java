@@ -5,7 +5,7 @@
  *
  */
 
-package org.objecttrouve.testing.matchers.fluentcollections;
+package org.objecttrouve.testing.matchers.fluentits;
 
 import org.hamcrest.StringDescription;
 
@@ -20,16 +20,19 @@ class Prose<X> {
     private static final String match = "\uD83D\uDC95";
     private static final String mismatch = "\uD83D\uDC94";
 
-    private static final String breakingSortOrder = "⇅";
-    private static final String breakingItemOrder = "⇆";
+    private static final String breakingSortOrder = "\u2195";
+    private static final String breakingItemOrder = "\u2194";
     private static final String duplicate = "\uD83D\uDC6F";
     private static final String obsolete = "\uD83D\uDEAF";
     private static final int actualItemMaxLength = 30;
+    private static final String iterable = Iterable.class.getSimpleName();
 
-    Prose() {}
+    Prose() {
+    }
+
     void describeExpectations(final Settings settings, final Consumer<String> description) {
-        description.accept("a collection with the following properties:\n");
-        description.accept("- collection of " + ofNullable(settings.klass).map(Class::getSimpleName).orElse(Object.class.getSimpleName()) + "\n");
+        description.accept("an " + iterable + " with the following properties:\n");
+        description.accept("- "+ iterable + " of " + ofNullable(settings.klass).map(Class::getSimpleName).orElse(Object.class.getSimpleName()) + "\n");
         if (settings.expectedSize >= 0) {
             description.accept("- exactly " + settings.expectedSize + " item(s)\n");
         }
@@ -52,11 +55,11 @@ class Prose<X> {
     }
 
     String actualItemString(final X actual, final int limit) {
-        return format("%1$-"+limit+"."+limit+"s", Objects.toString(actual).replaceAll("\n", " "));
+        return format("%1$-" + limit + "." + limit + "s", Objects.toString(actual).replaceAll("\n", " "));
     }
 
     String matcherSaying(final String self, final String mismatch) {
-        return (self + " " + mismatch).replaceAll("\n", " ");
+        return self.replaceAll("\n", " ");
     }
 
     String line(final ItemResult<X> result, final int collectionLength, final int longestActual) {
@@ -72,13 +75,12 @@ class Prose<X> {
         appendSymbol(line, result.isDuplicate(), duplicate);
         appendSymbol(line, result.isUnwanted(), obsolete);
         if (!result.isMatched()) {
-                result.getMismatchedItemMatchers().forEach(m -> {
-                line.append(" "+mismatch +"[");
+            result.getMismatchedItemMatchers().forEach(m -> {
+                m.matches(result.getActual());
+                line.append(" " + mismatch + "[");
                 final StringDescription selfDescription = new StringDescription();
                 m.describeTo(selfDescription);
-                final StringDescription mismatchDescription = new StringDescription();
-                m.describeMismatch(actual, mismatchDescription);
-                line.append(matcherSaying(selfDescription.toString(), mismatchDescription.toString()));
+                line.append(matcherSaying(selfDescription.toString(), ""));
                 line.append("]");
             });
 
@@ -88,7 +90,7 @@ class Prose<X> {
     }
 
     private void appendSymbol(final StringBuilder line, final boolean pred, final String symbol) {
-        line.append(format("%1$-2.2s",(pred ? symbol : " ")));
+        line.append(format("%1$-2.2s", (pred ? symbol : " ")));
 
 
     }

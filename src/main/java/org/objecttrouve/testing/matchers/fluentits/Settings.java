@@ -1,11 +1,11 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
-package org.objecttrouve.testing.matchers.fluentcollections;
+package org.objecttrouve.testing.matchers.fluentits;
 
 import org.hamcrest.Matcher;
 

@@ -5,7 +5,7 @@
  *
  */
 
-package org.objecttrouve.testing.matchers.fluentcollections;
+package org.objecttrouve.testing.matchers.fluentits;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -22,9 +22,10 @@ import static java.lang.System.arraycopy;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.StreamSupport.stream;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSafeMatcher<C> implements ScorableMatcher {
+public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMatcher<C> implements ScorableMatcher {
 
     private static final Finding theNullCollectionFinding = new Finding("Actual collection was null.");
     // Config.
@@ -41,10 +42,10 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
     private final Set<Integer> unordered = new HashSet<>();
     private final Set<Integer> duplicates = new HashSet<>();
     private final Set<Integer> unwanted = new HashSet<>();
-    private final List<Finding> findings = new LinkedList<>();
+    private final Set<Finding> findings = new LinkedHashSet<>();
 
 
-    public FluentCollectionMatcher(final Class<X> klass) {
+    public FluentIterableMatcher(final Class<X> klass) {
         if (klass == null) {
             throw new IllegalArgumentException("Argument 'klass' must not be null.");
         }
@@ -52,17 +53,17 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
     }
 
     @Override
-    protected boolean matchesSafely(final C collection) {
+    protected boolean matchesSafely(final C iterable) {
 
         reset();
         validateSetup();
-        if (collection == null) {
+        if (iterable == null) {
             findings.add(theNullCollectionFinding);
             return false;
         }
 
         //noinspection unchecked,ConstantConditions
-        actual = (X[]) collection.toArray();
+        actual = (X[]) stream(iterable.spliterator(), false).toArray();
         matchMatrix = new double[settings.expectations.length][actual.length];
 
         loop(this::match);
@@ -112,7 +113,7 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
         if (findings.isEmpty()) {
             return 1.0;
         }
-        if (findings.get(0) == theNullCollectionFinding){
+        if (findings.contains(theNullCollectionFinding)){
             return 0.0;
         }
         final int generalExpectations = Stream.of(
@@ -188,20 +189,20 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
             }
         }
         if (settings.sorted && actual.length > 1) {
+            final Finding unsorted = new Finding("Collection is not sorted.");
             for (int k = 0, l = 1; l < actual.length; k++, l++) {
-                final String description = "Collection is not sorted.";
                 if (settings.comparator == null) {
                     final Comparable x1 = (Comparable) actual[k];
                     final Comparable x2 = (Comparable) actual[l];
                     //noinspection unchecked
                     if (x1.compareTo(x2) > 0) {
-                        unsorted.add(l);
-                        findings.add(new Finding(description));
+                        this.unsorted.add(l);
+                        findings.add(unsorted);
                     }
                 } else {
                     if (settings.comparator.compare(actual[k], actual[l]) > 0) {
-                        unsorted.add(l);
-                        findings.add(new Finding(description));
+                        this.unsorted.add(l);
+                        findings.add(unsorted);
                     }
                 }
             }
@@ -351,7 +352,7 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
     }
 
     @SuppressWarnings("WeakerAccess")
-    public FluentCollectionMatcher<X, C> ofSize(final int expectedSize) {
+    public FluentIterableMatcher<X, C> ofSize(final int expectedSize) {
         if (expectedSize < 0) {
             throw new IllegalArgumentException("Size must not be negative.");
         }
@@ -361,12 +362,12 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
 
 
     @SuppressWarnings("WeakerAccess")
-    public FluentCollectionMatcher<X, C> sorted() {
+    public FluentIterableMatcher<X, C> sorted() {
         if (!Comparable.class.isAssignableFrom(settings.klass)) {
             final String msg = "" +
                 "Class " + settings.klass.getSimpleName() + " does not implement " + Comparable.class.getSimpleName() + ". " +
                 "Either implement that interface or " +
-                "use " + FluentCollectionMatcher.class.getSimpleName() + " .sorted(java.util.Comparator<X>). ";
+                "use " + FluentIterableMatcher.class.getSimpleName() + " .sorted(java.util.Comparator<X>). ";
             throw new IllegalArgumentException(msg);
         }
         this.settings.sorted = true;
@@ -374,21 +375,21 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
     }
 
     @SuppressWarnings("WeakerAccess")
-    public FluentCollectionMatcher<X, C> sorted(final Comparator<X> comparator) {
+    public FluentIterableMatcher<X, C> sorted(final Comparator<X> comparator) {
         this.settings.comparator = comparator;
         this.settings.sorted = true;
         return this;
     }
 
     @SuppressWarnings("WeakerAccess")
-    public FluentCollectionMatcher<X, C> ordered() {
+    public FluentIterableMatcher<X, C> ordered() {
         settings.ordered = true;
         return this;
     }
 
 
     @SuppressWarnings("WeakerAccess")
-    public final FluentCollectionMatcher<X, C> withItemsMatching(final Matcher... expectedItemMatchers) {
+    public final FluentIterableMatcher<X, C> withItemsMatching(final Matcher... expectedItemMatchers) {
         if (expectedItemMatchers == null) {
             throw new IllegalArgumentException("Item expectations must not be null.");
         }
@@ -398,7 +399,7 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
 
     @SafeVarargs
     @SuppressWarnings("WeakerAccess")
-    public final FluentCollectionMatcher<X, C> withItems(final X... expectedItems) {
+    public final FluentIterableMatcher<X, C> withItems(final X... expectedItems) {
         if (expectedItems == null) {
             throw new IllegalArgumentException("Item expectations must not be null.");
         }
@@ -412,20 +413,20 @@ public class FluentCollectionMatcher<X, C extends Collection<X>> extends TypeSaf
 
 
     @SuppressWarnings("WeakerAccess")
-    public FluentCollectionMatcher<X, C> exactly() {
+    public FluentIterableMatcher<X, C> exactly() {
         this.settings.mustNotHaveUnexpectedItems = true;
         return this;
     }
 
 
     @SuppressWarnings("WeakerAccess")
-    public FluentCollectionMatcher<X, C> unique() {
+    public FluentIterableMatcher<X, C> unique() {
         this.settings.unique = true;
         return this;
     }
 
     @SuppressWarnings("WeakerAccess")
-    public FluentCollectionMatcher<X, C> unique(final BiPredicate<X, X> equator) {
+    public FluentIterableMatcher<X, C> unique(final BiPredicate<X, X> equator) {
         this.settings.unique = true;
         this.settings.equator = equator;
         return this;
