@@ -24,7 +24,65 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static org.hamcrest.CoreMatchers.equalTo;
-
+/**
+ * <p>
+ * A {@code org.hamcrest.TypeSafeMatcher} implementation
+ * to check multiple characteristics of an <i>actual</i> {@code Iterable}
+ * at the same time.
+ * </p>
+ * <p>Offers a fluent API to express expectations about the actual {@code Iterable}
+ * such as size, sortedness or the expected items.</p>
+ * <p>
+ * Example:
+ * </p>
+ * <pre>
+ * <code>
+ *
+ * package org.objecttrouve.testing.matchers.fluentits;
+ *
+ * import org.junit.Test;
+ * import java.util.List;
+ * import static java.util.Arrays.asList;
+ * import static org.hamcrest.CoreMatchers.*;
+ * import static org.junit.Assert.assertThat;
+ * import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableOf;
+ *
+ * public class Example {
+ *
+ *  {@literal @}Test
+ *  public void heavyMismatch() {
+ *
+ *      final List{@literal <}String{@literal >} strings = asList(
+ *          "fake",
+ *          "impeachment",
+ *          "Donald",
+ *          "Trump",
+ *          "fake",
+ *          "news"
+ *      );
+ *
+ *      assertThat(strings, is(
+ *          anIterableOf(String.class)
+ *              .exactly()
+ *              .sorted()
+ *              .ordered()
+ *              .unique()
+ *              .withItemsMatching(
+ *                  startsWith("Ron"),
+ *                  endsWith("ment")
+ *              )
+ *              .withItems(
+ *                  "true",
+ *                  "news",
+ *                  "impeachment"
+ *              )
+ *      ));
+ *  }
+ * }
+ * </code>
+ * </pre>
+ *
+ */
 public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMatcher<C> implements ScorableMatcher {
 
     private static final Finding theNullCollectionFinding = new Finding("Actual collection was null.");
@@ -44,7 +102,11 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
     private final Set<Integer> unwanted = new HashSet<>();
     private final Set<Finding> findings = new LinkedHashSet<>();
 
-
+    /**
+     * <p>Creates a {@code FluentIterableMatcher}.</p>
+     *
+     * @param klass The expected class of items in the {@code Iterable}.
+     */
     public FluentIterableMatcher(final Class<X> klass) {
         if (klass == null) {
             throw new IllegalArgumentException("Argument 'klass' must not be null.");
@@ -108,6 +170,10 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         super.describeMismatchSafely(item, mismatchDescription);
     }
 
+    /**
+     * A measure for the extent to which the actual {@code Iterable} meets the expectations.
+     * @return Value between 0 and 1.
+     */
     @Override
     public double getScore() {
         if (findings.isEmpty()) {
@@ -351,6 +417,16 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         return itemResults;
     }
 
+    /**
+     * <p>Sets the expected number of items in the <i>actual</i> {@code Iterable}.</p>
+     * <p>If used in conjunction with {@link FluentIterableMatcher#exactly()}, 
+     * that number must be consistent with the number of items (or {@code Matcher}s for items) 
+     * specified via {@link FluentIterableMatcher#withItemsMatching(org.hamcrest.Matcher[])} 
+     * and/or {@link FluentIterableMatcher#withItems(java.lang.Object[])}.</p>
+     * 
+     * @param expectedSize The expected number of items in the {@code Iterable}.
+     * @return The {@code FluentIterableMatcher} instance on which the method was called.
+     */
     @SuppressWarnings("WeakerAccess")
     public FluentIterableMatcher<X, C> ofSize(final int expectedSize) {
         if (expectedSize < 0) {
@@ -360,7 +436,13 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         return this;
     }
 
-
+    /**
+     * <p>Expect the {@code Iterable} to be sorted in the natural item order.</p>
+     * <p>Applicable only if the items in the {@code Iterable} implement {@code java.lang.Comparable}.</p>
+     * <p>If the items aren't {@code Comparable}, use {@link FluentIterableMatcher#sorted(java.util.Comparator)}.</p>
+     * 
+     * @return The {@code FluentIterableMatcher} instance on which the method was called.
+     */
     @SuppressWarnings("WeakerAccess")
     public FluentIterableMatcher<X, C> sorted() {
         if (!Comparable.class.isAssignableFrom(settings.klass)) {
@@ -374,6 +456,12 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         return this;
     }
 
+    /**
+     * <p>Expect the {@code Iterable} to be sorted according to the order defined by the {@code comparator}.</p>
+     * 
+     * @param comparator {@code Comparator} defining how the {@code Iterable}'s items should be sorted.
+     * @return The {@code FluentIterableMatcher} instance on which the method was called.
+     */
     @SuppressWarnings("WeakerAccess")
     public FluentIterableMatcher<X, C> sorted(final Comparator<X> comparator) {
         this.settings.comparator = comparator;
@@ -381,13 +469,30 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         return this;
     }
 
+    /**
+     * <p>Expect iterated items to come in the same order in which expected values or item matchers are added. 
+     * (Via {@link FluentIterableMatcher#withItems(java.lang.Object[])} 
+     * and/or {@link FluentIterableMatcher#withItemsMatching(org.hamcrest.Matcher[])})</p>
+     *
+     * @return The {@code FluentIterableMatcher} instance on which the method was called.
+     */
     @SuppressWarnings("WeakerAccess")
     public FluentIterableMatcher<X, C> ordered() {
         settings.ordered = true;
         return this;
     }
 
-
+    /**
+     * <p>Adds {@code Matcher}s for the {@code Iterable}'s items.</p>
+     * <p>If {@link FluentIterableMatcher#ordered()} is set, 
+     * items are expected to be aligned with the added {@code Matcher}s
+     * and/or values set in {@link FluentIterableMatcher#withItems(java.lang.Object[])}.</p>
+     * <p>Otherwise the {@code FluentIterableMatcher} applies all matcher to all items.</p>
+     * <p>For each {@code Matcher}, there must be at least one matching item.</p>
+     *
+     * @param expectedItemMatchers {@code Matcher}s to be applied to the {@code Iterable}'s items.
+     * @return The {@code FluentIterableMatcher} instance on which the method was called.
+     */
     @SuppressWarnings("WeakerAccess")
     public final FluentIterableMatcher<X, C> withItemsMatching(final Matcher... expectedItemMatchers) {
         if (expectedItemMatchers == null) {
@@ -397,6 +502,17 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         return this;
     }
 
+    /**
+     * <p>Adds expected values for the {@code Iterable}'s items.</p>
+     * <p>If {@link FluentIterableMatcher#ordered()} is set,
+     * items are expected to be aligned with the added values
+     * and/or {@code Matcher}s set in {@link FluentIterableMatcher#withItemsMatching(org.hamcrest.Matcher[])}.</p>
+     * <p>Otherwise the {@code FluentIterableMatcher} compares all expected values to all items.</p>
+     * <p>For each expected value, there must be at least one equal item.</p>
+     *
+     * @param expectedItems Values expected to be contained in the {@code Iterable}'s iteration sequence.
+     * @return The {@code FluentIterableMatcher} instance on which the method was called.
+     */
     @SafeVarargs
     @SuppressWarnings("WeakerAccess")
     public final FluentIterableMatcher<X, C> withItems(final X... expectedItems) {
@@ -411,20 +527,39 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         return this;
     }
 
-
+    /**
+     * <p>Expect the sequence of iterated items to have <i>only</i> items that match the values or {@code Matcher}s specified in
+     * {@link FluentIterableMatcher#withItems(java.lang.Object[])}
+     * and/or {@link FluentIterableMatcher#withItemsMatching(org.hamcrest.Matcher[])}.</p>
+     * <p>If used in conjunction with {@link FluentIterableMatcher#ofSize(int)},
+     * the expected number of items must be consistent with the number of items (or {@code Matcher}s)
+     * specified via {@link FluentIterableMatcher#withItemsMatching(org.hamcrest.Matcher[])}
+     * and/or {@link FluentIterableMatcher#withItems(java.lang.Object[])}.</p>
+     *
+     * @return The {@code FluentIterableMatcher} instance on which the method was called.
+     */
     @SuppressWarnings("WeakerAccess")
     public FluentIterableMatcher<X, C> exactly() {
         this.settings.mustNotHaveUnexpectedItems = true;
         return this;
     }
 
-
+    /**
+     * <p>Expect items in the {@code Iterable} to be unique by instance identity or {@code equals} and {@code hashCode}.</p>
+     * @return The {@code FluentIterableMatcher} instance on which the method was called.
+     */
     @SuppressWarnings("WeakerAccess")
     public FluentIterableMatcher<X, C> unique() {
         this.settings.unique = true;
         return this;
     }
-
+    /**
+     * <p>Expect items in the {@code Iterable} to be unique according the equality definition of the input {@code equator}.</p>
+     * <p>The {@code equator} is a {@code BiPredicate} that returns {@code true} if its input arguments are to be considered equal and {@code false} otherwise.</p>
+     *
+     * @param equator Custom {@code equals} definition.
+     * @return The {@code FluentIterableMatcher} instance on which the method was called.
+     */
     @SuppressWarnings("WeakerAccess")
     public FluentIterableMatcher<X, C> unique(final BiPredicate<X, X> equator) {
         this.settings.unique = true;

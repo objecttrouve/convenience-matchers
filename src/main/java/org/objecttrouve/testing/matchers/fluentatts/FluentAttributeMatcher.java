@@ -1,7 +1,7 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
@@ -21,11 +21,13 @@ import static org.objecttrouve.testing.matchers.fluentatts.Scorer.score;
 
 /**
  * <p>
- * {@link org.hamcrest.TypeSafeMatcher} implementation
- * offering a fluent-style lambda-accepting API
- * to match multiple properties of the <i>actual</i> object
- * simultaneously.
+ * A {@code org.hamcrest.TypeSafeMatcher} implementation
+ * to match multiple properties of an <i>actual</i> {@code Object}
+ * at the same time.
  * </p>
+ * <p>Offers a fluent API
+ * in which the properties of the actual {@code Object} are represented
+ * as method references or lambda expressions.</p>
  * <p>
  * Example:
  * </p>
@@ -35,62 +37,63 @@ import static org.objecttrouve.testing.matchers.fluentatts.Scorer.score;
  *
  * package org.objecttrouve.testing.matchers.fluentatts;
  *
- * import org.junit.Ignore;
  * import org.junit.Test;
  *
  * import static org.hamcrest.CoreMatchers.is;
  * import static org.hamcrest.MatcherAssert.assertThat;
- * // Use the factory method for syntactic sugaring and configurability!
  * import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
  * import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
  *
  * public class Example {
  *
- * static class Result {
- * private final String stringValue;
- * private final int intValue;
- * private final boolean boolValue;
+ *  private static final Attribute&lt;Result, String&gt; stringValue = attribute("stringValue", Result::getStringValue);
+ *  private static final Attribute&lt;Result, Integer&gt; intValue = attribute("intValue", Result::getIntValue);
+ *  private static final Attribute&lt;Result, Boolean&gt; boolValue = attribute("booleanValue", Result::isBoolValue);
  *
- * Result(final String stringValue, final int intValue, final boolean boolValue) {
- * this.stringValue = stringValue;
- * this.intValue = intValue;
- * this.boolValue = boolValue;
+ *  {@literal @}Test
+ *  public void testSomething(){
+ *
+ *      final Result result = methodWithResult("2=", 1, false);
+ *
+ *      assertThat(result, is(//
+ *          a(Result.class)//
+ *              .with(stringValue, "1=") //
+ *              .with(intValue, is(2)) //
+ *              .with(boolValue, true)
+ *      ));
  * }
+
+ *
+ *  static class Result {
+ *
+ *      private final String stringValue;
+ *      private final int intValue;
+ *      private final boolean boolValue;
+ *
+ *      Result(final String stringValue, final int intValue, final boolean boolValue) {
+ *          this.stringValue = stringValue;
+ *          this.intValue = intValue;
+ *          this.boolValue = boolValue;
+ *      }
+ *  }
+ *
+ *  public String getStringValue() {
+ *      return stringValue;
+ *  }
+ *
+ *  public int getIntValue() {
+ *      return intValue;
+ *  }
+ *
+ *  public boolean isBoolValue() {
+ *      return boolValue;
+ *  }
  *
  *
- * public String getStringValue() {
- * return stringValue;
- * }
+ *  static Result methodWithResult(final String s, final int i, final boolean b){
+ *      return new Result(s, i, b);
+ *  }
  *
- * public int getIntValue() {
- * return intValue;
- * }
- *
- * public boolean isBoolValue() {
- * return boolValue;
- * }
- * }
- *
- * static Result methodWithResult(final String s, final int i, final boolean b){
- * return new Result(s, i, b);
- * }
- *
- * private static final Attribute&lt;Result, String&gt; stringValue = attribute("stringValue", Result::getStringValue);
- * private static final Attribute&lt;Result, Integer&gt; intValue = attribute("intValue", Result::getIntValue);
- * private static final Attribute&lt;Result, Boolean&gt; boolValue = attribute("booleanValue", Result::isBoolValue);
- *
- * {@literal @}Test
- * public void testSomething(){
- *
- * final Result result = methodWithResult("2=", 1, false);
- *
- * assertThat(result, is(//
- * a(Result.class)//
- * .with(stringValue, "1=") //
- * .with(intValue, is(2)) //
- * .with(boolValue, true)
- * ));
- * }
  *
  * }
  *
@@ -109,8 +112,11 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
     /**
      * New instance.
      *
+     * @deprecated C'tor will be removed by v1.0. Use factory methods in {@code ConvenientMatchers}.
      * @param tracking attempt (expensively!) to create human-readable descriptions of attribute lambdas
      */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
     public FluentAttributeMatcher(final boolean tracking) {
         this.tracking = tracking;
     }
@@ -132,14 +138,15 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
     }
 
     /**
-     * Builder method to set up checking {@code Objects.equals(attribute.getGetter().apply(), expectedValue)}.
-     * The name of the attribute is used in the description in case there is a mismatch.
-     * If the @param expectedValue is a {@link org.hamcrest.Matcher}, delegates to {@link FluentAttributeMatcher#withMatching(org.objecttrouve.testing.matchers.fluentatts.Attribute, org.hamcrest.Matcher)}.
+     * <p>Builder method to formulate an expectation about a particular property of an <i>actual</i> {@code Object}.</p>
+     * <p>If the  {@code expectedValue} is a {@code org.hamcrest.Matcher},
+     * the call is delegated to {@link FluentAttributeMatcher#withMatching(org.objecttrouve.testing.matchers.fluentatts.Attribute, org.hamcrest.Matcher)},
+     * otherwise to {@link FluentAttributeMatcher#withValue(org.objecttrouve.testing.matchers.fluentatts.Attribute, java.lang.Object)}.</p>
      *
-     * @param expectedValue the expected value
-     * @param attribute     {@link org.objecttrouve.testing.matchers.fluentatts.Attribute} describing the property to be checked.
-     * @param <O>           type of the value returned by the getter
-     * @return FluentAttributeMatcher
+     * @param expectedValue The expected value.
+     * @param attribute     An {@link org.objecttrouve.testing.matchers.fluentatts.Attribute} describing the property to be checked.
+     * @param <O>           The type of the value returned by the {@code Attribute}'s getter function.
+     * @return FluentAttributeMatcher.
      */
     public <O> FluentAttributeMatcher<T> with(final Attribute<T, O> attribute, final Object expectedValue) {
         check(attribute);
@@ -153,13 +160,11 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
     }
 
     /**
-     * Builder method to set up checking {@code Objects.equals(attribute.getGetter().apply(), expectedValue)}.
-     * The name of the attribute is used in the description in case there is a mismatch.
-     *
-     * @param expectedValue the expected value
-     * @param attribute     {@link org.objecttrouve.testing.matchers.fluentatts.Attribute} describing the property to be checked.
-     * @param <O>           type of the value returned by the getter
-     * @return FluentAttributeMatcher
+     * <p>Builder method to state an expected value for a particular property of an <i>actual</i> {@code Object}.</p>
+     * @param expectedValue The expected value.
+     * @param attribute     An {@link org.objecttrouve.testing.matchers.fluentatts.Attribute} describing the property to be checked.
+     * @param <O>           The type of the value returned by the {@code Attribute}'s getter function.
+     * @return FluentAttributeMatcher.
      */
     @SuppressWarnings("WeakerAccess")
     public <O> FluentAttributeMatcher<T> withValue(final Attribute<T, O> attribute, final O expectedValue) {
@@ -171,7 +176,7 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
     /**
      * Builder method to set up checking {@code matcher.matches(getter.apply())}.
      *
-     * @param matcher {@link org.hamcrest.Matcher} to be applied
+     * @param matcher {@code org.hamcrest.Matcher} to be applied
      * @param getter  Function returning the value to be checked
      * @param <O>     type of the value returned by the getter
      * @return FluentAttributeMatcher
@@ -187,13 +192,11 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
     }
 
     /**
-     * Builder method to set up checking {@code matcher.matches(attribute.getGetter().apply())}.
-     * The name of the attribute is used in the description in case there is a mismatch.
-     *
-     * @param matcher   {@link org.hamcrest.Matcher} to be applied
-     * @param attribute {@link org.objecttrouve.testing.matchers.fluentatts.Attribute} describing the property to be checked.
-     * @param <O>       type of the value returned by the getter
-     * @return FluentAttributeMatcher
+     * <p>Builder method to set a {@code org.hamcrest.Matcher} for a particular property of an <i>actual</i> {@code Object}.</p>
+     * @param matcher       A {@code org.hamcrest.Matcher} for the property value.
+     * @param attribute     An {@link org.objecttrouve.testing.matchers.fluentatts.Attribute} describing the property to be checked.
+     * @param <O>           The type of the value returned by the {@code Attribute}'s getter function.
+     * @return FluentAttributeMatcher.
      */
     @SuppressWarnings("WeakerAccess")
     public <O> FluentAttributeMatcher<T> withMatching(final Attribute<T, O> attribute, final Matcher<O> matcher) {
@@ -201,6 +204,15 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
         check(matcher);
         expectations.add(new Expectation<>(attribute.getName(), attribute.getGetter(), matcher::matches, null, matcher));
         return this;
+    }
+
+    /**
+     * The ratio of matched expectations and all expectations.
+     * @return Value between 0 and 1.
+     */
+    @Override
+    public double getScore() {
+        return score((expectations.size()-results.size()), expectations.size());
     }
 
     @Override
@@ -214,9 +226,6 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
         }
         return results.isEmpty();
     }
-
-
-
 
 
     private <O> Result<O> matching(final T item, final Expectation<T, O> exp) {
@@ -286,8 +295,5 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
         }
     }
 
-    @Override
-    public double getScore() {
-        return score((expectations.size()-results.size()), expectations.size());
-    }
+
 }
