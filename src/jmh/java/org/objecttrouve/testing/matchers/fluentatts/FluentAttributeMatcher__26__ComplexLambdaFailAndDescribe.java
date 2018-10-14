@@ -1,13 +1,12 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 package org.objecttrouve.testing.matchers.fluentatts;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.objecttrouve.testing.boilerplate.Flatts;
 import org.openjdk.jmh.annotations.*;
@@ -55,20 +54,20 @@ public class FluentAttributeMatcher__26__ComplexLambdaFailAndDescribe {
             thingWithStringList.add(thingWithString);
         }
 
-        public List<ThingWithString> getThingWithStringList() {
+        List<ThingWithString> getThingWithStringList() {
             return thingWithStringList;
         }
     }
 
-    public static class YetAnotherThingWithOtherThings {
+    static class YetAnotherThingWithOtherThings {
 
         private final ThingWithThingsWithString thingWithThingsWithString;
 
-        public YetAnotherThingWithOtherThings(final ThingWithThingsWithString thingWithThingsWithString) {
+        YetAnotherThingWithOtherThings(final ThingWithThingsWithString thingWithThingsWithString) {
             this.thingWithThingsWithString = thingWithThingsWithString;
         }
 
-        public ThingWithThingsWithString getThingWithThingsWithString() {
+        ThingWithThingsWithString getThingWithThingsWithString() {
             return thingWithThingsWithString;
         }
     }
@@ -78,13 +77,13 @@ public class FluentAttributeMatcher__26__ComplexLambdaFailAndDescribe {
         private final ThingWithThingsWithString twtwt;
         private final ThingWithString twt;
 
-        public RootThing(final YetAnotherThingWithOtherThings yat, final ThingWithThingsWithString twtwt, final ThingWithString twt) {
+        RootThing(final YetAnotherThingWithOtherThings yat, final ThingWithThingsWithString twtwt, final ThingWithString twt) {
             this.yat = yat;
             this.twtwt = twtwt;
             this.twt = twt;
         }
 
-        public YetAnotherThingWithOtherThings getYat() {
+        YetAnotherThingWithOtherThings getYat() {
             return yat;
         }
 
@@ -112,11 +111,11 @@ public class FluentAttributeMatcher__26__ComplexLambdaFailAndDescribe {
     @Setup(Level.Trial)
     public void checkFails() {
         assertThat(matcher(), not(is("")));
-        assertThat(control(), not(is(matchAndDescribe(is("input1false"), "input1false"))));
+        assertThat(control(), not(is("")));
     }
 
     @Benchmark
-    public Description matcher() {
+    public String matcher() {
         final FluentAttributeMatcher<RootThing> matcher = Flatts.aNonTracking(RootThing.class)//
                 .with(str,"output2true"//
                 );
@@ -124,7 +123,7 @@ public class FluentAttributeMatcher__26__ComplexLambdaFailAndDescribe {
     }
 
     @Benchmark
-    public Description control() {
+    public String control() {
         final String str1 = input.getTwt().getStr();
         final int size = input.getTwtwt().getThingWithStringList().size();
         final boolean empty = input.getYat().getThingWithThingsWithString().getThingWithStringList().isEmpty();

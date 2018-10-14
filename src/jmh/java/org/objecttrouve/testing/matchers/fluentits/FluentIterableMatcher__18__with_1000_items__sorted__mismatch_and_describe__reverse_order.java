@@ -7,7 +7,6 @@
 package org.objecttrouve.testing.matchers.fluentits;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public class FluentIterableMatcher__18__with_1000_items__sorted__mismatch_and_de
     }
 
     @Benchmark
-    public Description matcher() {
+    public String matcher() {
         return matchAndDescribe(
             anIterableOf(Integer.class)
                 .sorted(),
@@ -46,7 +45,7 @@ public class FluentIterableMatcher__18__with_1000_items__sorted__mismatch_and_de
     }
 
     @Benchmark
-    public Description control() {
+    public String control() {
         return matchAndDescribe(
             CoreMatchers.is(expectedItemsList),
             input);

@@ -1,13 +1,12 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 package org.objecttrouve.testing.matchers.fluentatts;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.objecttrouve.testing.boilerplate.Flatts;
@@ -73,11 +72,11 @@ public class FluentAttributeMatcher__28__MultipleAttributesFailAndDescribe {
     @Setup(Level.Trial)
     public void checkFails() {
         assertThat(matcher(), not(is("")));
-        /* Just believe the control logic is correct.*/
+        assertThat(control(), not(is("")));
     }
 
     @Benchmark
-    public Description matcher() {
+    public String matcher() {
         final FluentAttributeMatcher<ThingWithAttributes> matcher = Flatts.aNonTracking(ThingWithAttributes.class)//
                 .with(strVal, "putt")//
                 .with(intVal, 2)//
@@ -87,7 +86,7 @@ public class FluentAttributeMatcher__28__MultipleAttributesFailAndDescribe {
     }
 
     @Benchmark
-    public StringDescription control() {
+    public String control() {
         final Matcher<String> m1 = CoreMatchers.is("putt");
         final Matcher<Integer> m2 = CoreMatchers.is(2);
         final Matcher<OneTwoThree> m3 = CoreMatchers.is(OneTwoThree.two);
@@ -101,6 +100,6 @@ public class FluentAttributeMatcher__28__MultipleAttributesFailAndDescribe {
         m2.describeTo(d);
         m3.describeTo(d);
         m4.describeTo(d);
-        return d;
+        return d.toString();
     }
 }

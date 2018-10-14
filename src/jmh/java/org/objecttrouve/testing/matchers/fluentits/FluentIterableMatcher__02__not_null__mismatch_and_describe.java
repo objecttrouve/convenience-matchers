@@ -7,7 +7,6 @@
 package org.objecttrouve.testing.matchers.fluentits;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.List;
@@ -35,14 +34,14 @@ public class FluentIterableMatcher__02__not_null__mismatch_and_describe {
     }
 
     @Benchmark
-    public Description matcher() {
+    public String matcher() {
         return matchAndDescribe(
             anIterableOf(Integer.class),
             input);
     }
 
     @Benchmark
-    public Description control() {
+    public String control() {
         return matchAndDescribe(
             CoreMatchers.notNullValue(),
             input);

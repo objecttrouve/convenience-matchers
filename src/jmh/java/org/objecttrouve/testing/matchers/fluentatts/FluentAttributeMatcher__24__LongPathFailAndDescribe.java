@@ -1,13 +1,12 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 package org.objecttrouve.testing.matchers.fluentatts;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.objecttrouve.testing.boilerplate.Flatts;
 import org.openjdk.jmh.annotations.*;
@@ -56,20 +55,20 @@ public class FluentAttributeMatcher__24__LongPathFailAndDescribe {
             thingWithStringList.add(thingWithString);
         }
 
-        public List<ThingWithString> getThingWithStringList() {
+        List<ThingWithString> getThingWithStringList() {
             return thingWithStringList;
         }
     }
 
-    public static class YetAnotherThingWithOtherThings {
+    static class YetAnotherThingWithOtherThings {
 
         private final ThingWithThingsWithString thingWithThingsWithString;
 
-        public YetAnotherThingWithOtherThings(final ThingWithThingsWithString thingWithThingsWithString) {
+        YetAnotherThingWithOtherThings(final ThingWithThingsWithString thingWithThingsWithString) {
             this.thingWithThingsWithString = thingWithThingsWithString;
         }
 
-        public ThingWithThingsWithString getThingWithThingsWithString() {
+        ThingWithThingsWithString getThingWithThingsWithString() {
             return thingWithThingsWithString;
         }
     }
@@ -77,11 +76,11 @@ public class FluentAttributeMatcher__24__LongPathFailAndDescribe {
     public static class RootThing {
         private final YetAnotherThingWithOtherThings yat;
 
-        public RootThing(final YetAnotherThingWithOtherThings yat) {
+        RootThing(final YetAnotherThingWithOtherThings yat) {
             this.yat = yat;
         }
 
-        public YetAnotherThingWithOtherThings getYat() {
+        YetAnotherThingWithOtherThings getYat() {
             return yat;
         }
     }
@@ -95,11 +94,11 @@ public class FluentAttributeMatcher__24__LongPathFailAndDescribe {
     @Setup(Level.Trial)
     public void checkFails() {
         assertThat(matcher(), not(is("")));
-        assertThat(control(), not(is(matchAndDescribe(is("input"), "input"))));
+        assertThat(control(), not(is("")));
     }
 
     @Benchmark
-    public Description matcher() {
+    public String matcher() {
         final FluentAttributeMatcher<RootThing> matcher = Flatts.aNonTracking(RootThing.class)//
                 .with(str, "putt"//
                 );
@@ -107,7 +106,7 @@ public class FluentAttributeMatcher__24__LongPathFailAndDescribe {
     }
 
     @Benchmark
-    public Description control() {
+    public String control() {
         final Matcher<String> matcher = CoreMatchers.is("putt");
         return matchAndDescribe(matcher,//
                 this.input //

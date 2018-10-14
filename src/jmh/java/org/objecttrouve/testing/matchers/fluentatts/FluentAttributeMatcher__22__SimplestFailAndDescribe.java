@@ -1,13 +1,12 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 package org.objecttrouve.testing.matchers.fluentatts;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.objecttrouve.testing.boilerplate.Flatts;
 import org.openjdk.jmh.annotations.*;
@@ -46,12 +45,12 @@ public class FluentAttributeMatcher__22__SimplestFailAndDescribe {
     @Setup(Level.Trial)
     public void checkFails() {
         assertThat(matcher(), not(is("")));
-        assertThat(control(), not(is(matchAndDescribe(is("input"), "input"))));
+        assertThat(control(), not(is("")));
     }
 
 
     @Benchmark
-    public Description matcher() {
+    public String matcher() {
 
         final FluentAttributeMatcher<ThingWithString> matcher = Flatts.aNonTracking(ThingWithString.class)//
                 .with(str, "putt");
@@ -60,9 +59,8 @@ public class FluentAttributeMatcher__22__SimplestFailAndDescribe {
     }
 
     @Benchmark
-    public Description control() {
+    public String control() {
         final Matcher<String> matcher = CoreMatchers.is("putt");
-
         return matchAndDescribe(matcher, this.input.getStr());
     }
 

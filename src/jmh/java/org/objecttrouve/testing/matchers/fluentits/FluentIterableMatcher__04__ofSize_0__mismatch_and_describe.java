@@ -7,7 +7,6 @@
 package org.objecttrouve.testing.matchers.fluentits;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.Collections;
@@ -36,7 +35,7 @@ public class FluentIterableMatcher__04__ofSize_0__mismatch_and_describe {
     }
 
     @Benchmark
-    public Description matcher() {
+    public String matcher() {
         return matchAndDescribe(
             anIterableOf(Integer.class)
             .ofSize(0),
@@ -44,7 +43,7 @@ public class FluentIterableMatcher__04__ofSize_0__mismatch_and_describe {
     }
 
     @Benchmark
-    public Description control() {
+    public String control() {
         return matchAndDescribe(
             CoreMatchers.is(0),
             input.size());

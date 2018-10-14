@@ -7,7 +7,6 @@
 package org.objecttrouve.testing.matchers.fluentits;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class FluentIterableMatcher__14__with_1000_items__ordered__mismatch_and_d
     }
 
     @Benchmark
-    public Description matcher() {
+    public String matcher() {
         return matchAndDescribe(
             anIterableOf(Integer.class)
             .withItems(expectedItemsArray),
@@ -49,7 +48,7 @@ public class FluentIterableMatcher__14__with_1000_items__ordered__mismatch_and_d
     }
 
     @Benchmark
-    public Description control() {
+    public String control() {
         return matchAndDescribe(
             CoreMatchers.is(expectedItemsList),
             input);

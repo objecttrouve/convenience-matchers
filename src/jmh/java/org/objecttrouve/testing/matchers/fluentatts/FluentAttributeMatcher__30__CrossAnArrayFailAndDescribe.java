@@ -1,13 +1,12 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 package org.objecttrouve.testing.matchers.fluentatts;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.objecttrouve.testing.boilerplate.Flatts;
 import org.openjdk.jmh.annotations.*;
@@ -64,18 +63,18 @@ public class FluentAttributeMatcher__30__CrossAnArrayFailAndDescribe {
     @Setup(Level.Trial)
     public void checkFails() {
         assertThat(matcher(), not(is("")));
-        assertThat(control(), not(is(matchAndDescribe(is("3"), "3"))));
+        assertThat(control(), not(is("")));
     }
 
     @Benchmark
-    public Description matcher() {
+    public String matcher() {
         final FluentAttributeMatcher<ThingWithThingWithStringArray> matcher = Flatts.aNonTracking(ThingWithThingWithStringArray.class)//
                 .with(str, "3");
         return matchAndDescribe(matcher, input);
     }
 
     @Benchmark
-    public Description control() {
+    public String control() {
         final Matcher<String> matcher = CoreMatchers.is("3");
         return matchAndDescribe(matcher, input.getArray()[1].getStr());
     }
