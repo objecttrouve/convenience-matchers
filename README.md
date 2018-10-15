@@ -15,6 +15,8 @@ Best illustrated with an example:
 ```java
 
 // [...]
+import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 @SuppressWarnings("ALL")
 @Ignore("Failing intentionally.")
@@ -89,8 +91,21 @@ reading as "property matching whatever the matchter formulates".
 A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) with fluently formulatable expectations about an `Iterable`.
 
 ### Concept & Goals
+
+Have you ever spent time wondering *which* item caused a mismatch when a collection `Matcher` failed? 
+Have you ever asked yourself whether that matcher was sensitive to the size of the `Collection`? 
+Have you ever wondered if the item order was playing a role?
+
+The `FluentIterableMatcher` addresses such sources of confusion. 
+It produces an error description that tells you exactly which items in the `Iterable` need more attention. 
+It has a fluent API to specify requirements beyond items, such as size or order. 
+
+Here's a typical example:
+
 ```
 // [...]
+import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableOf;
+
 @Ignore("Failing intentionally.")
 public class Examples {
 
@@ -130,7 +145,7 @@ public class Examples {
 
 (See also the [full example](https://github.com/objecttrouve/convenience-matchers/blob/master/src/test/java/org/objecttrouve/testing/matchers/fluentits/Examples.java).)
 
-You can fluently express the basic requirements you might have about an `Iterable`: 
+You can fluently express the essential requirements you might have about an `Iterable`: 
 
 * The size.
 * The items.
@@ -156,6 +171,8 @@ Afterwards it's getting interesting.
 The actual items are presented in the order in which they were iterated. 
 After each actual items there is a sequence of symbols that indicate if the actual item was matched or (in what way) not matched.
 At the end of each line there's a sequence of the expectations for the item at the given position that were not met.
+
+### Pro/Con
 
 #### Benefits 
 * Instantaneous overview of which items matched and which didn't.
