@@ -1,7 +1,7 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
@@ -9,6 +9,7 @@ package org.objecttrouve.testing.matchers.fluentatts;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -103,5 +104,23 @@ class Prose {
 
     static <T>String typeMismatchMsg(final T target) {
         return "NOT " + target.getClass().getSimpleName() + " but what the type parameters define";
+    }
+
+    static <T> void expectation(final Description description, final Expectation<T, ?> e) {
+        final String getterDescription = e.getDescription();
+        if (getterDescription != null){
+            description.appendText(getterDescription);
+        }
+        if (e.isAboutMatcher()) {
+            final Matcher m = e.getMatcher();
+            if (m != null) {
+                description.appendText(matching);
+                m.describeTo(description);
+            }
+        } else {
+            final Object expVal = e.getExpectedValue();
+            description.appendText(eq);
+            description.appendValue(expVal);
+        }
     }
 }

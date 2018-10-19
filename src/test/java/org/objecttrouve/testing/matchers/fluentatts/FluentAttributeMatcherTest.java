@@ -104,41 +104,67 @@ public class FluentAttributeMatcherTest {
 
         final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
             .with(Thing::getValue, "the value"); //
-        matching.matchesSafely(new Thing("not the value"));
+        final Thing actual = new Thing("not the value");
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetValue = \"the value\" <> \"not the value\"\n\t"));
     }
 
     @Test
-    public void test__with_describes__mismatch() {
-
+    public void describeTo__with__mismatch() {
 
         final Attribute<Thing, String> value = attribute("value", Thing::getValue);
-
         final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
             .with(value, "the value"); //
-        matching.matchesSafely(new Thing("not the value"));
         final StringDescription description = new StringDescription();
 
         matching.describeTo(description);
+
+        assertThat(description.toString(), is("\n\tvalue = \"the value\"\n\t"));
+    }
+
+    @Test
+    public void describeMismatchSafely__with__mismatch() {
+
+        final Attribute<Thing, String> value = attribute("value", Thing::getValue);
+        final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
+            .with(value, "the value"); //
+        final Thing item = new Thing("not the value");
+        matching.matchesSafely(item);
+        final StringDescription description = new StringDescription();
+
+        matching.describeMismatchSafely(item, description);
 
         assertThat(description.toString(), is("\n\tvalue = \"the value\" <> \"not the value\"\n\t"));
     }
 
     @Test
-    public void test__withValue_describes__mismatch() {
+    public void describeTo__withValue__mismatch() {
 
         final Attribute<Thing, String> value = attribute("value", Thing::getValue);
-
         final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
             .withValue(value, "the value"); //
-        matching.matchesSafely(new Thing("not the value"));
         final StringDescription description = new StringDescription();
 
         matching.describeTo(description);
+
+        assertThat(description.toString(), is("\n\tvalue = \"the value\"\n\t"));
+    }
+
+    @Test
+    public void describeMismatchSafely__withValue__mismatch() {
+
+        final Attribute<Thing, String> value = attribute("value", Thing::getValue);
+        final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
+            .withValue(value, "the value"); //
+        final Thing item = new Thing("not the value");
+        matching.matchesSafely(item);
+        final StringDescription description = new StringDescription();
+
+        matching.describeMismatchSafely(item, description);
 
         assertThat(description.toString(), is("\n\tvalue = \"the value\" <> \"not the value\"\n\t"));
     }
@@ -155,7 +181,7 @@ public class FluentAttributeMatcherTest {
 
 
     @Test
-    public void test__withMatching__happy_path() {
+    public void withMatching__happy_path() {
 
         final Attribute<Thing, String> value = attribute("value", Thing::getValue);
 
@@ -167,7 +193,7 @@ public class FluentAttributeMatcherTest {
 
 
     @Test
-    public void test__with__happy_path__expecting_Matcher() {
+    public void with__happy_path__expecting_Matcher() {
 
         final Attribute<Thing, String> value = attribute("value", Thing::getValue);
 
@@ -196,7 +222,7 @@ public class FluentAttributeMatcherTest {
     }
 
     @Test
-    public void test__withMatching__mismatch() {
+    public void withMatching__mismatch() {
 
         final Attribute<Thing, String> value = attribute("value", Thing::getValue);
 
@@ -208,7 +234,7 @@ public class FluentAttributeMatcherTest {
 
 
     @Test
-    public void test__with__mismatch__expecting_Matcher() {
+    public void with__mismatch__expecting_Matcher() {
 
         final Attribute<Thing, String> value = attribute("value", Thing::getValue);
 
@@ -220,7 +246,7 @@ public class FluentAttributeMatcherTest {
 
 
     @Test
-    public void test__with__mismatch__expecting_Matcher__with_inappropriate_type() {
+    public void with__mismatch__expecting_Matcher__with_inappropriate_type() {
 
         final Attribute<Thing, String> value = attribute("value", Thing::getValue);
 
@@ -236,7 +262,7 @@ public class FluentAttributeMatcherTest {
     }
 
     @Test
-    public void test__with__mismatch__expecting_value__with_inappropriate_type() {
+    public void with__mismatch__expecting_value__with_inappropriate_type() {
 
         final Attribute<Thing, String> value = attribute("value", Thing::getValue);
 
@@ -255,7 +281,7 @@ public class FluentAttributeMatcherTest {
     }
 
     @Test
-    public void test__with__mismatch__expecting_Matcher__with_super_type() {
+    public void with__mismatch__expecting_Matcher__with_super_type() {
 
         final Attribute<Thing, String> value = attribute("value", Thing::getValue);
 
@@ -266,7 +292,7 @@ public class FluentAttributeMatcherTest {
     }
 
     @Test
-    public void test__with__mismatch__expecting_Matcher__with_sub_type() {
+    public void with__mismatch__expecting_Matcher__with_sub_type() {
 
         final Attribute<HeirThing, String> value = attribute("value", Thing::getValue);
 
@@ -277,7 +303,7 @@ public class FluentAttributeMatcherTest {
     }
 
     @Test
-    public void test__with__mismatch__expecting_null() {
+    public void with__mismatch__expecting_null() {
 
         final Attribute<Thing, String> value = attribute("value", Thing::getValue);
 
@@ -289,7 +315,7 @@ public class FluentAttributeMatcherTest {
     }
 
     @Test
-    public void test__with__mismatch__expecting_String_getting_null_target() {
+    public void with__mismatch__expecting_String_getting_null_target() {
 
         final Attribute<Thing, String> value = attribute("value", Thing::getValue);
 
@@ -300,7 +326,7 @@ public class FluentAttributeMatcherTest {
     }
 
     @Test
-    public void test__with__mismatch__expecting_matching_String_getting_null_target() {
+    public void with__mismatch__expecting_matching_String_getting_null_target() {
 
         final Attribute<Thing, String> value = attribute("value", Thing::getValue);
 
@@ -355,16 +381,41 @@ public class FluentAttributeMatcherTest {
         };
         final FluentAttributeMatcher<Question> matching = aTracking(Question.class)//
             .having(Question::getAnswer, answerMatcher); //
-        matching.matchesSafely(new Question(new Answer(24)));
+        final Question actual = new Question(new Answer(24));
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetAnswer =~ answer 42\n\t"));
     }
 
     @Test
-    public void test__withMatching__mismatch__describes_nicely() {
+    public void describeTo__withMatching__mismatch__describes_nicely() {
+
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final Matcher<Answer> answerMatcher = new TypeSafeMatcher<Answer>() {
+            @Override
+            protected boolean matchesSafely(final Answer item) {
+                return item.toEverything() == 42;
+            }
+
+            @Override
+            public void describeTo(final Description description) {
+                description.appendText("answer 42");
+            }
+        };
+        final FluentAttributeMatcher<Question> matching = aTracking(Question.class)//
+            .withMatching(answer, answerMatcher);
+        final StringDescription description = new StringDescription();
+
+        matching.describeTo(description);
+
+        assertThat(description.toString(), is("\n\tanswer =~ answer 42\n\t"));
+    }
+
+    @Test
+    public void describeMismatchSafely__withMatching__mismatch__describes_nicely() {
 
         final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
         final Matcher<Answer> answerMatcher = new TypeSafeMatcher<Answer>() {
@@ -380,13 +431,15 @@ public class FluentAttributeMatcherTest {
         };
         final FluentAttributeMatcher<Question> matching = aTracking(Question.class)//
             .withMatching(answer, answerMatcher); //
-        matching.matchesSafely(new Question(new Answer(24)));
+        final Question actual = new Question(new Answer(24));
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tanswer =~ answer 42\n\t"));
     }
+
 
     private static class Philosophy {
         private final List<Question> questions;
@@ -428,10 +481,11 @@ public class FluentAttributeMatcherTest {
         };
         final FluentAttributeMatcher<HumanThinking> matching = aTracking(HumanThinking.class)//
             .having(ht -> ht.getPhilosophy().getQuestions().get(1).getAnswer(), answerMatcher); //
-        matching.matchesSafely(new HumanThinking(new Philosophy(new Question(new Answer(24)), new Question(new Answer(31)))));
+        final HumanThinking actual = new HumanThinking(new Philosophy(new Question(new Answer(24)), new Question(new Answer(31))));
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetPhilosophy/getQuestions/get/getAnswer =~ answer 42\n\t"));
     }
@@ -458,10 +512,11 @@ public class FluentAttributeMatcherTest {
 
         final FluentAttributeMatcher<Untrackable> matching = aTracking(Untrackable.class)//
             .with(un -> un.getUntrackable().get(0), "trackable"); //
-        matching.matchesSafely(new Untrackable("untrackable"));
+        final Untrackable actual = new Untrackable("untrackable");
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetUntrackable/??? = \"trackable\" <> \"untrackable\"\n\t"));
     }
@@ -483,10 +538,11 @@ public class FluentAttributeMatcherTest {
 
         final FluentAttributeMatcher<NestedUntrackable> matching = aTracking(NestedUntrackable.class)//
             .with(un -> un.getNested().getUntrackable().get(0), "trackable"); //
-        matching.matchesSafely(new NestedUntrackable(new Untrackable("untrackable")));
+        final NestedUntrackable actual = new NestedUntrackable(new Untrackable("untrackable"));
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetNested/getUntrackable/??? = \"trackable\" <> \"untrackable\"\n\t"));
     }
@@ -503,10 +559,11 @@ public class FluentAttributeMatcherTest {
 
         final FluentAttributeMatcher<SubThing> matching = aTracking(SubThing.class)//
             .with(Thing::getValue, "value of subclass"); //
-        matching.matchesSafely(new SubThing("value of superclass"));
+        final SubThing actual = new SubThing("value of superclass");
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetValue = \"value of subclass\" <> \"value of superclass\"\n\t"));
     }
@@ -517,10 +574,11 @@ public class FluentAttributeMatcherTest {
         //noinspection Convert2MethodRef
         final FluentAttributeMatcher<SubThing> matching = aTracking(SubThing.class)//
             .with(t -> t.getValue(), "value of subclass"); //
-        matching.matchesSafely(new SubThing("value of superclass"));
+        final SubThing actual = new SubThing("value of superclass");
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetValue = \"value of subclass\" <> \"value of superclass\"\n\t"));
     }
@@ -557,10 +615,11 @@ public class FluentAttributeMatcherTest {
 
         final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
             .with(Thing::getValue, null); //
-        matching.matchesSafely(new Thing("not null"));
+        final Thing actual = new Thing("not null");
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetValue = null <> \"not null\"\n\t"));
     }
@@ -701,10 +760,11 @@ public class FluentAttributeMatcherTest {
 
         final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
             .with(twn -> twn.getNumbers().get(0) + twn.sum() + twn.count(), 7); //
-        matching.matchesSafely(new ThingWithNumbers(1, 2, 3));
+        final ThingWithNumbers actual = new ThingWithNumbers(1, 2, 3);
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         /*
         * Somewhat awkward but not really the most prominent use case.
@@ -768,18 +828,21 @@ public class FluentAttributeMatcherTest {
     }
 
 
+
+
     @Test
-    public void test__multiple_expectations__none_matching__describes_nicely() {
+    public void test__describeMismatchSafely__with__having__multiple_expectations__none_matching__describes_nicely() {
         final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
             .with(ThingWithNumbers::count, 6)//
             .with(ThingWithNumbers::sum, 3)//
             .having(twn -> twn.getNumbers().size(), is(2))//
             ;//
 
-        matching.matchesSafely(new ThingWithNumbers(1, 2, 3));
+        final ThingWithNumbers item = new ThingWithNumbers(1, 2, 3);
+        matching.matchesSafely(item);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(item, description);
 
         /*
         * Somewhat awkward but not really the most prominent use case.
@@ -826,10 +889,11 @@ public class FluentAttributeMatcherTest {
             .having(twn -> twn.getNumbers().size(), is(2))//
             ;//
 
-        matching.matchesSafely(new ThingWithNumbers(1, 2, 3));
+        final ThingWithNumbers item = new ThingWithNumbers(1, 2, 3);
+        matching.matchesSafely(item);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(item, description);
 
         /*
         * Somewhat awkward but not really the most prominent use case.
@@ -857,10 +921,11 @@ public class FluentAttributeMatcherTest {
                 }
             });//
 
-        matching.matchesSafely(new ThingWithNumbers(1, 2, 3));
+        final ThingWithNumbers actual = new ThingWithNumbers(1, 2, 3);
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n" + //
             "\tsum = <3> <> <6>\n" +//
@@ -874,13 +939,14 @@ public class FluentAttributeMatcherTest {
         final FluentAttributeMatcher<Thing> matching = aTracking(Thing.class)//
             .with(Thing::getValue, "the value"); //
 
-        assertThat(new Thing("not the value"), not(is(matching)));
+        final Thing eventualActual = new Thing("not the value");
+        assertThat(eventualActual, not(is(matching)));
         assertThat(new Thing("the value"), is(matching));
-        final boolean matches = matching.matchesSafely(new Thing("not the value"));
+        final boolean matches = matching.matchesSafely(eventualActual);
         assertFalse(matches);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(eventualActual, description);
 
         assertThat(description.toString(), is("\n\tgetValue = \"the value\" <> \"not the value\"\n\t"));
     }
@@ -938,16 +1004,15 @@ public class FluentAttributeMatcherTest {
 
         final FluentAttributeMatcher<ThingArray> matching = aTracking(ThingArray.class)//
             .with(a -> a.getThings()[1].getValue(), "the third value"); //
-
-        matching.matchesSafely(new ThingArray(//
+        final ThingArray actual = new ThingArray(//
             new Thing("the first value"),//
             new Thing("the second value"),//
             new Thing("the third value")//
-        ));
-
+        );
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetThings[...]/getValue = \"the third value\" <> \"the second value\"\n\t"));
 
@@ -964,16 +1029,15 @@ public class FluentAttributeMatcherTest {
                 a.getThings()[0].getValue();
                 return a.getThings()[1].getValue();
             }, "the third value"); //
-
-        matching.matchesSafely(new ThingArray(//
+        final ThingArray actual = new ThingArray(//
             new Thing("the first value"),//
             new Thing("the second value"),//
             new Thing("the third value")//
-        ));
-
+        );
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetThings&getThings[...]/getValue&getThings[...]/getValue = \"the third value\" <> \"the second value\"\n\t"));
 
@@ -992,16 +1056,15 @@ public class FluentAttributeMatcherTest {
                 a.getThingsAsList();
                 return a.getThings()[1].getValue();
             }, "the third value"); //
-
-        matching.matchesSafely(new ThingArray(//
+        final ThingArray actual = new ThingArray(//
             new Thing("the first value"),//
             new Thing("the second value"),//
             new Thing("the third value")//
-        ));
-
+        );
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetThings&getThings[...]/getValue&getThings[...]/getValue&getThingsAsList&getThingsAsList = \"the third value\" <> \"the second value\"\n\t"));
 
@@ -1013,12 +1076,11 @@ public class FluentAttributeMatcherTest {
 
         final FluentAttributeMatcher<ThingArray> matching = aTracking(ThingArray.class)//
             .with(ThingArray::getThings, "the third value"); //
-
-        matching.matchesSafely(new ThingArray());
-
+        final ThingArray actual = new ThingArray();
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetThings = \"the third value\" <> []\n\t"));
 
@@ -1053,12 +1115,11 @@ public class FluentAttributeMatcherTest {
 
         final FluentAttributeMatcher<Outer> matching = aTracking(Outer.class)//
             .with(outer -> outer.getInner().getS(), "S"); //
-
-        matching.matchesSafely(new Outer(new Outer.Inner("X")));
-
+        final Outer actual = new Outer(new Outer.Inner("X"));
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetInner/getS = \"S\" <> \"X\"\n\t"));
 
@@ -1089,12 +1150,11 @@ public class FluentAttributeMatcherTest {
 
         final FluentAttributeMatcher<AnonymousAttributes> matching = aTracking(AnonymousAttributes.class)//
             .with(a -> a.getAttr().attr(), "a property"); //
-
-        matching.matchesSafely(new AnonymousAttributes());
-
+        final AnonymousAttributes actual = new AnonymousAttributes();
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tgetAttr/attr = \"a property\" <> \"an attribute\"\n\t"));
 
@@ -1106,11 +1166,12 @@ public class FluentAttributeMatcherTest {
         final FluentAttributeMatcher<AnonymousAttributes> matching = aTracking(AnonymousAttributes.class)//
             .with(a -> a.func().apply("an attribute"), "a property"); //
 
-        matching.matchesSafely(new AnonymousAttributes());
+        final AnonymousAttributes actual = new AnonymousAttributes();
+        matching.matchesSafely(actual);
 
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tfunc/??? = \"a property\" <> \"an attribute\"\n\t"));
 
@@ -1140,42 +1201,14 @@ public class FluentAttributeMatcherTest {
 
         final FluentAttributeMatcher<Proxying> matching = aTracking(Proxying.class)//
             .with(p -> p.proxied().attr(), "a property"); //
-
-        matching.matchesSafely(new Proxying());
-
+        final Proxying actual = new Proxying();
+        matching.matchesSafely(actual);
         final StringDescription description = new StringDescription();
 
-        matching.describeTo(description);
+        matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("\n\tproxied/??? = \"a property\" <> \"a real attribute\"\n\t"));
 
-    }
-
-    @Test
-    public void testWhatsTheDescriptionIfThingsMatch() {
-
-        /* To clarify conditions relied upon in the benchmark tests. */
-
-        final Thing theThing = new Thing("the value");
-
-        final FluentAttributeMatcher<Thing> matcher = aTracking(Thing.class)//
-            .with(Thing::getValue, "the value"); //
-        matcher.matches(theThing);
-        final StringDescription d = new StringDescription();
-        matcher.describeTo(d);
-
-        assertThat(d.toString(), is(""));
-
-        final Matcher<String> hamcrestMatcher = is("the value");
-        hamcrestMatcher.matches(theThing.getValue());
-        hamcrestMatcher.describeTo(d);
-
-        final Matcher<String> hamcrestMatcher2 = is("not the value");
-        hamcrestMatcher2.matches(theThing);
-        final StringDescription d2 = new StringDescription();
-        hamcrestMatcher2.describeTo(d2);
-
-        assertThat(d.toString(), not(is(d2.toString())));
     }
 
     @Test

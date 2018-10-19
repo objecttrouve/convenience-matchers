@@ -217,7 +217,7 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
 
     @Override
     protected boolean matchesSafely(final T item) {
-        results.clear();
+        reset();
         for (final Expectation<T, ?> exp : expectations) {
             final Result<?> result = matching(item, exp);
             if (result.isNotMatched()) {
@@ -225,6 +225,10 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
             }
         }
         return results.isEmpty();
+    }
+
+    private void reset() {
+        results.clear();
     }
 
 
@@ -264,6 +268,20 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
 
     @Override
     public void describeTo(final Description description) {
+        expectations.forEach(e -> {
+            description.appendText("\n\t");
+            Prose.expectation(description, e);
+            description.appendText("\n\t");
+        });
+    }
+
+    @Override
+    protected void describeMismatchSafely(final T item, final Description mismatchDescription) {
+        matchesSafely(item);
+        describeTheMismatch(mismatchDescription);
+    }
+
+    private void describeTheMismatch(final Description description) {
         if (!results.isEmpty()) {
             description.appendText("\n\t");
             for (final Result r : results) {

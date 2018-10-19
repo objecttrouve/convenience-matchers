@@ -2880,13 +2880,12 @@ public class FluentIterableMatcherTest {
             "\"Detected duplicates.\"\n" +
             "\n" +
             "[0][Paper{text='PAP!', pages=40}  ]💕  ↔ 👯  \n" +
-            "[1][Paper{text='The Law Of Gravity]    ↔   🚯 💔[ \ttext = \"PAP!\" <> \"The Law Of Gravity\" \tpages = <40> <> <180> \t]\n" +
-            "[2][Paper{text='Booh!', pages=50} ]  ↕ ↔   🚯 💔[ \ttext = \"Grave\" <> \"Booh!\" \tpages = <0> <> <50> \t]\n" +
+            "[1][Paper{text='The Law Of Gravity]    ↔   🚯 💔[ \ttext = \"PAP!\" \t \tpages = <40> \t]\n" +
+            "[2][Paper{text='Booh!', pages=50} ]  ↕ ↔   🚯 💔[ \ttext = \"Grave\" \t \tpages = <0> \t]\n" +
             "[3][Paper{text='PAP!', pages=40}  ]💕↕   👯  \n" +
             "was <[Paper{text='PAP!', pages=40}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='Booh!', pages=50}, Paper{text='PAP!', pages=40}]>"
         ));
     }
-
 
     @Test
     public void matchesSafely__mismatch__describeTo__describeMismatchSafely__with_full_force_2(){
@@ -2899,10 +2898,10 @@ public class FluentIterableMatcherTest {
             .sorted(comparingInt(Paper::getPages))
             .unique((p1, p2) -> p1.text.equals(p2.text))
             .withItemsMatching(
-                a(Paper.class).with(txt, "Booh!").with(pages, 3),
                 a(Paper.class).with(txt, "PAP!").with(pages, 40),
-                a(Paper.class).with(txt, "Grave").with(pages, 0)
-            );
+                a(Paper.class).with(txt, "Grave").with(pages, 0),
+                a(Paper.class).with(txt, "Booh!").with(pages, 3)
+                );
 
         final boolean matches = matcher.matchesSafely(input);
 
@@ -2928,11 +2927,10 @@ public class FluentIterableMatcherTest {
             "\"Not all expectations were fulfilled.\"\n" +
             "\"Items did not appear in the expected order.\"\n" +
             "\"Collection is not sorted.\"\n" +
-            "\"Detected duplicates.\"\n" +
-            "\n" +
-            "[0][Paper{text='PAP!', pages=40}  ]💕  ↔ 👯  \n" +
-            "[1][Paper{text='The Law Of Gravity]    ↔      💔[ \ttext = \"Booh!\" <> \"The Law Of Gravity\" \tpages = <3> <> <180> \t] 💔[ \ttext = \"PAP!\" <> \"The Law Of Gravity\" \tpages = <40> <> <180> \t] 💔[ \ttext = \"Grave\" <> \"The Law Of Gravity\" \tpages = <0> <> <180> \t]\n" +
-            "[2][Paper{text='Booh!', pages=50} ]  ↕ ↔      💔[ \tpages = <3> <> <50> \t] 💔[ \ttext = \"PAP!\" <> \"Booh!\" \tpages = <40> <> <50> \t] 💔[ \ttext = \"Grave\" <> \"Booh!\" \tpages = <0> <> <50> \t]\n" +
+            "\"Detected duplicates.\"\n\n" +
+            "[0][Paper{text='PAP!', pages=40}  ]💕    👯  \n" +
+            "[1][Paper{text='The Law Of Gravity]    ↔      💔[ \ttext = \"PAP!\" \t \tpages = <40> \t] 💔[ \ttext = \"Grave\" \t \tpages = <0> \t] 💔[ \ttext = \"Booh!\" \t \tpages = <3> \t]\n" +
+            "[2][Paper{text='Booh!', pages=50} ]  ↕ ↔      💔[ \ttext = \"Booh!\" \t \tpages = <3> \t] 💔[ \ttext = \"PAP!\" \t \tpages = <40> \t] 💔[ \ttext = \"Grave\" \t \tpages = <0> \t]\n" +
             "[3][Paper{text='PAP!', pages=40}  ]💕↕ ↔ 👯  \n" +
             "was <[Paper{text='PAP!', pages=40}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='Booh!', pages=50}, Paper{text='PAP!', pages=40}]>"
         ));
