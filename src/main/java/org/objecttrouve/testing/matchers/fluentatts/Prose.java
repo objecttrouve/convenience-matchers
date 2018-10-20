@@ -24,8 +24,8 @@ class Prose {
     private static final String methodPathSeparator = "/";
     private static final String methodCallsSeparator = "&";
     private static final String eq = " = ";
-    private static final String neq = " <> ";
-    private static final String matching = " =~ ";
+    private static final String neq = " \u2260 ";
+    private static final String matching = " \u2A73 ";
     private static final String unknown = "???";
 
     private static String describe(final TrackingTree calls) {
@@ -77,27 +77,31 @@ class Prose {
     }
 
     static void wording(final Description description, final Result result) {
-        final String getterDescription = result.getExpectation().getDescription();
+        final Expectation expectation = result.getExpectation();
+        final String getterDescription = expectation.getDescription();
         if (getterDescription != null){
             description.appendText(getterDescription);
         } else if (result.getCalled() != null) {
             description.appendText(describe(result.getCalled()));
         } else {
-            description.appendText(result.getExpectation().getGetter().toString());
+            description.appendText(expectation.getGetter().toString());
         }
-        final Expectation<?, ?> expectation = result.getExpectation();
         if (expectation.isAboutMatcher()) {
-            final Matcher m = expectation.getMatcher();
-            if (m != null) {
-                description.appendText(matching);
-                m.describeTo(description);
-            }
+            describeMatcher(expectation, description);
         } else {
-            final Object expVal = expectation.getExpectedValue();
+            final Object expVal = ((Expectation<?, ?>) expectation).getExpectedValue();
             description.appendText(eq);
             description.appendValue(expVal);
             description.appendText(neq);
             description.appendValue(result.getActual());
+        }
+    }
+
+    private static void describeMatcher(final Expectation expectation, final Description description) {
+        final Matcher m = expectation.getMatcher();
+        if (m != null) {
+            description.appendText(matching);
+            m.describeTo(description);
         }
     }
 
@@ -112,11 +116,7 @@ class Prose {
             description.appendText(getterDescription);
         }
         if (e.isAboutMatcher()) {
-            final Matcher m = e.getMatcher();
-            if (m != null) {
-                description.appendText(matching);
-                m.describeTo(description);
-            }
+            describeMatcher(e, description);
         } else {
             final Object expVal = e.getExpectedValue();
             description.appendText(eq);
