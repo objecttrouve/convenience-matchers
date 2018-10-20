@@ -231,7 +231,7 @@ public class ProseTest {
         matcher.describeTo(self);
         matcher.describeMismatch("X", mismatch);
 
-        final String matcherSaying = stringProse.matcherSaying(self.toString(), mismatch.toString());
+        final String matcherSaying = stringProse.matcherSaying(self.toString());
 
         assertThat(matcherSaying, is("\"Y\""));
     }
@@ -266,7 +266,7 @@ public class ProseTest {
         matcher.describeTo(self);
         matcher.describeMismatch("X", mismatch);
 
-        final String matcherSaying = stringProse.matcherSaying(self.toString(), mismatch.toString());
+        final String matcherSaying = stringProse.matcherSaying(self.toString());
 
         assertThat(matcherSaying, is("y y"));
     }
@@ -365,15 +365,20 @@ public class ProseTest {
 
     @Test
     public void line__index_22__mismatched_item__of__1000__imaginary_truncated() {
+
         final ItemResult<Boolean> r = ItemResult.builder(true)
             .withIndex(22)
-            .withMatchers(singletonList(nullValue()))
+            .withMatchers(singletonList(mwi(nullValue(), 3)))
             .build();
 
         //noinspection unchecked
         final String line = boolProse.line(r, 1000, 3);
 
-        assertThat(line, is("[  22][tru]           💔[null]"));
+        assertThat(line, is("[  22][tru]           💔[3][null]"));
+    }
+
+    private ItemResult.MatcherWithIndex mwi(final Matcher matcher, final int index) {
+        return new ItemResult.MatcherWithIndex(matcher, index);
     }
 
     @Test
@@ -381,14 +386,14 @@ public class ProseTest {
         final ItemResult<String> r1 = ItemResult.builder("scene de menage")
             .withIndex(0)
             .matched(false)
-            .withMatchers(singletonList(equalTo("scène de ménage")))
+            .withMatchers(singletonList(mwi(equalTo("scène de ménage"), 0)))
             .build();
         final ItemResult<String> r2 = ItemResult.builder("scene de manège")
             .withIndex(1)
             .matched(false)
             .breakingItemOrder(true)
             .breakingSortOrder(true)
-            .withMatchers(asList(equalTo("scène de ménage"), endsWith("age")))
+            .withMatchers(asList(mwi(equalTo("scène de ménage"),2), mwi(endsWith("age"),3)))
             .build();
         final ItemResult<String> r3 = ItemResult.builder("le mariage")
             .withIndex(99)
@@ -397,7 +402,7 @@ public class ProseTest {
             .breakingSortOrder(true)
             .duplicate(true)
             .unwanted(true)
-            .withMatchers(singletonList(equalTo("scène de ménage")))
+            .withMatchers(singletonList(mwi(equalTo("scène de ménage"),0)))
             .build();
         final ItemResult<String> r4 = ItemResult.builder("scène de ménage")
             .withIndex(9999)
@@ -414,9 +419,9 @@ public class ProseTest {
         final String line3 = stringProse.line(r3, 100, 15);
         final String line4 = stringProse.line(r4, 100, 15);
 
-        assertThat(line1, is("[  0][scene de menage]           💔[\"scène de ménage\"]"));
-        assertThat(line2, is("[  1][scene de manège]  ↕ ↔      💔[\"scène de ménage\"] 💔[a string ending with \"age\"]"));
-        assertThat(line3, is("[ 99][le mariage     ]  ↕ ↔ 👯🚯 💔[\"scène de ménage\"]"));
+        assertThat(line1, is("[  0][scene de menage]           💔[0][\"scène de ménage\"]"));
+        assertThat(line2, is("[  1][scene de manège]  ↕ ↔      💔[2][\"scène de ménage\"] 💔[3][a string ending with \"age\"]"));
+        assertThat(line3, is("[ 99][le mariage     ]  ↕ ↔ 👯🚯 💔[0][\"scène de ménage\"]"));
         assertThat(line4, is("[999][scène de ménage]💕↕ ↔ 👯🚯"));
     }
 

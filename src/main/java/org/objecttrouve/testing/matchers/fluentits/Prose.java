@@ -58,7 +58,7 @@ class Prose<X> {
         return format("%1$-" + limit + "." + limit + "s", Objects.toString(actual).replaceAll("\n", " "));
     }
 
-    String matcherSaying(final String self, final String mismatch) {
+    String matcherSaying(final String self) {
         return self.replaceAll("\n", " ");
     }
 
@@ -75,12 +75,11 @@ class Prose<X> {
         appendSymbol(line, result.isDuplicate(), duplicate);
         appendSymbol(line, result.isUnwanted(), obsolete);
         if (!result.isMatched()) {
-            result.getMismatchedItemMatchers().forEach(m -> {
-                m.matches(result.getActual());
-                line.append(" " + mismatch + "[");
+            result.getMismatchedItemMatchers().forEach(matcherWithIndex -> {
+                line.append(" ").append(mismatch).append("[").append(matcherWithIndex.getIndex()).append("][");
                 final StringDescription selfDescription = new StringDescription();
-                m.describeTo(selfDescription);
-                line.append(matcherSaying(selfDescription.toString(), ""));
+                matcherWithIndex.getMatcher().describeTo(selfDescription);
+                line.append(matcherSaying(selfDescription.toString()));
                 line.append("]");
             });
 

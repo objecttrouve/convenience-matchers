@@ -2429,9 +2429,9 @@ public class FluentIterableMatcherTest {
                 .withItemsMatching(m1, m2, m3)
         );
 
-        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(0) == m2);
-        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(1) == m3);
-        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(2) == m1);
+        assertTrue(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(0)).getMatcher() == m2);
+        assertTrue(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(1)).getMatcher() == m3);
+        assertTrue(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(2)).getMatcher() == m1);
     }
 
     @Test
@@ -2459,9 +2459,9 @@ public class FluentIterableMatcherTest {
                 .withItemsMatching(m1, m2, m3)
         );
 
-        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(0) == m1);
-        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(1) == m2);
-        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(2) == m3);
+        assertTrue(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(0)).getMatcher() == m1);
+        assertTrue(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(1)).getMatcher() == m2);
+        assertTrue(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(2)).getMatcher() == m3);
     }
 
     @Test
@@ -2489,9 +2489,18 @@ public class FluentIterableMatcherTest {
                 .withItemsMatching(m1, m2, m3)
         );
 
-        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(0) == m3);
-        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(1) == m2);
-        assertTrue(itemResults.get(0).getMismatchedItemMatchers().get(2) == m1);
+        //noinspection unchecked
+        final List<ItemResult.MatcherWithIndex> mismatchedItemMatchers = itemResults.get(0).getMismatchedItemMatchers();
+        final ItemResult.MatcherWithIndex mAt0 = mismatchedItemMatchers.get(0);
+        final ItemResult.MatcherWithIndex mAt1 = mismatchedItemMatchers.get(1);
+        final ItemResult.MatcherWithIndex mAt2 = mismatchedItemMatchers.get(2);
+        assertTrue(mAt0.getMatcher() == m3);
+        assertTrue(mAt1.getMatcher() == m2);
+        assertTrue(mAt2.getMatcher() == m1);
+        assertTrue(mAt0.getIndex() == 2);
+        assertTrue(mAt1.getIndex() == 1);
+        assertTrue(mAt2.getIndex() == 0);
+
     }
 
     @Test
@@ -2880,8 +2889,8 @@ public class FluentIterableMatcherTest {
             "\"Detected duplicates.\"\n" +
             "\n" +
             "[0][Paper{text='PAP!', pages=40}  ]💕  ↔ 👯  \n" +
-            "[1][Paper{text='The Law Of Gravity]    ↔   🚯 💔[ \ttext = \"PAP!\" \t \tpages = <40> \t]\n" +
-            "[2][Paper{text='Booh!', pages=50} ]  ↕ ↔   🚯 💔[ \ttext = \"Grave\" \t \tpages = <0> \t]\n" +
+            "[1][Paper{text='The Law Of Gravity]    ↔   🚯 💔[1][ \ttext = \"PAP!\" \t \tpages = <40> \t]\n" +
+            "[2][Paper{text='Booh!', pages=50} ]  ↕ ↔   🚯 💔[2][ \ttext = \"Grave\" \t \tpages = <0> \t]\n" +
             "[3][Paper{text='PAP!', pages=40}  ]💕↕   👯  \n" +
             "was <[Paper{text='PAP!', pages=40}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='Booh!', pages=50}, Paper{text='PAP!', pages=40}]>"
         ));
@@ -2893,8 +2902,8 @@ public class FluentIterableMatcherTest {
         final StringDescription issues = new StringDescription();
         final Iterable<Paper> input = asList(
             pap("PAP!"),
-            pap("The Law Of Gravity"),
             pap("Booh!"),
+            pap("The Law Of Gravity"),
             pap("PAP!")
         );
         final FluentIterableMatcher<Paper, Iterable<Paper>> matcher = anIterableOf(Paper.class)
@@ -2935,10 +2944,10 @@ public class FluentIterableMatcherTest {
             "\"Detected duplicates.\"\n" +
             "\n" +
             "[0][Paper{text='PAP!', pages=40}  ]💕    👯  \n" +
-            "[1][Paper{text='The Law Of Gravity]    ↔      💔[ \ttext = \"Grave\" \t \tpages = <0> \t] 💔[ \ttext = \"PAP!\" \t \tpages = <40> \t] 💔[ \ttext = \"Booh!\" \t \tpages = <3> \t]\n" +
-            "[2][Paper{text='Booh!', pages=50} ]  ↕ ↔      💔[ \ttext = \"Booh!\" \t \tpages = <3> \t] 💔[ \ttext = \"Grave\" \t \tpages = <0> \t] 💔[ \ttext = \"PAP!\" \t \tpages = <40> \t]\n" +
+            "[1][Paper{text='Booh!', pages=50} ]    ↔      💔[2][ \ttext = \"Booh!\" \t \tpages = <3> \t] 💔[1][ \ttext = \"Grave\" \t \tpages = <0> \t] 💔[0][ \ttext = \"PAP!\" \t \tpages = <40> \t]\n" +
+            "[2][Paper{text='The Law Of Gravity]    ↔      💔[2][ \ttext = \"Booh!\" \t \tpages = <3> \t] 💔[1][ \ttext = \"Grave\" \t \tpages = <0> \t] 💔[0][ \ttext = \"PAP!\" \t \tpages = <40> \t]\n" +
             "[3][Paper{text='PAP!', pages=40}  ]💕↕ ↔ 👯  \n" +
-            "was <[Paper{text='PAP!', pages=40}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='Booh!', pages=50}, Paper{text='PAP!', pages=40}]>"
+            "was <[Paper{text='PAP!', pages=40}, Paper{text='Booh!', pages=50}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='PAP!', pages=40}]>"
         ));
     }
 }

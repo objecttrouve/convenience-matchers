@@ -383,7 +383,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
                 final ItemResult.Builder<X> builder = ItemResult.builder(actual[j]);
                 if (j < settings.expectations.length) {
                     builder
-                        .withMatchers(singletonList(settings.expectations[j]));
+                        .withMatchers(singletonList(new ItemResult.MatcherWithIndex(settings.expectations[j], j)));
                 }
                 itemResults.add(builder
                     .matched(false)
@@ -407,7 +407,9 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
                 itemResults.add(ItemResult.builder(actual[j])
                     .matched(false)
                     .withIndex(j)
-                    .withMatchers(unmatched.stream().map(sm -> settings.expectations[sm.matcher]).collect(toList()))
+                    .withMatchers(unmatched.stream()
+                        .map(sm -> new ItemResult.MatcherWithIndex(settings.expectations[sm.matcher], sm.matcher))
+                        .collect(toList()))
                     .breakingItemOrder(this.unordered.contains(j))
                     .duplicate(this.duplicates.contains(j))
                     .breakingSortOrder(this.unsorted.contains(j))

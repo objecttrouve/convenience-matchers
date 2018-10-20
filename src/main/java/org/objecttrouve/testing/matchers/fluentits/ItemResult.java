@@ -14,10 +14,27 @@ import java.util.List;
 
 class ItemResult<X> {
 
+    static class MatcherWithIndex {
+        private final Matcher matcher;
+        private final int index;
+
+        MatcherWithIndex(final Matcher matcher, final int index) {
+            this.matcher = matcher;
+            this.index = index;
+        }
+
+        public Matcher getMatcher() {
+            return matcher;
+        }
+
+        int getIndex() {
+            return index;
+        }
+    }
     private final int index;
     private final boolean matched;
     private final X actual;
-    private final List<Matcher> matchers;
+    private final List<MatcherWithIndex> matchers;
     private final boolean breakingSort;
     private final boolean breakingItemOrder;
     private final boolean duplicate;
@@ -43,7 +60,7 @@ class ItemResult<X> {
         private boolean matched;
         private int index;
         private final X actual;
-        private List<Matcher> matchers = Collections.emptyList();
+        private List<MatcherWithIndex> matchers = Collections.emptyList();
         private boolean breakingSort;
         private boolean breakingItemOrder;
         private boolean duplicate;
@@ -67,7 +84,7 @@ class ItemResult<X> {
             return this;
         }
 
-        Builder<X> withMatchers(final List<Matcher> matchers) {
+        Builder<X> withMatchers(final List<MatcherWithIndex> matchers) {
             this.matchers = matchers;
             return this;
         }
@@ -106,7 +123,7 @@ class ItemResult<X> {
         return actual;
     }
 
-    List<Matcher> getMismatchedItemMatchers() {
+    List<MatcherWithIndex> getMismatchedItemMatchers() {
         return matchers;
     }
 
