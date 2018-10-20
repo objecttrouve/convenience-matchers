@@ -359,6 +359,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         public int compareTo(final ScoredMismatch o) {
             return Comparator
                 .comparingDouble(ScoredMismatch::getScore).reversed()
+                .thenComparing(sm -> Math.abs(sm.actual-sm.matcher))
                 .thenComparing(ScoredMismatch::getMatcher)
                 .thenComparing(ScoredMismatch::getActual)
                 .compare(this, o);

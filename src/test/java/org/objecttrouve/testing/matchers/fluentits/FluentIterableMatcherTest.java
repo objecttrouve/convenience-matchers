@@ -2891,7 +2891,12 @@ public class FluentIterableMatcherTest {
     public void matchesSafely__mismatch__describeTo__describeMismatchSafely__with_full_force_2(){
         final StringDescription self = new StringDescription();
         final StringDescription issues = new StringDescription();
-        final Iterable<Paper> input = asList(pap("PAP!"), pap("The Law Of Gravity"), pap("Booh!"), pap("PAP!"));
+        final Iterable<Paper> input = asList(
+            pap("PAP!"),
+            pap("The Law Of Gravity"),
+            pap("Booh!"),
+            pap("PAP!")
+        );
         final FluentIterableMatcher<Paper, Iterable<Paper>> matcher = anIterableOf(Paper.class)
             .ofSize(9)
             .ordered()
@@ -2927,10 +2932,11 @@ public class FluentIterableMatcherTest {
             "\"Not all expectations were fulfilled.\"\n" +
             "\"Items did not appear in the expected order.\"\n" +
             "\"Collection is not sorted.\"\n" +
-            "\"Detected duplicates.\"\n\n" +
+            "\"Detected duplicates.\"\n" +
+            "\n" +
             "[0][Paper{text='PAP!', pages=40}  ]💕    👯  \n" +
-            "[1][Paper{text='The Law Of Gravity]    ↔      💔[ \ttext = \"PAP!\" \t \tpages = <40> \t] 💔[ \ttext = \"Grave\" \t \tpages = <0> \t] 💔[ \ttext = \"Booh!\" \t \tpages = <3> \t]\n" +
-            "[2][Paper{text='Booh!', pages=50} ]  ↕ ↔      💔[ \ttext = \"Booh!\" \t \tpages = <3> \t] 💔[ \ttext = \"PAP!\" \t \tpages = <40> \t] 💔[ \ttext = \"Grave\" \t \tpages = <0> \t]\n" +
+            "[1][Paper{text='The Law Of Gravity]    ↔      💔[ \ttext = \"Grave\" \t \tpages = <0> \t] 💔[ \ttext = \"PAP!\" \t \tpages = <40> \t] 💔[ \ttext = \"Booh!\" \t \tpages = <3> \t]\n" +
+            "[2][Paper{text='Booh!', pages=50} ]  ↕ ↔      💔[ \ttext = \"Booh!\" \t \tpages = <3> \t] 💔[ \ttext = \"Grave\" \t \tpages = <0> \t] 💔[ \ttext = \"PAP!\" \t \tpages = <40> \t]\n" +
             "[3][Paper{text='PAP!', pages=40}  ]💕↕ ↔ 👯  \n" +
             "was <[Paper{text='PAP!', pages=40}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='Booh!', pages=50}, Paper{text='PAP!', pages=40}]>"
         ));
