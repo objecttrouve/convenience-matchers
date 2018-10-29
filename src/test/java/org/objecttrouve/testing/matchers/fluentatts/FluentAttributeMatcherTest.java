@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.number.IsCloseTo.closeTo;
@@ -110,7 +111,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetValue = \"the value\" ≠ \"not the value\"\n\t"));
+        assertThat(description.toString(), is("\n\tgetValue = 'the value' ≠ 'not the value'\n"));
     }
 
     @Test
@@ -123,7 +124,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeTo(description);
 
-        assertThat(description.toString(), is("\n\tvalue = \"the value\"\n\t"));
+        assertThat(description.toString(), is("\n\tvalue = 'the value'\n"));
     }
 
     @Test
@@ -138,7 +139,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(item, description);
 
-        assertThat(description.toString(), is("\n\tvalue = \"the value\" ≠ \"not the value\"\n\t"));
+        assertThat(description.toString(), is("\n\tvalue = 'the value' ≠ 'not the value'\n"));
     }
 
     @Test
@@ -151,7 +152,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeTo(description);
 
-        assertThat(description.toString(), is("\n\tvalue = \"the value\"\n\t"));
+        assertThat(description.toString(), is("\n\tvalue = 'the value'\n"));
     }
 
     @Test
@@ -166,7 +167,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(item, description);
 
-        assertThat(description.toString(), is("\n\tvalue = \"the value\" ≠ \"not the value\"\n\t"));
+        assertThat(description.toString(), is("\n\tvalue = 'the value' ≠ 'not the value'\n"));
     }
 
 
@@ -351,6 +352,11 @@ public class FluentAttributeMatcherTest {
         int getTheAnswer() {
             return theAnswer;
         }
+
+        @Override
+        public String toString() {
+            return "toString->" + theAnswer;
+        }
     }
 
     private static class Question {
@@ -387,7 +393,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetAnswer ⩳ answer 42\n\t"));
+        assertThat(description.toString(), is("\n\tgetAnswer ⩳ 'answer 42' ≠ 'was <toString->24>'\n"));
     }
 
     @Test
@@ -411,7 +417,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeTo(description);
 
-        assertThat(description.toString(), is("\n\tanswer ⩳ answer 42\n\t"));
+        assertThat(description.toString(), is("\n\tanswer ⩳ 'answer 42'\n"));
     }
 
     @Test
@@ -437,7 +443,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tanswer ⩳ answer 42\n\t"));
+        assertThat(description.toString(), is("\n\tanswer ⩳ 'answer 42' ≠ 'was <toString->24>'\n"));
     }
 
 
@@ -487,7 +493,9 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetPhilosophy/getQuestions/get/getAnswer ⩳ answer 42\n\t"));
+        assertThat(description.toString(), is("" +
+            "\n\tgetPhilosophy/getQuestions/get/getAnswer ⩳ 'answer 42' ≠ 'was <toString->31>'\n"
+        ));
     }
 
     private static class Untrackable {
@@ -518,7 +526,9 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetUntrackable/??? = \"trackable\" ≠ \"untrackable\"\n\t"));
+        assertThat(description.toString(), is("" +
+                "\n\tgetUntrackable/??? = 'trackable' ≠ 'untrackable'\n" +
+            ""));
     }
 
     private static class NestedUntrackable {
@@ -544,7 +554,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetNested/getUntrackable/??? = \"trackable\" ≠ \"untrackable\"\n\t"));
+        assertThat(description.toString(), is("\n\tgetNested/getUntrackable/??? = 'trackable' ≠ 'untrackable'\n"));
     }
 
     private static class SubThing extends Thing {
@@ -565,7 +575,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetValue = \"value of subclass\" ≠ \"value of superclass\"\n\t"));
+        assertThat(description.toString(), is("\n\tgetValue = 'value of subclass' ≠ 'value of superclass'\n"));
     }
 
     @Test
@@ -580,7 +590,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetValue = \"value of subclass\" ≠ \"value of superclass\"\n\t"));
+        assertThat(description.toString(), is("\n\tgetValue = 'value of subclass' ≠ 'value of superclass'\n"));
     }
 
     @Test
@@ -621,7 +631,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetValue = null ≠ \"not null\"\n\t"));
+        assertThat(description.toString(), is( "\n\tgetValue = 'null' ≠ 'not null'\n"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -769,7 +779,7 @@ public class FluentAttributeMatcherTest {
         /*
         * Somewhat awkward but not really the most prominent use case.
         */
-        assertThat(description.toString(), is("\n\tgetNumbers/get&sum&count = <7> ≠ <10L>\n\t"));
+        assertThat(description.toString(), is("\n\tgetNumbers/get&sum&count = '7' ≠ '10'\n"));
     }
 
 
@@ -847,11 +857,11 @@ public class FluentAttributeMatcherTest {
         /*
         * Somewhat awkward but not really the most prominent use case.
         */
-        assertThat(description.toString(), is("\n" //
-            + "\tcount = <6> ≠ <3L>\n" //
-            + "\tsum = <3> ≠ <6>\n" //
-            + "\tgetNumbers/size ⩳ is <2>\n" //
-            + "\t"));
+        assertThat(description.toString(), is("\n" +
+            "\tcount = '6' ≠ '3'\n" +
+            "\tsum = '3' ≠ '6'\n" +
+            "\tgetNumbers/size ⩳ 'is <2>' ≠ 'was <3>'" +
+            "\n"));
     }
 
 
@@ -898,10 +908,10 @@ public class FluentAttributeMatcherTest {
         /*
         * Somewhat awkward but not really the most prominent use case.
         */
-        assertThat(description.toString(), is("\n" //
-            + "\tsum = <3> ≠ <6>\n" //
-            + "\tgetNumbers/size ⩳ is <2>\n" //
-            + "\t"));
+        assertThat(description.toString(), is("\n" +
+            "\tsum = '3' ≠ '6'\n" +
+            "\tgetNumbers/size ⩳ 'is <2>' ≠ 'was <3>'" +
+            "\n"));
     }
 
     @Test
@@ -927,10 +937,10 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n" + //
-            "\tsum = <3> ≠ <6>\n" +//
-            "\tgetNumbers ⩳ items 5,6,7\n" +//
-            "\t"));
+        assertThat(description.toString(), is( "\n" +
+            "\tsum = '3' ≠ '6'\n" +
+            "\tgetNumbers ⩳ 'items 5,6,7' ≠ 'was <[1, 2, 3]>'" +
+            "\n"));
     }
 
     @Test
@@ -948,7 +958,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(eventualActual, description);
 
-        assertThat(description.toString(), is("\n\tgetValue = \"the value\" ≠ \"not the value\"\n\t"));
+        assertThat(description.toString(), is("\n\tgetValue = 'the value' ≠ 'not the value'\n"));
     }
 
 
@@ -969,6 +979,11 @@ public class FluentAttributeMatcherTest {
             final ArrayList<Thing> thingList = new ArrayList<>();
             Arrays.stream(things).forEach(thingList::add);
             return thingList;
+        }
+
+        @Override
+        public String toString() {
+            return "toString->" + Arrays.stream(things).map(Thing::toString).collect(Collectors.joining());
         }
     }
 
@@ -1014,7 +1029,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetThings[...]/getValue = \"the third value\" ≠ \"the second value\"\n\t"));
+        assertThat(description.toString(), is("\n\tgetThings[...]/getValue = 'the third value' ≠ 'the second value'\n"));
 
     }
 
@@ -1039,7 +1054,9 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetThings&getThings[...]/getValue&getThings[...]/getValue = \"the third value\" ≠ \"the second value\"\n\t"));
+        assertThat(description.toString(), is("\n" +
+            "\tgetThings&getThings[...]/getValue&getThings[...]/getValue = 'the third value' ≠ 'the second value'" +
+            "\n"));
 
     }
 
@@ -1066,23 +1083,12 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetThings&getThings[...]/getValue&getThings[...]/getValue&getThingsAsList&getThingsAsList = \"the third value\" ≠ \"the second value\"\n\t"));
+        assertThat(description.toString(), is("" +
+            "\n" +
+            "\tgetThings&getThings[...]/getValue&getThings[...]/getValue&getThingsAsList&getThingsAsList = 'the third value' ≠ 'the second value'" +
+            "\n"
 
-    }
-
-
-    @Test
-    public void testSthInAnArrayNotMatchingButDescribedLovely4() {
-
-        final FluentAttributeMatcher<ThingArray> matching = aTracking(ThingArray.class)//
-            .with(ThingArray::getThings, "the third value"); //
-        final ThingArray actual = new ThingArray();
-        matching.matchesSafely(actual);
-        final StringDescription description = new StringDescription();
-
-        matching.describeMismatchSafely(actual, description);
-
-        assertThat(description.toString(), is("\n\tgetThings = \"the third value\" ≠ []\n\t"));
+        ));
 
     }
 
@@ -1121,7 +1127,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetInner/getS = \"S\" ≠ \"X\"\n\t"));
+        assertThat(description.toString(), is("\n\tgetInner/getS = 'S' ≠ 'X'\n"));
 
     }
 
@@ -1156,7 +1162,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tgetAttr/attr = \"a property\" ≠ \"an attribute\"\n\t"));
+        assertThat(description.toString(), is("\n\tgetAttr/attr = 'a property' ≠ 'an attribute'\n"));
 
     }
 
@@ -1173,7 +1179,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tfunc/??? = \"a property\" ≠ \"an attribute\"\n\t"));
+        assertThat(description.toString(), is("\n\tfunc/??? = 'a property' ≠ 'an attribute'\n"));
 
     }
 
@@ -1207,7 +1213,9 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is("\n\tproxied/??? = \"a property\" ≠ \"a real attribute\"\n\t"));
+        assertThat(description.toString(), is("" +
+            "\n\tproxied/??? = 'a property' ≠ 'a real attribute'\n" +
+            ""));
 
     }
 

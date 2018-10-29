@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static org.objecttrouve.testing.matchers.fluentatts.Scorer.score;
 
@@ -268,28 +269,70 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
 
     @Override
     public void describeTo(final Description description) {
-        expectations.forEach(e -> {
-            description.appendText("\n\t");
-            Prose.expectation(description, e);
-            description.appendText("\n\t");
-        });
+        Prose.join(recurseTheExpectations(), description);
     }
 
     @Override
     protected void describeMismatchSafely(final T item, final Description mismatchDescription) {
         matchesSafely(item);
-        describeTheMismatch(mismatchDescription);
+        final List<Stream<String>> mismatches = recurseTheMismatch();
+        Prose.join(mismatches, mismatchDescription);
     }
 
-    private void describeTheMismatch(final Description description) {
-        if (!results.isEmpty()) {
-            description.appendText("\n\t");
-            for (final Result r : results) {
-                Prose.wording(description, r);
-                description.appendText("\n\t");
+
+    private List<Stream<String>> recurseTheExpectations(){
+        final List<Stream<String>> allTails = new LinkedList<>();
+        for (final Expectation<T, ?> expectation : expectations) {
+            if(expectation.isAboutMatcher()){
+                final Matcher matcher = expectation.getMatcher();
+                if (matcher instanceof FluentAttributeMatcher) {
+                    final FluentAttributeMatcher flam = (FluentAttributeMatcher) matcher;
+                    //noinspection unchecked
+                    final List<Stream<String>> tails = flam.recurseTheExpectations();
+                    tails.forEach(tail -> {
+                        final Stream<String> prefixedTail = Prose.prefixTail(expectation, tail);
+                        allTails.add(prefixedTail);
+                    });
+                } else {
+                    final String matcherTail = Prose.matcherExpectation(expectation);
+                    allTails.add(Stream.of(matcherTail));
+                }
+            } else {
+                final String valueTail = Prose.valueExpectation(expectation);
+                allTails.add(Stream.of(valueTail));
             }
         }
+        return allTails;
     }
+
+    private List<Stream<String>> recurseTheMismatch(){
+        final List<Stream<String>> allTails = new LinkedList<>();
+        for (final Result result : results) {
+            final Expectation expectation = result.getExpectation();
+            if (expectation.isAboutMatcher()){
+                final Matcher matcher = expectation.getMatcher();
+                if (matcher instanceof FluentAttributeMatcher){
+                    final FluentAttributeMatcher flam = (FluentAttributeMatcher) matcher;
+                    //noinspection unchecked
+                    flam.matchesSafely(result.getActual());
+                    //noinspection unchecked
+                    final List<Stream<String>> tails = flam.recurseTheMismatch();
+                    tails.forEach(tail -> {
+                        final Stream<String> prefixedTail = Prose.prefixTail(result, tail);
+                        allTails.add(prefixedTail);
+                    });
+                } else {
+                    final String matcherTail = Prose.matcherMismatch(result);
+                    allTails.add(Stream.of(matcherTail));
+                }
+            } else {
+                final String valueTail = Prose.valueMismatch(result);
+                allTails.add(Stream.of(valueTail));
+            }
+        }
+        return allTails;
+    }
+
 
     private <O> void check(final Attribute<T, O> attribute) {
         if (attribute == null) {

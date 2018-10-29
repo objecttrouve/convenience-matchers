@@ -1,7 +1,7 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
@@ -12,9 +12,12 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-// Use the factory method for syntactic sugaring and configurability!
+import static org.hamcrest.Matchers.lessThan;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
 import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
+
+// Use the factory method for syntactic sugaring and configurability!
+
 
 @SuppressWarnings("ALL")
 @Ignore("Failing intentionally.")
@@ -30,7 +33,6 @@ public class Example {
             this.intValue = intValue;
             this.boolValue = boolValue;
         }
-
 
         public String getStringValue() {
             return stringValue;
@@ -66,4 +68,20 @@ public class Example {
         ));
     }
 
+
+    private static final Attribute<String, Integer> length = attribute("length", String::length);
+    private static final Attribute<String, String> substring = attribute("substring", s -> s.substring(0, 1));
+
+    @Test
+    public void testSomething2(){
+
+        final Result result = methodWithResult("2=", 1, false);
+
+        assertThat(result, is(//
+            a(Result.class)//
+                .with(stringValue, a(String.class).with(length, 3).with(substring, a(String.class).with(length, 10))) //
+                .with(intValue, lessThan(0)) //
+                .with(boolValue, true)
+        ));
+    }
 }

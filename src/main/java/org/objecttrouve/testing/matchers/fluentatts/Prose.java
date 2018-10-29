@@ -9,13 +9,13 @@ package org.objecttrouve.testing.matchers.fluentatts;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.StringDescription;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("Convert2streamapi")
 class Prose {
@@ -27,6 +27,8 @@ class Prose {
     private static final String neq = " \u2260 ";
     private static final String matching = " \u2A73 ";
     private static final String unknown = "???";
+    private static final String headTailSeparator = " ▶ ";
+
 
     private static String describe(final TrackingTree calls) {
         return describeAll(calls).stream().collect(Collectors.joining(methodCallsSeparator));
@@ -76,51 +78,83 @@ class Prose {
         }
     }
 
-    static void wording(final Description description, final Result result) {
-        final Expectation expectation = result.getExpectation();
-        final String getterDescription = expectation.getDescription();
-        if (getterDescription != null){
-            description.appendText(getterDescription);
-        } else if (result.getCalled() != null) {
-            description.appendText(describe(result.getCalled()));
-        } else {
-            description.appendText(expectation.getGetter().toString());
-        }
-        if (expectation.isAboutMatcher()) {
-            describeMatcher(expectation, description);
-        } else {
-            final Object expVal = ((Expectation<?, ?>) expectation).getExpectedValue();
-            description.appendText(eq);
-            description.appendValue(expVal);
-            description.appendText(neq);
-            description.appendValue(result.getActual());
-        }
-    }
-
-    private static void describeMatcher(final Expectation expectation, final Description description) {
-        final Matcher m = expectation.getMatcher();
-        if (m != null) {
-            description.appendText(matching);
-            m.describeTo(description);
-        }
-    }
-
-
     static <T>String typeMismatchMsg(final T target) {
         return "NOT " + target.getClass().getSimpleName() + " but what the type parameters define";
     }
 
-    static <T> void expectation(final Description description, final Expectation<T, ?> e) {
-        final String getterDescription = e.getDescription();
+    static Stream<String> prefixTail(final Result result, final Stream<String> tail) {
+        return prefixTail(tail, getKey(result));
+    }
+
+    static Stream<String> prefixTail(final Expectation expectation, final Stream<String> tail) {
+        return prefixTail(tail, getKey(expectation));
+    }
+
+    private static Stream<String> prefixTail(final Stream<String> tail, final String key) {
+        return tail.map(s -> key +headTailSeparator+ s);
+    }
+
+    static String matcherMismatch(final Result result){
+        final StringDescription description = new StringDescription();
+        final Matcher matcher = result.getExpectation().getMatcher();
+        final String key = getKey(result);
+        final String self = matcherSelf(key, matcher);
+        description.appendText(self);
+        description.appendText(neq);
+        description.appendText("'");
+        matcher.describeMismatch(result.getActual(), description);
+        description.appendText("'");
+        return description.toString();
+    }
+
+    static String matcherExpectation(final Expectation expectation){
+        return matcherSelf(getKey(expectation), expectation.getMatcher());
+    }
+
+    private static String getKey(final Expectation expectation) {
+        return Optional.ofNullable(expectation.getDescription()).orElse(unknown);
+    }
+
+    private static String matcherSelf(final String key, final Matcher matcher) {
+        final StringDescription description = new StringDescription();
+        description.appendText(key);
+        description.appendText(matching);
+        description.appendText("'");
+        matcher.describeTo(description);
+        description.appendText("'");
+        return description.toString();
+    }
+
+    private static String getKey(final Result result) {
+        final Expectation expectation = result.getExpectation();
+        final String getterDescription = expectation.getDescription();
+        final Function getter = expectation.getGetter();
         if (getterDescription != null){
-            description.appendText(getterDescription);
-        }
-        if (e.isAboutMatcher()) {
-            describeMatcher(e, description);
+            return getterDescription;
+        } else if (result.getCalled() != null) {
+            return describe(result.getCalled());
         } else {
-            final Object expVal = e.getExpectedValue();
-            description.appendText(eq);
-            description.appendValue(expVal);
+            return getter.toString();
         }
+    }
+
+    static String valueMismatch(final Result result) {
+        return valueExpectation(getKey(result), result.getExpectation()) + neq + "'" + result.getActual() + "'";
+    }
+
+    private static String valueExpectation(final String key, final Expectation expectation) {
+        return key + eq + "'" + expectation.getExpectedValue() + "'";
+    }
+
+    static String valueExpectation(final Expectation expectation){
+        return valueExpectation(getKey(expectation), expectation);
+    }
+
+    static void join(final List<Stream<String>> mismatches, final Description mismatchDescription) {
+       mismatches.forEach(mism -> {
+           mismatchDescription.appendText("\n\t");
+           mismatchDescription.appendText(mism.collect(Collectors.joining()));
+       });
+       mismatchDescription.appendText("\n");
     }
 }
