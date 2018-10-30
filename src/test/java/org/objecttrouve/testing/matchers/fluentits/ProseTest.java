@@ -198,7 +198,7 @@ public class ProseTest {
     public void test__actualItemString__newln_arg() {
         final String s = stringProse.actualItemString("xxxxxxx\nxxxxxxx", 15);
 
-        assertThat(s, is("xxxxxxx xxxxxxx"));
+        assertThat(s, is("xxxxxxx; xxxxxx"));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class ProseTest {
 
         final String matcherSaying = stringProse.matcherSaying(self.toString());
 
-        assertThat(matcherSaying, is("y y"));
+        assertThat(matcherSaying, is("y; y"));
     }
 
     @Test
@@ -281,7 +281,7 @@ public class ProseTest {
         //noinspection unchecked
         final String line = stringProse.line(r1, 1, 1);
 
-        assertThat(line, is("[0][n]          "));
+        assertThat(line, is("⦗0⦘⦗n⦘          "));
     }
 
     @Test
@@ -294,7 +294,7 @@ public class ProseTest {
         //noinspection unchecked
         final String line = stringProse.line(r1, 1, 4);
 
-        assertThat(line, is("[0][null]          "));
+        assertThat(line, is("⦗0⦘⦗null⦘          "));
     }
 
     @Test
@@ -307,7 +307,7 @@ public class ProseTest {
         //noinspection unchecked
         final String line = boolProse.line(r1, 1, 4);
 
-        assertThat(line, is("[0][true]💕        "));
+        assertThat(line, is("⦗0⦘⦗true⦘💕        "));
     }
 
     @Test
@@ -320,7 +320,7 @@ public class ProseTest {
         //noinspection unchecked
         final String line = boolProse.line(r1, 1, 4);
 
-        assertThat(line, is("[0][true]    ↔     "));
+        assertThat(line, is("⦗0⦘⦗true⦘    ↔     "));
     }
 
     @Test
@@ -333,7 +333,7 @@ public class ProseTest {
         //noinspection unchecked
         final String line = boolProse.line(r1, 1, 4);
 
-        assertThat(line, is("[1][true]  ↕       "));
+        assertThat(line, is("⦗1⦘⦗true⦘  ↕       "));
     }
 
     @Test
@@ -346,7 +346,7 @@ public class ProseTest {
         //noinspection unchecked
         final String line = boolProse.line(r, 100, 4);
 
-        assertThat(line, is("[ 22][true]      👯  "));
+        assertThat(line, is("⦗ 22⦘⦗true⦘      👯  "));
     }
 
     @Test
@@ -359,7 +359,7 @@ public class ProseTest {
         //noinspection unchecked
         final String line = boolProse.line(r, 1000, 10);
 
-        assertThat(line, is("[  22][true      ]        🚯"));
+        assertThat(line, is("⦗  22⦘⦗true      ⦘        🚯"));
     }
 
 
@@ -374,7 +374,7 @@ public class ProseTest {
         //noinspection unchecked
         final String line = boolProse.line(r, 1000, 3);
 
-        assertThat(line, is("[  22][tru]           💔[3][null]"));
+        assertThat(line, is("⦗  22⦘⦗tru⦘           💔⦗3⦘⦗null⦘"));
     }
 
     private ItemResult.MatcherWithIndex mwi(final Matcher matcher, final int index) {
@@ -419,10 +419,10 @@ public class ProseTest {
         final String line3 = stringProse.line(r3, 100, 15);
         final String line4 = stringProse.line(r4, 100, 15);
 
-        assertThat(line1, is("[  0][scene de menage]           💔[0][\"scène de ménage\"]"));
-        assertThat(line2, is("[  1][scene de manège]  ↕ ↔      💔[2][\"scène de ménage\"] 💔[3][a string ending with \"age\"]"));
-        assertThat(line3, is("[ 99][le mariage     ]  ↕ ↔ 👯🚯 💔[0][\"scène de ménage\"]"));
-        assertThat(line4, is("[999][scène de ménage]💕↕ ↔ 👯🚯"));
+        assertThat(line1, is("⦗  0⦘⦗scene de menage⦘           💔⦗0⦘⦗\"scène de ménage\"⦘"));
+        assertThat(line2, is("⦗  1⦘⦗scene de manège⦘  ↕ ↔      💔⦗2⦘⦗\"scène de ménage\"⦘ 💔⦗3⦘⦗a string ending with \"age\"⦘"));
+        assertThat(line3, is("⦗ 99⦘⦗le mariage     ⦘  ↕ ↔ 👯🚯 💔⦗0⦘⦗\"scène de ménage\"⦘"));
+        assertThat(line4, is("⦗999⦘⦗scène de ménage⦘💕↕ ↔ 👯🚯"));
     }
 
 }

@@ -11,6 +11,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.objecttrouve.testing.matchers.fluentatts.Attribute;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -21,6 +22,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableOf;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 
 @Ignore("Failing intentionally.")
@@ -521,8 +523,9 @@ public class Examples {
         ));
     }
 
-    private static final Attribute<String, String> prefix = Attribute.attribute("prefix", s -> s.substring(0,2));
-    private static final Attribute<String, String> suffix = Attribute.attribute("suffix", s -> s.substring(2,s.length()));
+    private static final Attribute<String, String> prefix = attribute("prefix", s -> s.substring(0, 2));
+    private static final Attribute<String, String> suffix = attribute("suffix", s -> s.substring(2, s.length()));
+    private static final Attribute<String, Integer> length = attribute("length", String::length);
 
 
     @Test
@@ -568,7 +571,7 @@ public class Examples {
                 .unique()
                 .withItemsMatching(
                     a(String.class).with(prefix, "Ron").with(suffix, "bard"),
-                    a(String.class).with(prefix, "Ron").with(suffix, "nald")
+                    a(String.class).with(prefix, "Ron").with(suffix, a(String.class).with(length, 500))
                 )
                 .withItems(
                     "true",
@@ -577,5 +580,129 @@ public class Examples {
                 )
         ));
     }
+
+
+    private static class Treatment {
+        private final String name;
+        private final String inventor;
+
+        private Treatment(final String name, final String inventor) {
+            this.inventor = inventor;
+            this.name = name;
+        }
+
+        String getInventor() {
+            return inventor;
+        }
+
+        String getName() {
+            return name;
+        }
+
+        @Override
+        public String toString() {
+            return "Treatment{" +
+                "name='" + getName() + '\'' +
+                ", inventor='" + getInventor() + '\'' +
+                '}';
+        }
+    }
+
+    private static class Disease {
+        private final String name;
+        private final Treatment cure;
+        private final int duration;
+
+        private Disease(final String name, final Treatment cure, final int duration) {
+            this.name = name;
+            this.cure = cure;
+            this.duration = duration;
+        }
+
+        String getName() {
+            return name;
+        }
+
+        int getDuration() {
+            return duration;
+        }
+
+        Treatment getCure() {
+            return cure;
+        }
+
+        @Override
+        public String toString() {
+            return "Disease{" +
+                "name='" + name + '\'' +
+                ", cure=" + cure +
+                ", duration=" + duration +
+                '}';
+        }
+    }
+
+    private static final Attribute<Disease, String> diseaseName = attribute("disease name", Disease::getName);
+    private static final Attribute<Disease, Integer> duration = attribute("duration", Disease::getDuration);
+    private static final Attribute<Disease, Treatment> treatment = attribute("treatment", Disease::getCure);
+    private static final Attribute<Treatment, String> treatmentName = attribute("treatment name", Treatment::getName);
+    private static final Attribute<Treatment, String> inventor = attribute("inventor", Treatment::getInventor);
+
+    @Test
+    public void flim_and_flam() {
+
+        final Treatment appendixOp = new Treatment("l'appendicectomie", "Avicenne");
+        final Disease appendicitis = new Disease("crise d'appendicite aiguë", appendixOp, 1);
+        final Treatment coldTherapy = new Treatment("repos au lit", "les ancêtres");
+        final Disease cold = new Disease("refroidissement", coldTherapy, 7);
+        final Treatment alzheimerTherapy = new Treatment("aucune", "Alzheimer");
+        final Disease alzheimer = new Disease("démence d'Alzheimer", alzheimerTherapy, 365 * 20);
+        final Treatment naziTherapy = new Treatment("l'éducation", null);
+        final Disease nazi = new Disease("Front National", naziTherapy, Integer.MAX_VALUE);
+        final Treatment lactoseTherapy = new Treatment("éviter de consommer du lactose en grande quantité", null);
+        final Disease lactose = new Disease("intolérance au lactose", lactoseTherapy, 365 * 50);
+        final Treatment cancerTherapy = new Treatment("chimiothérapie ", "industrie pharmaceutique");
+        final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
+        final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
+        final Disease cancer = new Disease("cancer", cancerTherapy, 90);
+        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+
+        assertThat(diseases, is(
+            anIterableOf(Disease.class)
+                .ofSize(8)
+                .ordered()
+                .sorted(comparingInt(Disease::getDuration))
+                .unique()
+                .withItems(appendicitis)
+                .withItemsMatching(
+                    a(Disease.class)
+                        .with(diseaseName, "démence d'Alzheimer")
+                        .with(treatment, a(Treatment.class)
+                            .with(treatmentName, "aucune")
+                            .with(inventor, "Alzheimer"))
+                        .with(duration, 365 * 19),
+                    a(Disease.class)
+                        .with(diseaseName, "refroidissement")
+                        .with(treatment, a(Treatment.class)
+                            .with(treatmentName, "repos au lit")
+                            .with(inventor, "L'Objet Trouvé"))
+                        .with(duration, 7),
+                    a(Disease.class).with(diseaseName, "intolérance au lactose")
+                )
+                .withItems(
+                    madCowDisease,
+                    cancer
+                )
+                .withItemsMatching(
+                    a(Disease.class)
+                        .with(diseaseName, "schizophrénie")
+                        .with(treatment, a(Treatment.class)
+                            .with(treatmentName, "l'éducation")
+                            .with(inventor, nullValue()))
+                        .with(duration, Integer.MAX_VALUE)
+                )
+        ));
+
+    }
+
 
 }

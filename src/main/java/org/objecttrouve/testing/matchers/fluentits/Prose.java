@@ -24,6 +24,8 @@ class Prose<X> {
     private static final String breakingItemOrder = "\u2194";
     private static final String duplicate = "\uD83D\uDC6F";
     private static final String obsolete = "\uD83D\uDEAF";
+    private static final String lBrack = "⦗";
+    private static final String rBrack = "⦘";
     private static final int actualItemMaxLength = 30;
     private static final String iterable = Iterable.class.getSimpleName();
 
@@ -55,20 +57,24 @@ class Prose<X> {
     }
 
     String actualItemString(final X actual, final int limit) {
-        return format("%1$-" + limit + "." + limit + "s", Objects.toString(actual).replaceAll("\n", " "));
+        return format("%1$-" + limit + "." + limit + "s", linify(Objects.toString(actual)));
+    }
+
+    private String linify(final String str) {
+        return str.trim().replaceAll("\n", "; ").replaceAll("\\s+", " ");
     }
 
     String matcherSaying(final String self) {
-        return self.replaceAll("\n", " ");
+        return linify(self);
     }
 
     String line(final ItemResult<X> result, final int collectionLength, final int longestActual) {
         final StringBuilder line = new StringBuilder();
         final int digits = Double.valueOf(Math.log10(collectionLength)).intValue() + 1;
         final String ix = format("%1$" + digits + "." + digits + "s", result.getIndex());
-        line.append("[").append(ix).append("]");
+        line.append(lBrack).append(ix).append(rBrack);
         final X actual = result.getActual();
-        line.append("[").append(actualItemString(actual, Math.min(longestActual, actualItemMaxLength))).append("]");
+        line.append(lBrack).append(actualItemString(actual, Math.min(longestActual, actualItemMaxLength))).append(rBrack);
         appendSymbol(line, result.isMatched(), match);
         appendSymbol(line, result.isBreakingSortOrder(), breakingSortOrder);
         appendSymbol(line, result.isBreakingItemOrder(), breakingItemOrder);
@@ -76,11 +82,11 @@ class Prose<X> {
         appendSymbol(line, result.isUnwanted(), obsolete);
         if (!result.isMatched()) {
             result.getMismatchedItemMatchers().forEach(matcherWithIndex -> {
-                line.append(" ").append(mismatch).append("[").append(matcherWithIndex.getIndex()).append("][");
+                line.append(" ").append(mismatch).append(lBrack).append(matcherWithIndex.getIndex()).append(rBrack).append(lBrack);
                 final StringDescription selfDescription = new StringDescription();
                 matcherWithIndex.getMatcher().describeTo(selfDescription);
                 line.append(matcherSaying(selfDescription.toString()));
-                line.append("]");
+                line.append(rBrack);
             });
 
         }

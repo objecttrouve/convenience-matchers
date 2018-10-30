@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.objecttrouve.testing.matchers.fluentatts.Attribute;
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -2882,17 +2883,20 @@ public class FluentIterableMatcherTest {
         matcher.describeMismatchSafely(input, issues);
 
         assertThat(issues.toString(), is("" +
-            "Findings:\n" +
+            "\nFindings:\n" +
             "\"Not all expectations were fulfilled.\"\n" +
             "\"Unexpected actual items.\"\n" +
             "\"Items did not appear in the expected order.\"\n" +
             "\"Collection is not sorted.\"\n" +
-            "\"Detected duplicates.\"\n\n" +
-            "[0][Paper{text='PAP!', pages=40}  ]💕  ↔ 👯  \n" +
-            "[1][Paper{text='The Law Of Gravity]    ↔   🚯 💔[1][ \ttext = 'PAP!' \tpages = '40' ]\n" +
-            "[2][Paper{text='Booh!', pages=50} ]  ↕ ↔   🚯 💔[2][ \ttext = 'Grave' \tpages = '0' ]\n" +
-            "[3][Paper{text='PAP!', pages=40}  ]💕↕   👯  \n" +
+            "\"Detected duplicates.\"\n" +
+            "\n" +
+            "⦗0⦘⦗Paper{text='PAP!', pages=40}  ⦘💕  ↔ 👯  \n" +
+            "⦗1⦘⦗Paper{text='The Law Of Gravity⦘    ↔   🚯 💔⦗1⦘⦗text = 'PAP!'; pages = '40'⦘\n" +
+            "⦗2⦘⦗Paper{text='Booh!', pages=50} ⦘  ↕ ↔   🚯 💔⦗2⦘⦗text = 'Grave'; pages = '0'⦘\n" +
+            "⦗3⦘⦗Paper{text='PAP!', pages=40}  ⦘💕↕   👯  \n" +
+            "\n" +
             "was <[Paper{text='PAP!', pages=40}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='Booh!', pages=50}, Paper{text='PAP!', pages=40}]>"
+
         ));
     }
 
@@ -2936,17 +2940,161 @@ public class FluentIterableMatcherTest {
         matcher.describeMismatchSafely(input, issues);
 
         assertThat(issues.toString(), is("" +
-            "Findings:\n" +
+            "\nFindings:\n" +
             "\"Size mismatch. Expected: 9. Actual was: 4.\"\n" +
+            "\"Not all expectations were fulfilled.\"\n" +
+            "\"Items did not appear in the expected order.\"\n" +
+            "\"Collection is not sorted.\"\n\"Detected duplicates.\"\n" +
+            "\n" +
+            "⦗0⦘⦗Paper{text='PAP!', pages=40}  ⦘💕    👯  \n" +
+            "⦗1⦘⦗Paper{text='Booh!', pages=50} ⦘    ↔      💔⦗2⦘⦗text = 'Booh!'; pages = '3'⦘ 💔⦗1⦘⦗text = 'Grave'; pages = '0'⦘ 💔⦗0⦘⦗text = 'PAP!'; pages = '40'⦘\n" +
+            "⦗2⦘⦗Paper{text='The Law Of Gravity⦘    ↔      💔⦗2⦘⦗text = 'Booh!'; pages = '3'⦘ 💔⦗1⦘⦗text = 'Grave'; pages = '0'⦘ 💔⦗0⦘⦗text = 'PAP!'; pages = '40'⦘\n" +
+            "⦗3⦘⦗Paper{text='PAP!', pages=40}  ⦘💕↕ ↔ 👯  \n" +
+            "\n" +
+            "was <[Paper{text='PAP!', pages=40}, Paper{text='Booh!', pages=50}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='PAP!', pages=40}]>"
+        ));
+    }
+
+
+    private static class Treatment {
+        private final String name;
+        private final String inventor;
+
+        private Treatment(final String name, final String inventor) {
+            this.inventor = inventor;
+            this.name = name;
+        }
+
+        String getInventor() {
+            return inventor;
+        }
+
+        String getName() {
+            return name;
+        }
+
+        @Override
+        public String toString() {
+            return "Treatment{" +
+                "name='" + getName() + '\'' +
+                ", inventor='" + getInventor() + '\'' +
+                '}';
+        }
+    }
+
+    private static class Disease {
+        private final String name;
+        private final Treatment cure;
+        private final int duration;
+
+        private Disease(final String name, final Treatment cure, final int duration) {
+            this.name = name;
+            this.cure = cure;
+            this.duration = duration;
+        }
+
+        String getName() {
+            return name;
+        }
+
+        int getDuration() {
+            return duration;
+        }
+
+        Treatment getCure() {
+            return cure;
+        }
+
+        @Override
+        public String toString() {
+            return "Disease{" +
+                "name='" + name + '\'' +
+                ", cure=" + cure +
+                ", duration=" + duration +
+                '}';
+        }
+    }
+
+    private static final Attribute<Disease, String> diseaseName = attribute("disease name", Disease::getName);
+    private static final Attribute<Disease, Integer> duration = attribute("duration", Disease::getDuration);
+    private static final Attribute<Disease, Treatment> treatment = attribute("treatment", Disease::getCure);
+    private static final Attribute<Treatment, String> treatmentName = attribute("treatment name", Treatment::getName);
+    private static final Attribute<Treatment, String> inventor = attribute("inventor", Treatment::getInventor);
+
+    @Test
+    public void matchesSafely__mismatch__describeTo__describeMismatchSafely__flim_and_flam() {
+
+        final Treatment appendixOp = new Treatment("l'appendicectomie", "Avicenne");
+        final Disease appendicitis = new Disease("crise d'appendicite aiguë", appendixOp, 1);
+        final Treatment coldTherapy = new Treatment("repos au lit", "les ancêtres");
+        final Disease cold = new Disease("refroidissement", coldTherapy, 7);
+        final Treatment alzheimerTherapy = new Treatment("aucune", "Alzheimer");
+        final Disease alzheimer = new Disease("démence d'Alzheimer", alzheimerTherapy, 365 * 20);
+        final Treatment naziTherapy = new Treatment("l'éducation", null);
+        final Disease nazi = new Disease("Front National", naziTherapy, Integer.MAX_VALUE);
+        final Treatment lactoseTherapy = new Treatment("éviter de consommer du lactose en grande quantité", null);
+        final Disease lactose = new Disease("intolérance au lactose", lactoseTherapy, 365 * 50);
+        final Treatment cancerTherapy = new Treatment("chimiothérapie ", "industrie pharmaceutique");
+        final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
+        final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
+        final Disease cancer = new Disease("cancer", cancerTherapy, 90);
+        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+        final FluentIterableMatcher<Disease, Iterable<Disease>> matcher = anIterableOf(Disease.class)
+            .ofSize(8)
+            .ordered()
+            .sorted(comparingInt(Disease::getDuration))
+            .unique()
+            .withItems(appendicitis)
+            .withItemsMatching(
+                a(Disease.class)
+                    .with(diseaseName, "démence d'Alzheimer")
+                    .with(treatment, a(Treatment.class)
+                        .with(treatmentName, "aucune")
+                        .with(inventor, "Alzheimer"))
+                    .with(duration, 365 * 19),
+                a(Disease.class)
+                    .with(diseaseName, "refroidissement")
+                    .with(treatment, a(Treatment.class)
+                        .with(treatmentName, "repos au lit")
+                        .with(inventor, "L'Objet Trouvé"))
+                    .with(duration, 7),
+                a(Disease.class).with(diseaseName, "intolérance au lactose")
+            )
+            .withItems(
+                madCowDisease,
+                cancer
+            )
+            .withItemsMatching(
+                a(Disease.class)
+                    .with(diseaseName, "schizophrénie")
+                    .with(treatment, a(Treatment.class)
+                        .with(treatmentName, "l'éducation")
+                        .with(inventor, nullValue()))
+                    .with(duration, Integer.MAX_VALUE)
+            );
+        final StringDescription issues = new StringDescription();
+
+        matcher.describeMismatchSafely(diseases, issues);
+
+        assertThat(issues.toString(), is("" +
+            "\nFindings:\n" +
+            "\"Size mismatch. Expected: 8. Actual was: 7.\"\n" +
             "\"Not all expectations were fulfilled.\"\n" +
             "\"Items did not appear in the expected order.\"\n" +
             "\"Collection is not sorted.\"\n" +
             "\"Detected duplicates.\"\n\n" +
-            "[0][Paper{text='PAP!', pages=40}  ]💕    👯  \n" +
-            "[1][Paper{text='Booh!', pages=50} ]    ↔      💔[2][ \ttext = 'Booh!' \tpages = '3' ] 💔[1][ \ttext = 'Grave' \tpages = '0' ] 💔[0][ \ttext = 'PAP!' \tpages = '40' ]\n" +
-            "[2][Paper{text='The Law Of Gravity]    ↔      💔[2][ \ttext = 'Booh!' \tpages = '3' ] 💔[1][ \ttext = 'Grave' \tpages = '0' ] 💔[0][ \ttext = 'PAP!' \tpages = '40' ]\n" +
-            "[3][Paper{text='PAP!', pages=40}  ]💕↕ ↔ 👯  \n" +
-            "was <[Paper{text='PAP!', pages=40}, Paper{text='Booh!', pages=50}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='PAP!', pages=40}]>"
+            "⦗0⦘⦗Disease{name='crise d'appendic⦘💕        \n" +
+            "⦗1⦘⦗Disease{name='refroidissement'⦘    ↔      💔⦗2⦘⦗disease name = 'refroidissement'; treatment ▶ treatment name = 'repos au lit'; treatment ▶ inventor = 'L'Objet Trouvé'; duration = '7'⦘ 💔⦗1⦘⦗disease name = 'démence d'Alzheimer'; treatment ▶ treatment name = 'aucune'; treatment ▶ inventor = 'Alzheimer'; duration = '6935'⦘ 💔⦗0⦘⦗<Disease{name='crise d'appendicite aiguë', cure=Treatment{name='l'appendicectomie', inventor='Avicenne'}, duration=1}>⦘ 💔⦗3⦘⦗disease name = 'intolérance au lactose'⦘ 💔⦗4⦘⦗<Disease{name='encéphalopathie spongiaire bovine', cure=Treatment{name='🤯', inventor='null'}, duration=-5}>⦘ 💔⦗5⦘⦗<Disease{name='cancer', cure=Treatment{name='chimiothérapie ', inventor='industrie pharmaceutique'}, duration=90}>⦘ 💔⦗6⦘⦗disease name = 'schizophrénie'; treatment ▶ treatment name = 'l'éducation'; treatment ▶ inventor ⩳ 'null'; duration = '2147483647'⦘\n" +
+            "⦗2⦘⦗Disease{name='démence d'Alzhei⦘    ↔ 👯   💔⦗1⦘⦗disease name = 'démence d'Alzheimer'; treatment ▶ treatment name = 'aucune'; treatment ▶ inventor = 'Alzheimer'; duration = '6935'⦘ 💔⦗2⦘⦗disease name = 'refroidissement'; treatment ▶ treatment name = 'repos au lit'; treatment ▶ inventor = 'L'Objet Trouvé'; duration = '7'⦘ 💔⦗3⦘⦗disease name = 'intolérance au lactose'⦘ 💔⦗0⦘⦗<Disease{name='crise d'appendicite aiguë', cure=Treatment{name='l'appendicectomie', inventor='Avicenne'}, duration=1}>⦘ 💔⦗4⦘⦗<Disease{name='encéphalopathie spongiaire bovine', cure=Treatment{name='🤯', inventor='null'}, duration=-5}>⦘ 💔⦗5⦘⦗<Disease{name='cancer', cure=Treatment{name='chimiothérapie ', inventor='industrie pharmaceutique'}, duration=90}>⦘ 💔⦗6⦘⦗disease name = 'schizophrénie'; treatment ▶ treatment name = 'l'éducation'; treatment ▶ inventor ⩳ 'null'; duration = '2147483647'⦘\n" +
+            "⦗3⦘⦗Disease{name='Front National',⦘    ↔      💔⦗6⦘⦗disease name = 'schizophrénie'; treatment ▶ treatment name = 'l'éducation'; treatment ▶ inventor ⩳ 'null'; duration = '2147483647'⦘ 💔⦗3⦘⦗disease name = 'intolérance au lactose'⦘ 💔⦗2⦘⦗disease name = 'refroidissement'; treatment ▶ treatment name = 'repos au lit'; treatment ▶ inventor = 'L'Objet Trouvé'; duration = '7'⦘ 💔⦗4⦘⦗<Disease{name='encéphalopathie spongiaire bovine', cure=Treatment{name='🤯', inventor='null'}, duration=-5}>⦘ 💔⦗1⦘⦗disease name = 'démence d'Alzheimer'; treatment ▶ treatment name = 'aucune'; treatment ▶ inventor = 'Alzheimer'; duration = '6935'⦘ 💔⦗5⦘⦗<Disease{name='cancer', cure=Treatment{name='chimiothérapie ', inventor='industrie pharmaceutique'}, duration=90}>⦘ 💔⦗0⦘⦗<Disease{name='crise d'appendicite aiguë', cure=Treatment{name='l'appendicectomie', inventor='Avicenne'}, duration=1}>⦘\n" +
+            "⦗4⦘⦗Disease{name='intolérance au l⦘💕↕ ↔     \n" +
+            "⦗5⦘⦗Disease{name='démence d'Alzhei⦘  ↕ ↔ 👯   💔⦗1⦘⦗disease name = 'démence d'Alzheimer'; treatment ▶ treatment name = 'aucune'; treatment ▶ inventor = 'Alzheimer'; duration = '6935'⦘ 💔⦗5⦘⦗<Disease{name='cancer', cure=Treatment{name='chimiothérapie ', inventor='industrie pharmaceutique'}, duration=90}>⦘ 💔⦗4⦘⦗<Disease{name='encéphalopathie spongiaire bovine', cure=Treatment{name='🤯', inventor='null'}, duration=-5}>⦘ 💔⦗6⦘⦗disease name = 'schizophrénie'; treatment ▶ treatment name = 'l'éducation'; treatment ▶ inventor ⩳ 'null'; duration = '2147483647'⦘ 💔⦗3⦘⦗disease name = 'intolérance au lactose'⦘ 💔⦗2⦘⦗disease name = 'refroidissement'; treatment ▶ treatment name = 'repos au lit'; treatment ▶ inventor = 'L'Objet Trouvé'; duration = '7'⦘ 💔⦗0⦘⦗<Disease{name='crise d'appendicite aiguë', cure=Treatment{name='l'appendicectomie', inventor='Avicenne'}, duration=1}>⦘\n" +
+            "⦗6⦘⦗Disease{name='encéphalopathie ⦘💕↕ ↔     \n" +
+            "\n" +
+            "was <[Disease{name='crise d'appendicite aiguë', cure=Treatment{name='l'appendicectomie', inventor='Avicenne'}, duration=1}, Disease{name='refroidissement', cure=Treatment{name='repos au lit', inventor='les ancêtres'}, duration=7}, Disease{name='démence d'Alzheimer', cure=Treatment{name='aucune', inventor='Alzheimer'}, duration=7300}, Disease{name='Front National', cure=Treatment{name='l'éducation', inventor='null'}, duration=2147483647}, Disease{name='intolérance au lactose', cure=Treatment{name='éviter de consommer du lactose en grande quantité', inventor='null'}, duration=18250}, Disease{name='démence d'Alzheimer', cure=Treatment{name='aucune', inventor='Alzheimer'}, duration=7300}, Disease{name='encéphalopathie spongiaire bovine', cure=Treatment{name='🤯', inventor='null'}, duration=-5}]>"
+
         ));
+
     }
+
 }

@@ -147,12 +147,12 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
 
     @Override
     protected void describeMismatchSafely(final C item, final Description mismatchDescription) {
-
+        this.matchesSafely(item);
         final List<SelfDescribing> fs = findings.stream()
             .map(Finding::getDescription)
             .map(s -> (SelfDescribing) description1 -> description1.appendValue(s))
             .collect(toList());
-        mismatchDescription.appendList("Findings:\n", "\n", "\n", fs);
+        mismatchDescription.appendList("\nFindings:\n", "\n", "\n", fs);
 
         final int longestActual = Arrays.stream(actual).map(Objects::toString).mapToInt(String::length).max().orElse(1);
         final List<ItemResult> itemResults = getItemResults();
@@ -164,8 +164,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
             .map(result -> prose.line(result, actual.length, longestActual))
             .collect(joining("\n")
             ));
-        mismatchDescription.appendText("\n");
-
+        mismatchDescription.appendText("\n\n");
 
         super.describeMismatchSafely(item, mismatchDescription);
     }
