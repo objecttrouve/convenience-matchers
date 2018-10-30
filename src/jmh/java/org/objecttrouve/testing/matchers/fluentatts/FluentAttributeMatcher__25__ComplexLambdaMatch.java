@@ -1,17 +1,18 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 package org.objecttrouve.testing.matchers.fluentatts;
 
 import org.hamcrest.CoreMatchers;
-import org.objecttrouve.testing.boilerplate.Flatts;
+import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -52,20 +53,20 @@ public class FluentAttributeMatcher__25__ComplexLambdaMatch {
             thingWithStringList.add(thingWithString);
         }
 
-        public List<ThingWithString> getThingWithStringList() {
+        List<ThingWithString> getThingWithStringList() {
             return thingWithStringList;
         }
     }
 
-    public static class YetAnotherThingWithOtherThings {
+    static class YetAnotherThingWithOtherThings {
 
         private final ThingWithThingsWithString thingWithThingsWithString;
 
-        public YetAnotherThingWithOtherThings(final ThingWithThingsWithString thingWithThingsWithString) {
+        YetAnotherThingWithOtherThings(final ThingWithThingsWithString thingWithThingsWithString) {
             this.thingWithThingsWithString = thingWithThingsWithString;
         }
 
-        public ThingWithThingsWithString getThingWithThingsWithString() {
+        ThingWithThingsWithString getThingWithThingsWithString() {
             return thingWithThingsWithString;
         }
     }
@@ -75,13 +76,13 @@ public class FluentAttributeMatcher__25__ComplexLambdaMatch {
         private final ThingWithThingsWithString twtwt;
         private final ThingWithString twt;
 
-        public RootThing(final YetAnotherThingWithOtherThings yat, final ThingWithThingsWithString twtwt, final ThingWithString twt) {
+        RootThing(final YetAnotherThingWithOtherThings yat, final ThingWithThingsWithString twtwt, final ThingWithString twt) {
             this.yat = yat;
             this.twtwt = twtwt;
             this.twt = twt;
         }
 
-        public YetAnotherThingWithOtherThings getYat() {
+        YetAnotherThingWithOtherThings getYat() {
             return yat;
         }
 
@@ -94,11 +95,12 @@ public class FluentAttributeMatcher__25__ComplexLambdaMatch {
         }
     }
 
-    @SuppressWarnings("FieldMayBeFinal")
-    private RootThing input = getInput();
+    private String randomString;
+    private String expected;
+    private RootThing input;
 
     private RootThing getInput() {
-        final ThingWithString twt = new ThingWithString("input");
+        final ThingWithString twt = new ThingWithString(randomString);
         final ThingWithThingsWithString twtwt = new ThingWithThingsWithString(//
                 twt);
         return new RootThing(
@@ -107,17 +109,18 @@ public class FluentAttributeMatcher__25__ComplexLambdaMatch {
     }
 
     @Setup(Level.Trial)
-    public void checkMatches() {
-        assertThat(matcher(), is(true));
-        assertThat(control(), is(true));
+    public synchronized  void setupInput() {
+        randomString = UUID.randomUUID().toString();
+        input = getInput();
+        expected = randomString + "1false";
+        checkMatches();
     }
 
 
     @Benchmark
     public boolean matcher() {
-        return Flatts.aNonTracking(RootThing.class)//
-                .with(str,"input1false"//
-                )//
+        return ConvenientMatchers.a(RootThing.class)//
+                .with(str,expected)//
                 .matches(input);
     }
 
@@ -127,6 +130,12 @@ public class FluentAttributeMatcher__25__ComplexLambdaMatch {
         final int size = input.getTwtwt().getThingWithStringList().size();
         final boolean empty = input.getYat().getThingWithThingsWithString().getThingWithStringList().isEmpty();
         final String actual = str1 + size + empty;
-        return CoreMatchers.is("input1false").matches(actual);
+        return CoreMatchers.is(expected).matches(actual);
+    }
+
+
+    private void checkMatches() {
+        assertThat(matcher(), is(true));
+        assertThat(control(), is(true));
     }
 }

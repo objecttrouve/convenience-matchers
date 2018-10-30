@@ -1,14 +1,15 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 package org.objecttrouve.testing.matchers.fluentatts;
 
-import org.objecttrouve.testing.boilerplate.Flatts;
+import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import org.openjdk.jmh.annotations.*;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -22,10 +23,9 @@ import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 public class FluentAttributeMatcher__21__SimplestMatch {
 
     private static final Attribute<ThingWithString, String> str = attribute("string", ThingWithString::getStr);
-
     private static class ThingWithString {
-        private final String str;
 
+        private final String str;
         ThingWithString(final String str) {
             this.str = str;
         }
@@ -33,26 +33,34 @@ public class FluentAttributeMatcher__21__SimplestMatch {
         String getStr() {
             return str;
         }
+
     }
 
-    @SuppressWarnings("FieldMayBeFinal")
-    private ThingWithString input = new ThingWithString("input");
+    private String randomString;
+    private ThingWithString input ;
 
     @Setup(Level.Trial)
-    public void checkMatches() {
-        assertThat(matcher(), is(true));
-        assertThat(control(), is(true));
+    public synchronized void setupInput() {
+        randomString = UUID.randomUUID().toString();
+        input = new ThingWithString(randomString);
+        checkMatches();
     }
 
     @Benchmark
     public boolean matcher() {
-        return Flatts.aNonTracking(ThingWithString.class)//
-                .with(str, "input")//
+        return ConvenientMatchers.a(ThingWithString.class)//
+                .with(str, randomString)//
                 .matches(input);
     }
 
     @Benchmark
     public boolean control() {
-        return is("input").matches(input.getStr());
+        return is(randomString).matches(input.getStr());
+    }
+
+
+    private void checkMatches() {
+        assertThat(matcher(), is(true));
+        assertThat(control(), is(true));
     }
 }

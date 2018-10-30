@@ -1,17 +1,18 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 package org.objecttrouve.testing.matchers.fluentatts;
 
 import org.hamcrest.CoreMatchers;
-import org.objecttrouve.testing.boilerplate.Flatts;
+import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -52,20 +53,20 @@ public class FluentAttributeMatcher__23__LongPathMatch {
             thingWithStringList.add(thingWithString);
         }
 
-        public List<ThingWithString> getThingWithStringList() {
+        List<ThingWithString> getThingWithStringList() {
             return thingWithStringList;
         }
     }
 
-    public static class YetAnotherThingWithOtherThings {
+    static class YetAnotherThingWithOtherThings {
 
         private final ThingWithThingsWithString thingWithThingsWithString;
 
-        public YetAnotherThingWithOtherThings(final ThingWithThingsWithString thingWithThingsWithString) {
+        YetAnotherThingWithOtherThings(final ThingWithThingsWithString thingWithThingsWithString) {
             this.thingWithThingsWithString = thingWithThingsWithString;
         }
 
-        public ThingWithThingsWithString getThingWithThingsWithString() {
+        ThingWithThingsWithString getThingWithThingsWithString() {
             return thingWithThingsWithString;
         }
     }
@@ -73,38 +74,39 @@ public class FluentAttributeMatcher__23__LongPathMatch {
     public static class RootThing {
         private final YetAnotherThingWithOtherThings yat;
 
-        public RootThing(final YetAnotherThingWithOtherThings yat) {
+        RootThing(final YetAnotherThingWithOtherThings yat) {
             this.yat = yat;
         }
 
-        public YetAnotherThingWithOtherThings getYat() {
+        YetAnotherThingWithOtherThings getYat() {
             return yat;
         }
     }
 
-    @SuppressWarnings("FieldMayBeFinal")
-    private RootThing input = new RootThing(//
-        new YetAnotherThingWithOtherThings(//
-            new ThingWithThingsWithString(//
-                new ThingWithString("input"))));
+    private String randomString;
+    private RootThing input;
 
     @Setup(Level.Trial)
-    public void checkMatches() {
-        assertThat(matcher(), is(true));
-        assertThat(control(), is(true));
+    public synchronized void setupInput() {
+        randomString = UUID.randomUUID().toString();
+        input = new RootThing(//
+            new YetAnotherThingWithOtherThings(//
+                new ThingWithThingsWithString(//
+                    new ThingWithString(randomString))));
+        checkMatches();
     }
 
 
     @Benchmark
     public boolean matcher() {
-        return Flatts.aNonTracking(RootThing.class)//
-            .with(str, "input")//
+        return ConvenientMatchers.a(RootThing.class)//
+            .with(str, randomString)//
             .matches(input);
     }
 
     @Benchmark
     public boolean control() {
-        return CoreMatchers.is("input").matches(//
+        return CoreMatchers.is(randomString).matches(//
             input //
                 .getYat()//
                 .getThingWithThingsWithString()//
@@ -113,5 +115,10 @@ public class FluentAttributeMatcher__23__LongPathMatch {
                 .next()//
                 .getStr() //
         );
+    }
+
+    private void checkMatches() {
+        assertThat(matcher(), is(true));
+        assertThat(control(), is(true));
     }
 }
