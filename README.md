@@ -58,16 +58,10 @@ The `FluentAttributeMatcher` implements the builder pattern so that it can be se
 
 If you provide nice names you get nice output in case of a mismatch.
 
-The output always follows the form 
-```
-<getter description> = <expected value> <> <actual value>
-```
-reading as "property equal to expected value and not actual value"
-or 
-```
-<getter description> =~ <matcher provided description>
-```
-reading as "property matching whatever the matchter formulates".
+![Error description by FluentAttributeMatcher](https://github.com/objecttrouve/convenience-matchers/blob/master/doc/img/FluentAttributeMatcher-test-output.png)
+
+
+
 
 ### Why (not)?
 
@@ -76,11 +70,11 @@ reading as "property matching whatever the matchter formulates".
 * Ignore irrelevant properties at the same time. 
 * Match nested structures in a uniform way.
 * Human friendly DSL.
-* Human friendly output on mismatch.
+* Human friendly output in case of a mismatch.
 
 #### Drawbacks
 * Performance is traded for convenience.
-    * (When compared to the minimal logic you could use otherwise.)
+    * (When compared to the minimal logic you could alternatively use to test the same features. Less convenient, of course.)
     * (Check [benchmarks](https://github.com/objecttrouve/convenience-matchers/tree/master/benchmarks/) or run [JMH](https://github.com/objecttrouve/convenience-matchers/tree/master/src/jmh/java/org/objecttrouve/testing) if it's crucial.)
 * Requires a minimum of syntactic sugaring.
 * Heavy dependencies (but deprecated, to be removed with v1.0). 

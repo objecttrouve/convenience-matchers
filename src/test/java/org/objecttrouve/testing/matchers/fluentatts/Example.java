@@ -51,9 +51,38 @@ public class Example {
         return new Result(s, i, b);
     }
 
-    private static final Attribute<Result, String> stringValue = attribute("stringValue", Result::getStringValue);
+
+
     private static final Attribute<Result, Integer> intValue = attribute("intValue", Result::getIntValue);
     private static final Attribute<Result, Boolean> boolValue = attribute("booleanValue", Result::isBoolValue);
+    private static final Attribute<String, String> substring = attribute("substring", s -> s.substring(0, 1));
+    private static final Attribute<String, Integer> length = attribute("length", String::length);
+    private static final Attribute<Result, String> stringValue = attribute("stringValue", Result::getStringValue);
+
+    @Test
+    public void test(){
+
+        final Result result = methodWithResult("result", 1, false);
+
+        assertThat(result, is(//
+            a(Result.class)//
+                .with(stringValue, a(String.class)
+                    .with(length, 3)
+                    .with(substring, a(String.class)
+                        .with(length, 10))) //
+                .with(intValue, lessThan(0)) //
+                .with(boolValue, true)
+        ));
+    }
+
+
+
+
+
+
+
+
+
 
     @Test
     public void testSomething(){
@@ -69,19 +98,6 @@ public class Example {
     }
 
 
-    private static final Attribute<String, Integer> length = attribute("length", String::length);
-    private static final Attribute<String, String> substring = attribute("substring", s -> s.substring(0, 1));
 
-    @Test
-    public void testSomething2(){
 
-        final Result result = methodWithResult("2=", 1, false);
-
-        assertThat(result, is(//
-            a(Result.class)//
-                .with(stringValue, a(String.class).with(length, 3).with(substring, a(String.class).with(length, 10))) //
-                .with(intValue, lessThan(0)) //
-                .with(boolValue, true)
-        ));
-    }
 }
