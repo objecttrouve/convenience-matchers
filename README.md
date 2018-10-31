@@ -56,7 +56,7 @@ public class Example {
 Object properties are described with named lambdas or method references (`Attribute`s).  
 The `Attribute`'s logic returns the actual value form the object.  
 That value is then compared to the expected value or matched against a provided `Matcher`.  
-The `FluentAttributeMatcher` implements the builder pattern so that it can be set up in a fluent style.    
+The `FluentAttributeMatcher` implements the builder pattern so that it can be configured in a fluent style.    
 
 
 #### Interpreting The Output
@@ -85,7 +85,7 @@ If you provide nice names you get nice output in case of a mismatch.
 ### `FluentIterableMatcher`
 
 A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) with fluently formulatable expectations about an `Iterable`.   
-Such as the size, the items, the sort order or the uniqueness of items. 
+Such as the size, the items, the sort order or the uniqueness of items.   
 If items are represented by [`ScorableMatcher`](https://github.com/objecttrouve/convenience-matchers/blob/master/src/main/java/org/objecttrouve/testing/matchers/api/ScorableMatcher.java) instances, the best fit is presented first.
 
 #### Concept & Goals
