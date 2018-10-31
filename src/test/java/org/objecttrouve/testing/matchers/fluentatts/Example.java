@@ -52,7 +52,6 @@ public class Example {
     }
 
 
-
     private static final Attribute<Result, Integer> intValue = attribute("intValue", Result::getIntValue);
     private static final Attribute<Result, Boolean> boolValue = attribute("booleanValue", Result::isBoolValue);
     private static final Attribute<String, String> substring = attribute("substring", s -> s.substring(0, 1));
@@ -74,15 +73,6 @@ public class Example {
                 .with(boolValue, true)
         ));
     }
-
-
-
-
-
-
-
-
-
 
     @Test
     public void testSomething(){

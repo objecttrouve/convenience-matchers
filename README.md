@@ -1,14 +1,19 @@
 Convenience Matchers
 ====================
 
-Convenience library with custom [Hamcrest](http://hamcrest.org/JavaHamcrest/) Matcher derivates for more comfortable unit testing.
+Convenience library with custom [Hamcrest](http://hamcrest.org/JavaHamcrest/) Matcher derivates for more comfortable unit testing.  
+Particularly focused on maximizing the expressiveness of error messages.  
+With a simple fluent DSL.
 
-`FluentAttributeMatcher`
-------------------------
-A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) extension to check multiple target object attributes at once. 
-Offers a fluent builder API in which the attributes of the target object can be referred to via lambda expressions. 
+API
+----
 
-### Basic Concept 
+### `FluentAttributeMatcher`
+
+A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) extension to check multiple target object attributes at once.  
+Offers a fluent builder API. Attributes of the target object are simply phrased as lambda expressions. 
+
+#### Basic Concept 
 
 Best illustrated with an example:
 
@@ -48,55 +53,54 @@ public class Example {
 
 (See also the [full example](https://github.com/objecttrouve/convenience-matchers/blob/master/src/test/java/org/objecttrouve/testing/matchers/fluentatts/Example.java).)
 
-Object properties are described with named lambdas or method references (`Attribute`s).
-The `Attribute`'s expression returns the actual value form the object.
-That value is then compared to the expected value or matched against a provided `Matcher`.
-The `FluentAttributeMatcher` implements the builder pattern so that it can be set up in a fluent style.  
+Object properties are described with named lambdas or method references (`Attribute`s).  
+The `Attribute`'s logic returns the actual value form the object.  
+That value is then compared to the expected value or matched against a provided `Matcher`.  
+The `FluentAttributeMatcher` implements the builder pattern so that it can be set up in a fluent style.    
 
 
-### Interpreting The Output
+#### Interpreting The Output
 
 If you provide nice names you get nice output in case of a mismatch.
 
 ![Error description by FluentAttributeMatcher](https://github.com/objecttrouve/convenience-matchers/blob/master/doc/img/FluentAttributeMatcher-test-output.png)
 
 
+#### Why (not)?
 
-
-### Why (not)?
-
-#### Benefits 
+##### Benefits 
 * Check all relevant properties of an object on one go.
 * Ignore irrelevant properties at the same time. 
 * Match nested structures in a uniform way.
 * Human friendly DSL.
 * Human friendly output in case of a mismatch.
 
-#### Drawbacks
+##### Drawbacks
 * Performance is traded for convenience.
     * (When compared to the minimal logic you could alternatively use to test the same features. Less convenient, of course.)
     * (Check [benchmarks](https://github.com/objecttrouve/convenience-matchers/tree/master/benchmarks/) or run [JMH](https://github.com/objecttrouve/convenience-matchers/tree/master/src/jmh/java/org/objecttrouve/testing) if it's crucial.)
 * Requires a minimum of syntactic sugaring.
 * Heavy dependencies (but deprecated, to be removed with v1.0). 
 
-`FluentIterableMatcher`
------------------------
+### `FluentIterableMatcher`
 
-A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) with fluently formulatable expectations about an `Iterable`.
+A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) with fluently formulatable expectations about an `Iterable`.   
+Such as the size, the items, the sort order or the uniqueness of items. 
+If items are represented by [`ScorableMatcher`](https://github.com/objecttrouve/convenience-matchers/blob/master/src/main/java/org/objecttrouve/testing/matchers/api/ScorableMatcher.java) instances, the best fit is presented first.
 
-### Concept & Goals
+#### Concept & Goals
 
-Have you ever spent time wondering *which* item caused a mismatch when a collection `Matcher` failed? 
-Have you ever asked yourself whether that matcher was sensitive to the size of the `Collection`? 
-Have you ever wondered if the item order was playing a role?
+Have you ever spent time wondering *which* item caused a mismatch when a collection `Matcher` failed?   
+Have you ever asked yourself whether that matcher was sensitive to the size of the `Collection`?   
+Have you ever wondered if the item order was playing a role?  
 
-The `FluentIterableMatcher` addresses such sources of confusion. 
-It produces an error description that tells you exactly which items in the `Iterable` need more attention. 
-It has a fluent API to specify requirements beyond items, such as size or order. 
+The `FluentIterableMatcher` addresses such sources of confusion.   
+It produces an error description that tells you exactly which items in the `Iterable` need more attention.   
+It has a fluent API to specify requirements beyond items, such as size or order.   
 
 Here's a typical example:
 
-```
+```java
 // [...]
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableOf;
 
@@ -152,23 +156,27 @@ You can fluently express the essential requirements you might have about an `Ite
 
 The main goal, however, is to have an error message that immediately tells *which* items were not matched and *which* expectation was unmet, if any.
 
-### Reading The Output
 
-#### Mismatch Description
+#### Reading The Output
+
+##### Mismatch Description
 
 The above example produces the following error message: 
 
 ![Error description by FluentIterableMatcher](https://github.com/objecttrouve/convenience-matchers/blob/master/doc/img/FluentIterableMatcher-output.png)
 
-The mismatch description starts with a summary of expectations followed by a summary of findings. 
-Afterwards it's getting interesting. 
-The actual items are presented in the order in which they were iterated. 
-After each actual items there is a sequence of symbols that indicate if the actual item was matched or (in what way) not matched.
-At the end of each line there's a sequence of the expectations for the item at the given position that were not met.
+The mismatch description starts with a summary of expectations followed by a summary of findings.   
+Afterwards it's getting interesting.   
+The actual items are presented in the order in which they were iterated.   
+After each actual item there's a sequence of symbols that indicate if the actual item was matched or (in what way) not matched.  
+At the end of each line there's a sequence of the expected values or matchers for the item that were not matched.  
+If items are represented by `ScorableMatcher`s and multiple such matchers match only partially, the best match is presented first.  
+(Unless you call `exactly().ordered()`. In this case the value or matcher added exactly at the item's position is assumed to be the correct one.)  
 
-### Pro/Con
 
-#### Benefits 
+#### Pro/Con
+
+##### Benefits 
 * Instantaneous overview of which items matched and which didn't.
 * Clear indication of which actual item breaks sort order or expected order of items.
 * Easy identification of unwanted duplicates. 
@@ -176,13 +184,25 @@ At the end of each line there's a sequence of the expectations for the item at t
 * Symbols are so lovely that they comfort you in case of a mismatch.
 * Fluent DSL that allows for focusing on the relevant aspects. 
 
-#### Drawbacks
+##### Drawbacks
 * Performance is traded for convenience.
     * (When compared to the minimal logic you could use otherwise.)
     * (Check [benchmarks](https://github.com/objecttrouve/convenience-matchers/tree/master/benchmarks/) or run [JMH](https://github.com/objecttrouve/convenience-matchers/tree/master/src/jmh/java/org/objecttrouve/testing) if it's crucial.)
 * Heavy dependencies (but deprecated, to be removed with v1.0).
 * Lovely symbols aren't always displayed nicely. (And therefore there's a plan for an optional ASCII-only flavor by v1.0.)
 
+
+Alternatives
+------------
+
+There's choice!
+* [Google Truth](https://google.github.io/truth/)
+* [AssertJ](http://joel-costigliola.github.io/assertj/)
+
+Download
+---------
+
+Artifacts available at the [Maven Repository](https://mvnrepository.com/artifact/org.objecttrouve/convenience-matchers).
 
 License
 -------
