@@ -7,6 +7,7 @@
 
 package org.objecttrouve.testing.matchers;
 
+import org.objecttrouve.testing.matchers.customization.MatcherFactory;
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
 import org.objecttrouve.testing.matchers.fluentits.FluentIterableMatcher;
 
@@ -20,6 +21,7 @@ public class ConvenientMatchers {
     private static final boolean tracking = tracking();
 
     private static final String sysPropTracking = "org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher.tracking";
+    private static final MatcherFactory defaultFactory = MatcherFactory.factory().build();
 
     private ConvenientMatchers(){
         /* Not there. */
@@ -42,11 +44,7 @@ public class ConvenientMatchers {
      * @return FluentAttributeMatcher.
      */
     public static <T> FluentAttributeMatcher<T> a(final Class<T> klass) {
-        if (klass == null) {
-            throw new IllegalArgumentException("Class arg must not be null.");
-        }
-        //noinspection deprecation
-        return new FluentAttributeMatcher<>(tracking);
+        return defaultFactory.instanceOf(klass);
     }
 
 
@@ -85,7 +83,14 @@ public class ConvenientMatchers {
      * @return FluentAttributeMatcher.
      */
     public static <X, C extends Iterable<X>> FluentIterableMatcher<X, C> anIterableOf(final Class<X> klass){
-        return new FluentIterableMatcher<>(klass);
+        return defaultFactory.iterableOf(klass);
+    }
+
+    /**
+     * <p>Retrieve a {@link MatcherFactory} on which symbols, stringifiers and other settings can be configured.</p>
+     * @return {@link MatcherFactory}*/
+    public static MatcherFactory.Builder customized(){
+        return MatcherFactory.factory();
     }
 
 }

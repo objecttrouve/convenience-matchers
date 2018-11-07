@@ -10,6 +10,8 @@ package org.objecttrouve.testing.matchers.fluentatts;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
+import org.objecttrouve.testing.matchers.api.Stringifiers;
+import org.objecttrouve.testing.matchers.api.Symbols;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -23,12 +25,14 @@ class Prose {
     static final String typeMatchExpectationDescription = "CHECK TEST FOR TYPE-SAFETY: Expected class";
     private static final String methodPathSeparator = "/";
     private static final String methodCallsSeparator = "&";
-    private static final String eq = " = ";
-    private static final String neq = " \u2260 ";
-    private static final String matching = " \u2A73 ";
     private static final String unknown = "???";
-    private static final String headTailSeparator = " ▶ ";
+    private final Symbols symbols;
+    private final Stringifiers stringifiers;
 
+    Prose(final Symbols symbols, final Stringifiers stringifiers) {
+        this.symbols = symbols;
+        this.stringifiers = stringifiers;
+    }
 
     private static String describe(final TrackingTree calls) {
         return describeAll(calls).stream().collect(Collectors.joining(methodCallsSeparator));
@@ -82,32 +86,37 @@ class Prose {
         return "NOT " + target.getClass().getSimpleName() + " but what the type parameters define";
     }
 
-    static Stream<String> prefixTail(final Result result, final Stream<String> tail) {
+    Stream<String> prefixTail(final Result result, final Stream<String> tail) {
         return prefixTail(tail, getKey(result));
     }
 
-    static Stream<String> prefixTail(final Expectation expectation, final Stream<String> tail) {
+    Stream<String> prefixTail(final Expectation expectation, final Stream<String> tail) {
         return prefixTail(tail, getKey(expectation));
     }
 
-    private static Stream<String> prefixTail(final Stream<String> tail, final String key) {
-        return tail.map(s -> key +headTailSeparator+ s);
+   private  Stream<String> prefixTail(final Stream<String> tail, final String key) {
+        return tail.map(s -> key +symbols.getPointingNested()+ s);
     }
 
-    static String matcherMismatch(final Result result){
+    String matcherMismatch(final Result result){
         final StringDescription description = new StringDescription();
         final Matcher matcher = result.getExpectation().getMatcher();
         final String key = getKey(result);
         final String self = matcherSelf(key, matcher);
         description.appendText(self);
-        description.appendText(neq);
+        description.appendText(symbols.getActualNotEquals());
         description.appendText("'");
         matcher.describeMismatch(result.getActual(), description);
         description.appendText("'");
         return description.toString();
     }
 
-    static String matcherExpectation(final Expectation expectation){
+    private String stringify(final Object actual) {
+        final Optional<Function<Object, String>> shortStringifier = stringifiers.getShortStringifier(actual);
+        return shortStringifier.map(stringifier -> stringifier.apply(actual)).orElseGet(() -> Objects.toString(actual));
+    }
+
+    String matcherExpectation(final Expectation expectation){
         return matcherSelf(getKey(expectation), expectation.getMatcher());
     }
 
@@ -115,10 +124,10 @@ class Prose {
         return Optional.ofNullable(expectation.getDescription()).orElse(unknown);
     }
 
-    private static String matcherSelf(final String key, final Matcher matcher) {
+    private String matcherSelf(final String key, final Matcher matcher) {
         final StringDescription description = new StringDescription();
         description.appendText(key);
-        description.appendText(matching);
+        description.appendText(symbols.getExpectedMatches());
         description.appendText("'");
         matcher.describeTo(description);
         description.appendText("'");
@@ -138,15 +147,15 @@ class Prose {
         }
     }
 
-    static String valueMismatch(final Result result) {
-        return valueExpectation(getKey(result), result.getExpectation()) + neq + "'" + result.getActual() + "'";
+    String valueMismatch(final Result result) {
+        return valueExpectation(getKey(result), result.getExpectation()) + symbols.getActualNotEquals() + "'" + stringify(result.getActual()) + "'";
     }
 
-    private static String valueExpectation(final String key, final Expectation expectation) {
-        return key + eq + "'" + expectation.getExpectedValue() + "'";
+    private String valueExpectation(final String key, final Expectation expectation) {
+        return key + symbols.getExpectedEquals() + "'" + stringify(expectation.getExpectedValue()) + "'";
     }
 
-    static String valueExpectation(final Expectation expectation){
+    String valueExpectation(final Expectation expectation){
         return valueExpectation(getKey(expectation), expectation);
     }
 

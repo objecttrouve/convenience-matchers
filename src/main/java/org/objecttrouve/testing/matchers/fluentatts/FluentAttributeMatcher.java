@@ -10,11 +10,15 @@ package org.objecttrouve.testing.matchers.fluentatts;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.objecttrouve.testing.matchers.api.Config;
 import org.objecttrouve.testing.matchers.api.ScorableMatcher;
+import org.objecttrouve.testing.matchers.api.Stringifiers;
+import org.objecttrouve.testing.matchers.api.Symbols;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -105,21 +109,107 @@ import static org.objecttrouve.testing.matchers.fluentatts.Scorer.score;
  */
 public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements ScorableMatcher {
 
-
     private final List<Expectation<T, ?>> expectations = new LinkedList<>();
     private final List<Result> results = new LinkedList<>();
     private final boolean tracking;
+    private final Prose prose;
 
     /**
      * New instance.
      *
-     * @deprecated C'tor will be removed by v1.0. Use factory methods in {@code ConvenientMatchers}.
+     * @deprecated C'tor will be removed by v1.0. Use {@link FluentAttributeMatcher#FluentAttributeMatcher(org.objecttrouve.testing.matchers.api.Config)} or customization methods in {@code ConvenientMatchers}.
      * @param tracking attempt (expensively!) to create human-readable descriptions of attribute lambdas
      */
     @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     public FluentAttributeMatcher(final boolean tracking) {
         this.tracking = tracking;
+        // Avoid package cycles and live with redundancy until this c'tor goes away.
+        this.prose = new Prose(new Symbols() {
+            @Override
+            public String getExpectedEquals() {
+                return " = ";
+            }
+
+            @Override
+            public String getActualNotEquals() {
+                return " \u2260 ";
+            }
+
+            @Override
+            public String getExpectedMatches() {
+                return " \u2A73 ";
+            }
+
+            @Override
+            public String getPointingNested() {
+                return " ▶ ";
+            }
+
+            @Override
+            public String getIterableItemMatchesSymbol() {
+                return "";
+            }
+
+            @Override
+            public String getIterableItemNotMatchesSymbol() {
+                return "";
+            }
+
+            @Override
+            public String getIterableItemBadItemOrderSymbol() {
+                return "";
+            }
+
+            @Override
+            public String getIterableItemBadSortOrderSymbol() {
+                return "";
+            }
+
+            @Override
+            public String getIterableItemDuplicateSymbol() {
+                return null;
+            }
+
+            @Override
+            public String getIterableItemUnwantedSymbol() {
+                return "";
+            }
+
+            @Override
+            public String getRightBracket() {
+                return "";
+            }
+
+            @Override
+            public String getLeftBracket() {
+                return "";
+            }
+        }, new Stringifiers() {
+
+            @Override
+            public <Z> Optional<Function<Z, String>> getShortStringifier(final Z object) {
+                return Optional.empty();
+            }
+
+            @Override
+            public <Z> Optional<Function<Z, String>> getDebugStringifier(final Z object) {
+                return Optional.empty();
+            }
+        });
+    }
+    /**
+     * New instance.
+     *
+     * @param config The {@link Config} for the matcher.
+     */
+    protected FluentAttributeMatcher(final Config config) {
+        this(new Prose(config.getSymbols(), config.getStringifiers()));
+    }
+
+    FluentAttributeMatcher(final Prose prose) {
+        this.prose = prose;
+        this.tracking = false;
     }
 
     /**
@@ -290,15 +380,15 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
                     //noinspection unchecked
                     final List<Stream<String>> tails = flam.recurseTheExpectations();
                     tails.forEach(tail -> {
-                        final Stream<String> prefixedTail = Prose.prefixTail(expectation, tail);
+                        final Stream<String> prefixedTail = prose.prefixTail(expectation, tail);
                         allTails.add(prefixedTail);
                     });
                 } else {
-                    final String matcherTail = Prose.matcherExpectation(expectation);
+                    final String matcherTail = prose.matcherExpectation(expectation);
                     allTails.add(Stream.of(matcherTail));
                 }
             } else {
-                final String valueTail = Prose.valueExpectation(expectation);
+                final String valueTail = prose.valueExpectation(expectation);
                 allTails.add(Stream.of(valueTail));
             }
         }
@@ -318,15 +408,15 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
                     //noinspection unchecked
                     final List<Stream<String>> tails = flam.recurseTheMismatch();
                     tails.forEach(tail -> {
-                        final Stream<String> prefixedTail = Prose.prefixTail(result, tail);
+                        final Stream<String> prefixedTail = prose.prefixTail(result, tail);
                         allTails.add(prefixedTail);
                     });
                 } else {
-                    final String matcherTail = Prose.matcherMismatch(result);
+                    final String matcherTail = prose.matcherMismatch(result);
                     allTails.add(Stream.of(matcherTail));
                 }
             } else {
-                final String valueTail = Prose.valueMismatch(result);
+                final String valueTail = prose.valueMismatch(result);
                 allTails.add(Stream.of(valueTail));
             }
         }

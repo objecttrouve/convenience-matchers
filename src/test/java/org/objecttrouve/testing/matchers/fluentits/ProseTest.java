@@ -12,6 +12,11 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.Test;
+import org.objecttrouve.testing.matchers.api.Symbols;
+import org.objecttrouve.testing.matchers.customization.StringifiersConfig;
+import org.objecttrouve.testing.matchers.customization.SymbolsConfig;
+
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -21,8 +26,8 @@ import static org.junit.Assert.assertThat;
 public class ProseTest {
 
 
-    private static final Prose<String> stringProse = new Prose<>();
-    private static final Prose<Boolean> boolProse = new Prose<>();
+    private static final Prose<String> stringProse = new Prose<>(SymbolsConfig.defaultSymbols(), StringifiersConfig.stringifiers().build());
+    private static final Prose<Boolean> boolProse = new Prose<>(SymbolsConfig.defaultSymbols(), StringifiersConfig.stringifiers().build());
 
     @Test
     public void test__describeExpectations__no_expectations() {
@@ -279,7 +284,7 @@ public class ProseTest {
             .build();
 
         //noinspection unchecked
-        final String line = stringProse.line(r1, 1, 1);
+        final String line = stringProse.line(r1, 1, 1, "null");
 
         assertThat(line, is("⦗0⦘⦗n⦘          "));
     }
@@ -292,7 +297,7 @@ public class ProseTest {
             .build();
 
         //noinspection unchecked
-        final String line = stringProse.line(r1, 1, 4);
+        final String line = stringProse.line(r1, 1, 4, "null");
 
         assertThat(line, is("⦗0⦘⦗null⦘          "));
     }
@@ -305,7 +310,7 @@ public class ProseTest {
             .build();
 
         //noinspection unchecked
-        final String line = boolProse.line(r1, 1, 4);
+        final String line = boolProse.line(r1, 1, 4, "true");
 
         assertThat(line, is("⦗0⦘⦗true⦘💕        "));
     }
@@ -318,7 +323,7 @@ public class ProseTest {
             .build();
 
         //noinspection unchecked
-        final String line = boolProse.line(r1, 1, 4);
+        final String line = boolProse.line(r1, 1, 4, "true");
 
         assertThat(line, is("⦗0⦘⦗true⦘    ↔     "));
     }
@@ -331,7 +336,7 @@ public class ProseTest {
             .build();
 
         //noinspection unchecked
-        final String line = boolProse.line(r1, 1, 4);
+        final String line = boolProse.line(r1, 1, 4, "true");
 
         assertThat(line, is("⦗1⦘⦗true⦘  ↕       "));
     }
@@ -344,7 +349,7 @@ public class ProseTest {
             .build();
 
         //noinspection unchecked
-        final String line = boolProse.line(r, 100, 4);
+        final String line = boolProse.line(r, 100, 4, "true");
 
         assertThat(line, is("⦗ 22⦘⦗true⦘      👯  "));
     }
@@ -357,7 +362,7 @@ public class ProseTest {
             .build();
 
         //noinspection unchecked
-        final String line = boolProse.line(r, 1000, 10);
+        final String line = boolProse.line(r, 1000, 10, "true");
 
         assertThat(line, is("⦗  22⦘⦗true      ⦘        🚯"));
     }
@@ -372,7 +377,7 @@ public class ProseTest {
             .build();
 
         //noinspection unchecked
-        final String line = boolProse.line(r, 1000, 3);
+        final String line = boolProse.line(r, 1000, 3, "true");
 
         assertThat(line, is("⦗  22⦘⦗tru⦘           💔⦗3⦘⦗null⦘"));
     }
@@ -393,7 +398,7 @@ public class ProseTest {
             .matched(false)
             .breakingItemOrder(true)
             .breakingSortOrder(true)
-            .withMatchers(asList(mwi(equalTo("scène de ménage"),2), mwi(endsWith("age"),3)))
+            .withMatchers(asList(mwi(equalTo("scène de ménage"), 2), mwi(endsWith("age"), 3)))
             .build();
         final ItemResult<String> r3 = ItemResult.builder("le mariage")
             .withIndex(99)
@@ -402,7 +407,7 @@ public class ProseTest {
             .breakingSortOrder(true)
             .duplicate(true)
             .unwanted(true)
-            .withMatchers(singletonList(mwi(equalTo("scène de ménage"),0)))
+            .withMatchers(singletonList(mwi(equalTo("scène de ménage"), 0)))
             .build();
         final ItemResult<String> r4 = ItemResult.builder("scène de ménage")
             .withIndex(9999)
@@ -414,15 +419,169 @@ public class ProseTest {
             .build();
 
         //noinspection unchecked
-        final String line1 = stringProse.line(r1, 100, 15);
-        final String line2 = stringProse.line(r2, 100, 15);
-        final String line3 = stringProse.line(r3, 100, 15);
-        final String line4 = stringProse.line(r4, 100, 15);
+        final String line1 = stringProse.line(r1, 100, 15, "scene de menage");
+        final String line2 = stringProse.line(r2, 100, 15, "scene de manège");
+        final String line3 = stringProse.line(r3, 100, 15, "le mariage");
+        final String line4 = stringProse.line(r4, 100, 15, "scène de ménage");
 
         assertThat(line1, is("⦗  0⦘⦗scene de menage⦘           💔⦗0⦘⦗\"scène de ménage\"⦘"));
         assertThat(line2, is("⦗  1⦘⦗scene de manège⦘  ↕ ↔      💔⦗2⦘⦗\"scène de ménage\"⦘ 💔⦗3⦘⦗a string ending with \"age\"⦘"));
         assertThat(line3, is("⦗ 99⦘⦗le mariage     ⦘  ↕ ↔ 👯🚯 💔⦗0⦘⦗\"scène de ménage\"⦘"));
         assertThat(line4, is("⦗999⦘⦗scène de ménage⦘💕↕ ↔ 👯🚯"));
+    }
+
+
+    @Test
+    public void line__s__with_all_of_it__and_custom_Symbols() {
+
+        final Symbols symbols = SymbolsConfig.symbols()
+            .withIterableItemMatches("\uD83D\uDC98")
+            .withIterableItemNotMatches("\uD83D\uDC80")
+            .withIterableItemBadItemOrder("⥨")
+            .withIterableItemBadSortOrder("⑄")
+            .withIterableItemDuplicate("♊")
+            .withIterableItemUnwanted("\uD83D\uDEAE")
+            .withBrackets("⧼", "⧽")
+            .build();
+        final Prose<String> prose = new Prose<>(symbols, StringifiersConfig.stringifiers().build());
+        final ItemResult<String> r3 = ItemResult.builder("le mariage")
+            .withIndex(99)
+            .matched(false)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .duplicate(true)
+            .unwanted(true)
+            .withMatchers(singletonList(mwi(equalTo("scène de ménage"), 0)))
+            .build();
+        final ItemResult<String> r4 = ItemResult.builder("scène de ménage")
+            .withIndex(9999)
+            .matched(true)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .duplicate(true)
+            .unwanted(true)
+            .build();
+
+        //noinspection unchecked
+        final String line3 = prose.line(r3, 100, 15, "le mariage");
+        final String line4 = prose.line(r4, 100, 15, "scène de ménage");
+
+        assertThat(line3, is("⧼ 99⧽⧼le mariage     ⧽  ⑄ ⥨ ♊ 🚮 💀⧼0⧽⧼\"scène de ménage\"⧽"));
+        assertThat(line4, is("⧼999⧽⧼scène de ménage⧽💘⑄ ⥨ ♊ 🚮"));
+    }
+
+    @Test
+    public void describe__without_stringifiers() {
+        final ItemResult<String> r1 = ItemResult.builder("scene de menage")
+            .withIndex(0)
+            .matched(false)
+            .withMatchers(singletonList(mwi(equalTo("scène de ménage"), 0)))
+            .build();
+        final ItemResult<String> r2 = ItemResult.builder("scene de manège")
+            .withIndex(1)
+            .matched(false)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .withMatchers(asList(mwi(equalTo("scène de ménage"), 2), mwi(endsWith("age"), 3)))
+            .build();
+        final ItemResult<String> r3 = ItemResult.builder("le mariage")
+            .withIndex(99)
+            .matched(false)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .duplicate(true)
+            .unwanted(true)
+            .withMatchers(singletonList(mwi(equalTo("scène de ménage"), 0)))
+            .build();
+        final ItemResult<String> r4 = ItemResult.builder("scène de ménage")
+            .withIndex(9999)
+            .matched(true)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .duplicate(true)
+            .unwanted(true)
+            .build();
+        final List<Finding> findings = asList(new Finding("Something isn't right."), new Finding("There seems to be chaos..."));
+        final List<ItemResult> itemResults = asList(r1, r2, r3, r4);
+        final Prose<String> prose = new Prose<>(SymbolsConfig.defaultSymbols(), StringifiersConfig.stringifiers().build());
+        final StringDescription description = new StringDescription();
+
+        prose.describe(findings.stream(), itemResults, description);
+
+        final String result = description.toString();
+        assertThat(result, is("" +
+            "\n" +
+            "Findings:\n" +
+            "\"Something isn't right.\"\n" +
+            "\"There seems to be chaos...\"\n" +
+            "\n" +
+            "⦗0⦘⦗scene de menage⦘           💔⦗0⦘⦗\"scène de ménage\"⦘\n" +
+            "⦗1⦘⦗scene de manège⦘  ↕ ↔      💔⦗2⦘⦗\"scène de ménage\"⦘ 💔⦗3⦘⦗a string ending with \"age\"⦘\n" +
+            "⦗9⦘⦗le mariage     ⦘  ↕ ↔ 👯🚯 💔⦗0⦘⦗\"scène de ménage\"⦘\n" +
+            "⦗9⦘⦗scène de ménage⦘💕↕ ↔ 👯🚯\n" +
+            "\n"
+            +
+            ""));
+    }
+
+
+
+    @Test
+    public void describe__with_short_stringifier_for_actual_items() {
+        final ItemResult<String> r1 = ItemResult.builder("scene de menage")
+            .withIndex(0)
+            .matched(false)
+            .withMatchers(singletonList(mwi(equalTo("scène de ménage"), 0)))
+            .build();
+        final ItemResult<String> r2 = ItemResult.builder("scene de manège")
+            .withIndex(1)
+            .matched(false)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .withMatchers(asList(mwi(equalTo("scène de ménage"), 2), mwi(endsWith("age"), 3)))
+            .build();
+        final ItemResult<String> r3 = ItemResult.builder("le mariage")
+            .withIndex(99)
+            .matched(false)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .duplicate(true)
+            .unwanted(true)
+            .withMatchers(singletonList(mwi(equalTo("scène de ménage"), 0)))
+            .build();
+        final ItemResult<String> r4 = ItemResult.builder("scène de ménage")
+            .withIndex(9999)
+            .matched(true)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .duplicate(true)
+            .unwanted(true)
+            .build();
+        final List<Finding> findings = asList(new Finding("Something isn't right."), new Finding("There seems to be chaos..."));
+        final List<ItemResult> itemResults = asList(r1, r2, r3, r4);
+        final Prose<String> prose = new Prose<>(
+            SymbolsConfig.defaultSymbols(),
+            StringifiersConfig.stringifiers()
+                .withShortStringifier(String.class, String::toUpperCase)
+                .build()
+        );
+        final StringDescription description = new StringDescription();
+
+        prose.describe(findings.stream(), itemResults, description);
+
+        final String result = description.toString();
+        assertThat(result, is("" +
+            "\n" +
+            "Findings:\n" +
+            "\"Something isn't right.\"\n" +
+            "\"There seems to be chaos...\"\n" +
+            "\n" +
+            "⦗0⦘⦗SCENE DE MENAGE⦘           💔⦗0⦘⦗\"scène de ménage\"⦘\n" +
+            "⦗1⦘⦗SCENE DE MANÈGE⦘  ↕ ↔      💔⦗2⦘⦗\"scène de ménage\"⦘ 💔⦗3⦘⦗a string ending with \"age\"⦘\n" +
+            "⦗9⦘⦗LE MARIAGE     ⦘  ↕ ↔ 👯🚯 💔⦗0⦘⦗\"scène de ménage\"⦘\n" +
+            "⦗9⦘⦗SCÈNE DE MÉNAGE⦘💕↕ ↔ 👯🚯\n" +
+            "\n" +
+            ""));
     }
 
 }

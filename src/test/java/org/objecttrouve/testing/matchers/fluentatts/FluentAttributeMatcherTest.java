@@ -9,6 +9,9 @@ package org.objecttrouve.testing.matchers.fluentatts;
 
 import org.hamcrest.*;
 import org.junit.Test;
+import org.objecttrouve.testing.matchers.ConvenientMatchers;
+import org.objecttrouve.testing.matchers.customization.MatcherFactory;
+import org.objecttrouve.testing.matchers.customization.SymbolsConfig;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -25,6 +28,7 @@ import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.Assert.*;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.an;
+import static org.objecttrouve.testing.matchers.customization.StringifiersConfig.stringifiers;
 import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 
@@ -479,6 +483,114 @@ public class FluentAttributeMatcherTest {
         ));
     }
 
+
+    @Test
+    public void customized__withDefaultSymbols__describeTo__withMatching__withValue() {
+        final MatcherFactory an = ConvenientMatchers.customized().withDefaultSymbols().build();
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final Attribute<Answer, Integer> embeddedAnswer = attribute("embedded answer", Answer::getTheAnswer);
+        final Attribute<Answer, Integer> halfAnswer = attribute("half answer", Answer::getHalfTheAnswer);
+        final Attribute<Integer, Object> byt = attribute("byteval", Integer::byteValue);
+        final Attribute<Integer, Object> doub = attribute("doubleval", Integer::doubleValue);
+        final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)//
+            .withMatching(answer, an.instanceOf(Answer.class)
+                .withMatching(embeddedAnswer, an.instanceOf(Integer.class)
+                    .withMatching(byt, nullValue())
+                    .withValue(doub, 1.0)
+                ).withValue(halfAnswer, 1)
+            );
+        final StringDescription description = new StringDescription();
+
+        matching.describeTo(description);
+
+        assertThat(description.toString(), is("" +
+            "\n" +
+            "\tanswer ▶ embedded answer ▶ byteval ⩳ 'null'\n" +
+            "\tanswer ▶ embedded answer ▶ doubleval = '1.0'\n" +
+            "\tanswer ▶ half answer = '1'\n"
+        ));
+    }
+
+    @Test
+    public void customized__withAsciiSymbols__describeTo__withMatching__withValue() {
+        final MatcherFactory an = ConvenientMatchers.customized().withAsciiSymbols().build();
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final Attribute<Answer, Integer> embeddedAnswer = attribute("embedded answer", Answer::getTheAnswer);
+        final Attribute<Answer, Integer> halfAnswer = attribute("half answer", Answer::getHalfTheAnswer);
+        final Attribute<Integer, Object> byt = attribute("byteval", Integer::byteValue);
+        final Attribute<Integer, Object> doub = attribute("doubleval", Integer::doubleValue);
+        final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)//
+            .withMatching(answer, an.instanceOf(Answer.class)
+                .withMatching(embeddedAnswer, an.instanceOf(Integer.class)
+                    .withMatching(byt, nullValue())
+                    .withValue(doub, 1.0)
+                ).withValue(halfAnswer, 1)
+            );
+        final StringDescription description = new StringDescription();
+
+        matching.describeTo(description);
+
+        assertThat(description.toString(), is("" +
+            "\n" +
+            "\tanswer >> embedded answer >> byteval =~ 'null'\n" +
+            "\tanswer >> embedded answer >> doubleval = '1.0'\n" +
+            "\tanswer >> half answer = '1'\n"
+        ));
+    }
+
+    @Test
+    public void customized__with_custom_Symbols__describeTo__withMatching__withValue() {
+        final SymbolsConfig.Builder symbols = SymbolsConfig.symbols()
+            .withExpectedEquals("⩶")
+            .withActualNotEquals("╪")
+            .withExpectedMatches("♒")
+            .withPointingNested("⤼")
+            ;
+        final MatcherFactory an = ConvenientMatchers.customized().withSymbols(symbols).build();
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final Attribute<Answer, Integer> embeddedAnswer = attribute("embedded answer", Answer::getTheAnswer);
+        final Attribute<Answer, Integer> halfAnswer = attribute("half answer", Answer::getHalfTheAnswer);
+        final Attribute<Integer, Object> byt = attribute("byteval", Integer::byteValue);
+        final Attribute<Integer, Object> doub = attribute("doubleval", Integer::doubleValue);
+        final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)//
+            .withMatching(answer, an.instanceOf(Answer.class)
+                .withMatching(embeddedAnswer, an.instanceOf(Integer.class)
+                    .withMatching(byt, nullValue())
+                    .withValue(doub, 1.0)
+                ).withValue(halfAnswer, 1)
+            );
+        final StringDescription description = new StringDescription();
+
+        matching.describeTo(description);
+
+        assertThat(description.toString(), is("" +
+            "\n" +
+            "\tanswer⤼embedded answer⤼byteval♒'null'\n" +
+            "\tanswer⤼embedded answer⤼doubleval⩶'1.0'\n" +
+            "\tanswer⤼half answer⩶'1'\n"
+        ));
+    }
+
+    @Test
+    public void customized__withShortStringifiers__describeTo__withValue() {
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .withStringifiers(stringifiers()
+                .withShortStringifier(Answer.class, a -> "A-" + a.theAnswer)
+            ).build();
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)//
+            .withValue(answer, new Answer(42));
+        final StringDescription description = new StringDescription();
+
+        matching.describeTo(description);
+
+        assertThat(description.toString(), is("" +
+            "\n\tanswer = 'A-42'\n"
+        ));
+    }
+
+
+
     @Test
     public void describeMismatchSafely__withMatching__mismatch__describes_nicely__nested_FluentAttributeMatcher() {
         final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
@@ -530,6 +642,115 @@ public class FluentAttributeMatcherTest {
             "\tanswer ▶ embedded answer ▶ byteval ⩳ 'null' ≠ 'was <42>'\n" +
             "\tanswer ▶ embedded answer ▶ doubleval = '1.0' ≠ '42.0'\n" +
             "\tanswer ▶ half answer = '1' ≠ '21'\n"
+        ));
+    }
+
+    @Test
+    public void customized__withDefaultSymbols__describeMismatchSafely__withMatching__withValue() {
+        final MatcherFactory an = ConvenientMatchers.customized().withDefaultSymbols().build();
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final Attribute<Answer, Integer> embeddedAnswer = attribute("embedded answer", Answer::getTheAnswer);
+        final Attribute<Answer, Integer> halfAnswer = attribute("half answer", Answer::getHalfTheAnswer);
+        final Attribute<Integer, Object> byt = attribute("byteval", Integer::byteValue);
+        final Attribute<Integer, Object> doub = attribute("doubleval", Integer::doubleValue);
+        final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)//
+            .withMatching(answer, an.instanceOf(Answer.class)
+                .withMatching(embeddedAnswer, an.instanceOf(Integer.class)
+                    .withMatching(byt, nullValue())
+                    .withValue(doub, 1.0)
+                ).withValue(halfAnswer, 1)
+            );
+        final StringDescription description = new StringDescription();
+        final Question item = new Question(new Answer(42));
+
+        matching.describeMismatchSafely(item, description);
+
+        assertThat(description.toString(), is("" +
+            "\n" +
+            "\tanswer ▶ embedded answer ▶ byteval ⩳ 'null' ≠ 'was <42>'\n" +
+            "\tanswer ▶ embedded answer ▶ doubleval = '1.0' ≠ '42.0'\n" +
+            "\tanswer ▶ half answer = '1' ≠ '21'\n"
+        ));
+    }
+
+    @Test
+    public void customized__withAsciiSymbols__describeMismatchSafely__withMatching__withValue() {
+        final MatcherFactory an = ConvenientMatchers.customized().withAsciiSymbols().build();
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final Attribute<Answer, Integer> embeddedAnswer = attribute("embedded answer", Answer::getTheAnswer);
+        final Attribute<Answer, Integer> halfAnswer = attribute("half answer", Answer::getHalfTheAnswer);
+        final Attribute<Integer, Object> byt = attribute("byteval", Integer::byteValue);
+        final Attribute<Integer, Object> doub = attribute("doubleval", Integer::doubleValue);
+        final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)//
+            .withMatching(answer, an.instanceOf(Answer.class)
+                .withMatching(embeddedAnswer, an.instanceOf(Integer.class)
+                    .withMatching(byt, nullValue())
+                    .withValue(doub, 1.0)
+                ).withValue(halfAnswer, 1)
+            );
+        final StringDescription description = new StringDescription();
+        final Question item = new Question(new Answer(42));
+
+        matching.describeMismatchSafely(item, description);
+
+        assertThat(description.toString(), is("" +
+            "\n" +
+            "\tanswer >> embedded answer >> byteval =~ 'null' != 'was <42>'\n" +
+            "\tanswer >> embedded answer >> doubleval = '1.0' != '42.0'\n" +
+            "\tanswer >> half answer = '1' != '21'\n"
+        ));
+    }
+
+    @Test
+    public void customized__withShortStringifiers__describeMismatchSafely__withMatching__withValue() {
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .withStringifiers(
+                stringifiers().withShortStringifier(Answer.class, a -> "A-"+a.theAnswer)
+            ).build();
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)//
+            .withValue(answer, new Answer(24));
+        final StringDescription description = new StringDescription();
+        final Question item = new Question(new Answer(42));
+
+        matching.describeMismatchSafely(item, description);
+
+        assertThat(description.toString(), is("" +
+            "\n\tanswer = 'A-24' ≠ 'A-42'\n"
+        ));
+    }
+
+    @Test
+    public void customized__with_custom_Symbols__describeMismatchSafely__withMatching__withValue() {
+        final SymbolsConfig.Builder symbols = SymbolsConfig.symbols()
+            .withExpectedEquals("⩶")
+            .withActualNotEquals("╪")
+            .withExpectedMatches("♒")
+            .withPointingNested("⤼")
+            ;
+        final MatcherFactory an = ConvenientMatchers.customized().withSymbols(symbols).build();
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final Attribute<Answer, Integer> embeddedAnswer = attribute("embedded answer", Answer::getTheAnswer);
+        final Attribute<Answer, Integer> halfAnswer = attribute("half answer", Answer::getHalfTheAnswer);
+        final Attribute<Integer, Object> byt = attribute("byteval", Integer::byteValue);
+        final Attribute<Integer, Object> doub = attribute("doubleval", Integer::doubleValue);
+        final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)//
+            .withMatching(answer, an.instanceOf(Answer.class)
+                .withMatching(embeddedAnswer, an.instanceOf(Integer.class)
+                    .withMatching(byt, nullValue())
+                    .withValue(doub, 1.0)
+                ).withValue(halfAnswer, 1)
+            );
+        final StringDescription description = new StringDescription();
+        final Question item = new Question(new Answer(42));
+
+        matching.describeMismatchSafely(item, description);
+
+        assertThat(description.toString(), is("" +
+            "\n" +
+            "\tanswer⤼embedded answer⤼byteval♒'null'╪'was <42>'\n" +
+            "\tanswer⤼embedded answer⤼doubleval⩶'1.0'╪'42.0'\n" +
+            "\tanswer⤼half answer⩶'1'╪'21'\n"
         ));
     }
 

@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.lessThan;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
 import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
-// Use the factory method for syntactic sugaring and configurability!
+// Use the customization method for syntactic sugaring and configurability!
 
 
 @SuppressWarnings("ALL")

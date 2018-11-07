@@ -7,29 +7,34 @@
 
 package org.objecttrouve.testing.matchers.fluentits;
 
+import org.hamcrest.Description;
+import org.hamcrest.SelfDescribing;
 import org.hamcrest.StringDescription;
+import org.objecttrouve.testing.matchers.api.Stringifiers;
+import org.objecttrouve.testing.matchers.api.Symbols;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 class Prose<X> {
 
-    private static final String match = "\uD83D\uDC95";
-    private static final String mismatch = "\uD83D\uDC94";
-
-    private static final String breakingSortOrder = "\u2195";
-    private static final String breakingItemOrder = "\u2194";
-    private static final String duplicate = "\uD83D\uDC6F";
-    private static final String obsolete = "\uD83D\uDEAF";
-    private static final String lBrack = "⦗";
-    private static final String rBrack = "⦘";
     private static final int actualItemMaxLength = 30;
     private static final String iterable = Iterable.class.getSimpleName();
+    private final Symbols symbols;
+    private final Stringifiers stringifiers;
 
-    Prose() {
+    Prose(final Symbols symbols, final Stringifiers stringifiers) {
+        this.symbols = symbols;
+        this.stringifiers = stringifiers;
     }
 
     void describeExpectations(final Settings settings, final Consumer<String> description) {
@@ -56,8 +61,8 @@ class Prose<X> {
         description.accept("\n");
     }
 
-    String actualItemString(final X actual, final int limit) {
-        return format("%1$-" + limit + "." + limit + "s", linify(Objects.toString(actual)));
+    String actualItemString(final String actual, final int limit) {
+        return limit > 0 ? format("%1$-" + limit + "." + limit + "s", linify(Objects.toString(actual))) : "";
     }
 
     private String linify(final String str) {
@@ -68,29 +73,51 @@ class Prose<X> {
         return linify(self);
     }
 
-    String line(final ItemResult<X> result, final int collectionLength, final int longestActual) {
+    void describe(final Stream<Finding> findings, final List<ItemResult> itemResults, final Description mismatchDescription) {
+        final List<SelfDescribing> fs = findings
+            .map(Finding::getDescription)
+            .map(s -> (SelfDescribing) description1 -> description1.appendValue(s))
+            .collect(toList());
+        mismatchDescription.appendList("\nFindings:\n", "\n", "\n", fs);
+        final Map<ItemResult, String> stringifiedActuals = new HashMap<>();
+        for (final ItemResult itemResult : itemResults) {
+            stringifiedActuals.put(itemResult, stringifiers.getShortStringifier(itemResult.getActual()).orElse(Objects::toString).apply(itemResult.getActual()));
+        }
+        final int longestActual = stringifiedActuals.values().stream().mapToInt(String::length).max().orElse(1);
+        mismatchDescription.appendText("\n");
+        //noinspection unchecked
+        final String line = itemResults.stream()
+            .map(result -> line(result, itemResults.size(), longestActual, stringifiedActuals.get(result)))
+            .collect(joining("\n")
+            );
+        mismatchDescription.appendText(line);
+        mismatchDescription.appendText("\n\n");
+    }
+
+    String line(final ItemResult<X> result, final int collectionLength, final int longestActual, final String stringifiedActual) {
+        final String lBrack = symbols.getLeftBracket();
+        final String rBrack = symbols.getRightBracket();
         final StringBuilder line = new StringBuilder();
         final int digits = Double.valueOf(Math.log10(collectionLength)).intValue() + 1;
         final String ix = format("%1$" + digits + "." + digits + "s", result.getIndex());
         line.append(lBrack).append(ix).append(rBrack);
-        final X actual = result.getActual();
-        line.append(lBrack).append(actualItemString(actual, Math.min(longestActual, actualItemMaxLength))).append(rBrack);
-        appendSymbol(line, result.isMatched(), match);
-        appendSymbol(line, result.isBreakingSortOrder(), breakingSortOrder);
-        appendSymbol(line, result.isBreakingItemOrder(), breakingItemOrder);
-        appendSymbol(line, result.isDuplicate(), duplicate);
-        appendSymbol(line, result.isUnwanted(), obsolete);
+        line.append(lBrack).append(
+            actualItemString(stringifiedActual, Math.min(longestActual, actualItemMaxLength))
+        ).append(rBrack);
+        appendSymbol(line, result.isMatched(), symbols.getIterableItemMatchesSymbol());
+        appendSymbol(line, result.isBreakingSortOrder(), symbols.getIterableItemBadSortOrderSymbol());
+        appendSymbol(line, result.isBreakingItemOrder(), symbols.getIterableItemBadItemOrderSymbol());
+        appendSymbol(line, result.isDuplicate(), symbols.getIterableItemDuplicateSymbol());
+        appendSymbol(line, result.isUnwanted(), symbols.getIterableItemUnwantedSymbol());
         if (!result.isMatched()) {
             result.getMismatchedItemMatchers().forEach(matcherWithIndex -> {
-                line.append(" ").append(mismatch).append(lBrack).append(matcherWithIndex.getIndex()).append(rBrack).append(lBrack);
+                line.append(" ").append(symbols.getIterableItemNotMatchesSymbol()).append(lBrack).append(matcherWithIndex.getIndex()).append(rBrack).append(lBrack);
                 final StringDescription selfDescription = new StringDescription();
                 matcherWithIndex.getMatcher().describeTo(selfDescription);
                 line.append(matcherSaying(selfDescription.toString()));
                 line.append(rBrack);
             });
-
         }
-
         return line.toString();
     }
 

@@ -9,6 +9,8 @@ package org.objecttrouve.testing.matchers.fluentits;
 
 import org.hamcrest.StringDescription;
 import org.junit.Test;
+import org.objecttrouve.testing.matchers.ConvenientMatchers;
+import org.objecttrouve.testing.matchers.customization.MatcherFactory;
 import org.objecttrouve.testing.matchers.fluentatts.Attribute;
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
 
@@ -26,6 +28,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableOf;
+import static org.objecttrouve.testing.matchers.customization.StringifiersConfig.stringifiers;
 import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 public class FluentIterableMatcherTest {
@@ -3022,7 +3025,7 @@ public class FluentIterableMatcherTest {
     private static final Attribute<Treatment, String> inventor = attribute("inventor", Treatment::getInventor);
 
     @Test
-    public void matchesSafely__mismatch__describeTo__describeMismatchSafely__flim_and_flam() {
+    public void describeMismatchSafely__flim_and_flam() {
 
         final Treatment appendixOp = new Treatment("l'appendicectomie", "Avicenne");
         final Disease appendicitis = new Disease("crise d'appendicite aiguë", appendixOp, 1);
@@ -3097,4 +3100,204 @@ public class FluentIterableMatcherTest {
 
     }
 
+
+    @Test
+    public void customized__withAsciiSymbols__describeTo__describeMismatchSafely__with_full_force(){
+        final MatcherFactory an = ConvenientMatchers.customized().withAsciiSymbols().build();
+        final StringDescription self = new StringDescription();
+        final StringDescription issues = new StringDescription();
+        final Iterable<Paper> input = asList(pap("PAP!"), pap("The Law Of Gravity"), pap("Booh!"), pap("PAP!"));
+        final FluentIterableMatcher<Paper, Iterable<Paper>> matcher = an.iterableOf(Paper.class)
+            .exactly()
+            .ordered()
+            .sorted(comparingInt(Paper::getPages))
+            .unique((p1, p2) -> p1.text.equals(p2.text))
+            .withItemsMatching(
+                a(Paper.class).with(txt, "Booh!").with(pages, 3),
+                a(Paper.class).with(txt, "PAP!").with(pages, 40),
+                a(Paper.class).with(txt, "Grave").with(pages, 0)
+            );
+
+        final boolean matches = matcher.matchesSafely(input);
+
+        assertThat(matches, is(false));
+
+        matcher.describeTo(self);
+
+        assertThat(self.toString(), is( "" +
+            "an Iterable with the following properties:\n" +
+            "- Iterable of Paper\n" +
+            "- at least 3 matching item(s)\n" +
+            "- no unexpected items\n" +
+            "- sorted\n" +
+            "- ordered\n" +
+            "- no duplicates\n" +
+            "\n"
+        ));
+
+        matcher.describeMismatchSafely(input, issues);
+
+        assertThat(issues.toString(), is("" +
+            "\n" +
+            "Findings:\n" +
+            "\"Not all expectations were fulfilled.\"\n" +
+            "\"Unexpected actual items.\"\n" +
+            "\"Items did not appear in the expected order.\"\n" +
+            "\"Collection is not sorted.\"\n" +
+            "\"Detected duplicates.\"\n\n" +
+            "[0][Paper{text='PAP!', pages=40}  ]OK  <>2+  \n" +
+            "[1][Paper{text='The Law Of Gravity]    <>  -- FAIL[1][text = 'PAP!'; pages = '40']\n" +
+            "[2][Paper{text='Booh!', pages=50} ]  ^v<>  -- FAIL[2][text = 'Grave'; pages = '0']\n" +
+            "[3][Paper{text='PAP!', pages=40}  ]OK^v  2+  \n" +
+            "\n" +
+            "was <[Paper{text='PAP!', pages=40}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='Booh!', pages=50}, Paper{text='PAP!', pages=40}]>"
+        ));
+    }
+
+    @Test
+    public void describeTo__describeMismatchSafely__with_null_items(){
+        final List<Object> iterable = Arrays.asList(null, null, null);
+        final FluentIterableMatcher<Object, Iterable<Object>> matching = anIterableOf(Object.class)
+            .withItems("", "", "");
+        final StringDescription self = new StringDescription();
+        final StringDescription issues = new StringDescription();
+
+        matching.describeTo(self);
+
+        assertThat(self.toString(), is("" +
+            "an Iterable with the following properties:\n" +
+            "- Iterable of Object\n" +
+            "- at least 3 matching item(s)\n" +
+            "\n"
+        ));
+
+        matching.describeMismatchSafely(iterable, issues);
+
+        assertThat(issues.toString(), is("" +
+            "\nFindings:\n" +
+            "\"Not all expectations were fulfilled.\"\n" +
+            "\n" +
+            "⦗0⦘⦗null⦘           💔⦗0⦘⦗<>⦘ 💔⦗1⦘⦗<>⦘ 💔⦗2⦘⦗<>⦘\n" +
+            "⦗1⦘⦗null⦘           💔⦗1⦘⦗<>⦘ 💔⦗0⦘⦗<>⦘ 💔⦗2⦘⦗<>⦘\n" +
+            "⦗2⦘⦗null⦘           💔⦗2⦘⦗<>⦘ 💔⦗1⦘⦗<>⦘ 💔⦗0⦘⦗<>⦘\n" +
+            "\n" +
+            "was <[null, null, null]>"
+
+
+        ));
+    }
+
+    @Test
+    public void describeTo__describeMismatchSafely__with_null_exectations(){
+        final List<Object> iterable = Arrays.asList("", "", "");
+        final FluentIterableMatcher<Object, Iterable<Object>> matching = anIterableOf(Object.class)
+            .withItems(null, null, null);
+        final StringDescription self = new StringDescription();
+        final StringDescription issues = new StringDescription();
+
+        matching.describeTo(self);
+
+        assertThat(self.toString(), is("" +
+            "an Iterable with the following properties:\n" +
+            "- Iterable of Object\n" +
+            "- at least 3 matching item(s)\n" +
+            "\n"
+        ));
+
+        matching.describeMismatchSafely(iterable, issues);
+
+        assertThat(issues.toString(), is("" +
+            "\nFindings:\n" +
+            "\"Not all expectations were fulfilled.\"\n" +
+            "\n" +
+            "⦗0⦘⦗⦘           💔⦗0⦘⦗<null>⦘ 💔⦗1⦘⦗<null>⦘ 💔⦗2⦘⦗<null>⦘\n" +
+            "⦗1⦘⦗⦘           💔⦗1⦘⦗<null>⦘ 💔⦗0⦘⦗<null>⦘ 💔⦗2⦘⦗<null>⦘\n" +
+            "⦗2⦘⦗⦘           💔⦗2⦘⦗<null>⦘ 💔⦗1⦘⦗<null>⦘ 💔⦗0⦘⦗<null>⦘\n" +
+            "\n" +
+            "was <[, , ]>"
+
+
+        ));
+    }
+
+
+    @Test
+    public void customized__withShortStringifiers__describeMismatchSafely__flim_and_flam() {
+
+        final Treatment appendixOp = new Treatment("l'appendicectomie", "Avicenne");
+        final Disease appendicitis = new Disease("crise d'appendicite aiguë", appendixOp, 1);
+        final Treatment coldTherapy = new Treatment("repos au lit", "les ancêtres");
+        final Disease cold = new Disease("refroidissement", coldTherapy, 7);
+        final Treatment alzheimerTherapy = new Treatment("aucune", "Alzheimer");
+        final Disease alzheimer = new Disease("démence d'Alzheimer", alzheimerTherapy, 365 * 20);
+        final Treatment naziTherapy = new Treatment("l'éducation", null);
+        final Disease nazi = new Disease("Front National", naziTherapy, Integer.MAX_VALUE);
+        final Treatment lactoseTherapy = new Treatment("éviter de consommer du lactose en grande quantité", null);
+        final Disease lactose = new Disease("intolérance au lactose", lactoseTherapy, 365 * 50);
+        final Treatment cancerTherapy = new Treatment("chimiothérapie ", "industrie pharmaceutique");
+        final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
+        final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
+        final Disease cancer = new Disease("cancer", cancerTherapy, 90);
+        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .withStringifiers(
+                stringifiers()
+                    .withShortStringifier(Disease.class, d -> "\uD83E\uDD2E "+d.name)
+                    .withShortStringifier(Treatment.class, t -> "\uD83D\uDC89 "+t.name)
+            ).build();
+        final FluentIterableMatcher<Disease, Iterable<Disease>> matcher = an.iterableOf(Disease.class)
+            .ofSize(8)
+            .ordered()
+            .sorted(comparingInt(Disease::getDuration))
+            .unique()
+            .withItems(appendicitis)
+            .withItemsMatching(
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "démence d'Alzheimer")
+                    .with(treatment, an.instanceOf(Treatment.class)
+                        .with(treatmentName, "aucune")
+                        .with(inventor, "Alzheimer"))
+                    .with(duration, 365 * 19),
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "refroidissement")
+                    .with(treatment, cancerTherapy)
+                    .with(duration, 7),
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "intolérance au lactose")
+            )
+            .withItems(
+                madCowDisease,
+                cancer
+            )
+            .withItemsMatching(
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "schizophrénie")
+                    .with(treatment, an.instanceOf(Treatment.class)
+                        .with(treatmentName, "l'éducation")
+                        .with(inventor, nullValue()))
+                    .with(duration, Integer.MAX_VALUE)
+            );
+        final StringDescription issues = new StringDescription();
+
+        matcher.describeMismatchSafely(diseases, issues);
+
+        assertThat(issues.toString(), is("" +
+            "\nFindings:\n" +
+            "\"Size mismatch. Expected: 8. Actual was: 7.\"\n" +
+            "\"Not all expectations were fulfilled.\"\n" +
+            "\"Items did not appear in the expected order.\"\n" +
+            "\"Collection is not sorted.\"\n" +
+            "\"Detected duplicates.\"\n" +
+            "\n" +
+            "⦗0⦘⦗🤮 crise d'appendicite aiguë  ⦘💕        \n" +
+            "⦗1⦘⦗🤮 refroidissement            ⦘    ↔      💔⦗2⦘⦗disease name = 'refroidissement'; treatment = '💉 chimiothérapie '; duration = '7'⦘ 💔⦗1⦘⦗disease name = 'démence d'Alzheimer'; treatment ▶ treatment name = 'aucune'; treatment ▶ inventor = 'Alzheimer'; duration = '6935'⦘ 💔⦗0⦘⦗<🤮 crise d'appendicite aiguë>⦘ 💔⦗3⦘⦗disease name = 'intolérance au lactose'⦘ 💔⦗4⦘⦗<🤮 encéphalopathie spongiaire bovine>⦘ 💔⦗5⦘⦗<🤮 cancer>⦘ 💔⦗6⦘⦗disease name = 'schizophrénie'; treatment ▶ treatment name = 'l'éducation'; treatment ▶ inventor ⩳ 'null'; duration = '2147483647'⦘\n" +
+            "⦗2⦘⦗🤮 démence d'Alzheimer        ⦘    ↔ 👯   💔⦗1⦘⦗disease name = 'démence d'Alzheimer'; treatment ▶ treatment name = 'aucune'; treatment ▶ inventor = 'Alzheimer'; duration = '6935'⦘ 💔⦗2⦘⦗disease name = 'refroidissement'; treatment = '💉 chimiothérapie '; duration = '7'⦘ 💔⦗3⦘⦗disease name = 'intolérance au lactose'⦘ 💔⦗0⦘⦗<🤮 crise d'appendicite aiguë>⦘ 💔⦗4⦘⦗<🤮 encéphalopathie spongiaire bovine>⦘ 💔⦗5⦘⦗<🤮 cancer>⦘ 💔⦗6⦘⦗disease name = 'schizophrénie'; treatment ▶ treatment name = 'l'éducation'; treatment ▶ inventor ⩳ 'null'; duration = '2147483647'⦘\n" +
+            "⦗3⦘⦗🤮 Front National             ⦘    ↔      💔⦗6⦘⦗disease name = 'schizophrénie'; treatment ▶ treatment name = 'l'éducation'; treatment ▶ inventor ⩳ 'null'; duration = '2147483647'⦘ 💔⦗3⦘⦗disease name = 'intolérance au lactose'⦘ 💔⦗2⦘⦗disease name = 'refroidissement'; treatment = '💉 chimiothérapie '; duration = '7'⦘ 💔⦗4⦘⦗<🤮 encéphalopathie spongiaire bovine>⦘ 💔⦗1⦘⦗disease name = 'démence d'Alzheimer'; treatment ▶ treatment name = 'aucune'; treatment ▶ inventor = 'Alzheimer'; duration = '6935'⦘ 💔⦗5⦘⦗<🤮 cancer>⦘ 💔⦗0⦘⦗<🤮 crise d'appendicite aiguë>⦘\n" +
+            "⦗4⦘⦗🤮 intolérance au lactose     ⦘💕↕ ↔     \n" +
+            "⦗5⦘⦗🤮 démence d'Alzheimer        ⦘  ↕ ↔ 👯   💔⦗1⦘⦗disease name = 'démence d'Alzheimer'; treatment ▶ treatment name = 'aucune'; treatment ▶ inventor = 'Alzheimer'; duration = '6935'⦘ 💔⦗5⦘⦗<🤮 cancer>⦘ 💔⦗4⦘⦗<🤮 encéphalopathie spongiaire bovine>⦘ 💔⦗6⦘⦗disease name = 'schizophrénie'; treatment ▶ treatment name = 'l'éducation'; treatment ▶ inventor ⩳ 'null'; duration = '2147483647'⦘ 💔⦗3⦘⦗disease name = 'intolérance au lactose'⦘ 💔⦗2⦘⦗disease name = 'refroidissement'; treatment = '💉 chimiothérapie '; duration = '7'⦘ 💔⦗0⦘⦗<🤮 crise d'appendicite aiguë>⦘\n" +
+            "⦗6⦘⦗🤮 encéphalopathie spongiaire ⦘💕↕ ↔     \n" +
+            "\n" +
+            "was <[Disease{name='crise d'appendicite aiguë', cure=Treatment{name='l'appendicectomie', inventor='Avicenne'}, duration=1}, Disease{name='refroidissement', cure=Treatment{name='repos au lit', inventor='les ancêtres'}, duration=7}, Disease{name='démence d'Alzheimer', cure=Treatment{name='aucune', inventor='Alzheimer'}, duration=7300}, Disease{name='Front National', cure=Treatment{name='l'éducation', inventor='null'}, duration=2147483647}, Disease{name='intolérance au lactose', cure=Treatment{name='éviter de consommer du lactose en grande quantité', inventor='null'}, duration=18250}, Disease{name='démence d'Alzheimer', cure=Treatment{name='aucune', inventor='Alzheimer'}, duration=7300}, Disease{name='encéphalopathie spongiaire bovine', cure=Treatment{name='🤯', inventor='null'}, duration=-5}]>"
+        ));
+    }
 }

@@ -9,21 +9,23 @@ package org.objecttrouve.testing.matchers.fluentits;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.SelfDescribing;
 import org.hamcrest.TypeSafeMatcher;
+import org.objecttrouve.testing.matchers.api.Config;
 import org.objecttrouve.testing.matchers.api.ScorableMatcher;
+import org.objecttrouve.testing.matchers.api.Stringifiers;
+import org.objecttrouve.testing.matchers.api.Symbols;
 
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.lang.System.arraycopy;
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
-import static org.hamcrest.CoreMatchers.equalTo;
+
 /**
  * <p>
  * A {@code org.hamcrest.TypeSafeMatcher} implementation
@@ -81,7 +83,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
  * }
  * </code>
  * </pre>
- *
  */
 public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMatcher<C> implements ScorableMatcher {
 
@@ -101,17 +102,113 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
     private final Set<Integer> duplicates = new HashSet<>();
     private final Set<Integer> unwanted = new HashSet<>();
     private final Set<Finding> findings = new LinkedHashSet<>();
+    private final Prose<X> prose;
+    private final Config config;
 
     /**
      * <p>Creates a {@code FluentIterableMatcher}.</p>
      *
      * @param klass The expected class of items in the {@code Iterable}.
+     * @deprecated C'tor will be removed with v1.0. Use {@link FluentIterableMatcher#FluentIterableMatcher(java.lang.Class, org.objecttrouve.testing.matchers.api.Config)} or customization methods in {@code ConvenientMatchers}..
      */
+    @Deprecated
     public FluentIterableMatcher(final Class<X> klass) {
+        // Avoid package cycles. The c'tor will be removed.
+        this(klass, new Config() {
+                public Symbols getSymbols() {
+                    return new Symbols() {
+                        @Override
+                        public String getExpectedEquals() {
+                            return "";
+                        }
+
+                        @Override
+                        public String getActualNotEquals() {
+                            return "";
+                        }
+
+                        @Override
+                        public String getExpectedMatches() {
+                            return "";
+                        }
+
+                        @Override
+                        public String getPointingNested() {
+                            return "";
+                        }
+
+                        @Override
+                        public String getIterableItemMatchesSymbol() {
+                            return "\uD83D\uDC95";
+                        }
+
+                        @Override
+                        public String getIterableItemNotMatchesSymbol() {
+                            return "\uD83D\uDC94";
+                        }
+
+                        @Override
+                        public String getIterableItemBadItemOrderSymbol() {
+                            return "\u2194";
+                        }
+
+                        @Override
+                        public String getIterableItemBadSortOrderSymbol() {
+                            return "\u2195";
+                        }
+
+                        @Override
+                        public String getIterableItemDuplicateSymbol() {
+                            return "\uD83D\uDC6F";
+                        }
+
+                        @Override
+                        public String getIterableItemUnwantedSymbol() {
+                            return "\uD83D\uDEAF";
+                        }
+
+                        @Override
+                        public String getRightBracket() {
+                            return "⦘";
+                        }
+
+                        @Override
+                        public String getLeftBracket() {
+                            return "⦗";
+                        }
+                    };
+                }
+
+                @Override
+                public Stringifiers getStringifiers() {
+                    return new Stringifiers() {
+
+                        @Override
+                        public <Z> Optional<Function<Z, String>> getShortStringifier(final Z object) {
+                            return Optional.empty();
+                        }
+
+                        @Override
+                        public <Z> Optional<Function<Z, String>> getDebugStringifier(final Z object) {
+                            return Optional.empty();
+                        }
+                    };
+                }
+            }
+        );
+    }
+
+    protected FluentIterableMatcher(final Class<X> klass, final Config config) {
+        this(klass, new Prose<>(config.getSymbols(), config.getStringifiers()), config);
+    }
+
+    FluentIterableMatcher(final Class<X> klass, final Prose<X> prose, final Config config) {
+        this.config = config;
         if (klass == null) {
             throw new IllegalArgumentException("Argument 'klass' must not be null.");
         }
         settings.klass = klass;
+        this.prose = prose;
     }
 
     @Override
@@ -139,8 +236,6 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
 
     @Override
     public void describeTo(final Description description) {
-
-        final Prose<X> prose = new Prose<>();
         prose.describeExpectations(settings, description::appendText);
 
     }
@@ -148,29 +243,19 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
     @Override
     protected void describeMismatchSafely(final C item, final Description mismatchDescription) {
         this.matchesSafely(item);
-        final List<SelfDescribing> fs = findings.stream()
-            .map(Finding::getDescription)
-            .map(s -> (SelfDescribing) description1 -> description1.appendValue(s))
-            .collect(toList());
-        mismatchDescription.appendList("\nFindings:\n", "\n", "\n", fs);
 
-        final int longestActual = Arrays.stream(actual).map(Objects::toString).mapToInt(String::length).max().orElse(1);
+        final Stream<Finding> findings = this.findings.stream();
         final List<ItemResult> itemResults = getItemResults();
-
-        final Prose prose = new Prose();
-        mismatchDescription.appendText("\n");
-        //noinspection unchecked
-        mismatchDescription.appendText(itemResults.stream()
-            .map(result -> prose.line(result, actual.length, longestActual))
-            .collect(joining("\n")
-            ));
-        mismatchDescription.appendText("\n\n");
+        prose.describe(findings, itemResults, mismatchDescription);
 
         super.describeMismatchSafely(item, mismatchDescription);
     }
 
+
+
     /**
      * A measure for the extent to which the actual {@code Iterable} meets the expectations.
+     *
      * @return Value between 0 and 1.
      */
     @Override
@@ -178,7 +263,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         if (findings.isEmpty()) {
             return 1.0;
         }
-        if (findings.contains(theNullCollectionFinding)){
+        if (findings.contains(theNullCollectionFinding)) {
             return 0.0;
         }
         final int generalExpectations = Stream.of(
@@ -201,7 +286,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         if (allMatched > allExpectations) {
             throw new IllegalStateException("There should not be more matched expectations than expectations.");
         }
-        return allMatched/allExpectations;
+        return allMatched / allExpectations;
     }
 
     private void validateSetup() {
@@ -358,7 +443,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         public int compareTo(final ScoredMismatch o) {
             return Comparator
                 .comparingDouble(ScoredMismatch::getScore).reversed()
-                .thenComparing(sm -> Math.abs(sm.actual-sm.matcher))
+                .thenComparing(sm -> Math.abs(sm.actual - sm.matcher))
                 .thenComparing(ScoredMismatch::getMatcher)
                 .thenComparing(ScoredMismatch::getActual)
                 .compare(this, o);
@@ -421,11 +506,11 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
 
     /**
      * <p>Sets the expected number of items in the <i>actual</i> {@code Iterable}.</p>
-     * <p>If used in conjunction with {@link FluentIterableMatcher#exactly()}, 
-     * that number must be consistent with the number of items (or {@code Matcher}s for items) 
-     * specified via {@link FluentIterableMatcher#withItemsMatching(org.hamcrest.Matcher[])} 
+     * <p>If used in conjunction with {@link FluentIterableMatcher#exactly()},
+     * that number must be consistent with the number of items (or {@code Matcher}s for items)
+     * specified via {@link FluentIterableMatcher#withItemsMatching(org.hamcrest.Matcher[])}
      * and/or {@link FluentIterableMatcher#withItems(java.lang.Object[])}.</p>
-     * 
+     *
      * @param expectedSize The expected number of items in the {@code Iterable}.
      * @return The {@code FluentIterableMatcher} instance on which the method was called.
      */
@@ -442,7 +527,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
      * <p>Expect the {@code Iterable} to be sorted in the natural item order.</p>
      * <p>Applicable only if the items in the {@code Iterable} implement {@code java.lang.Comparable}.</p>
      * <p>If the items aren't {@code Comparable}, use {@link FluentIterableMatcher#sorted(java.util.Comparator)}.</p>
-     * 
+     *
      * @return The {@code FluentIterableMatcher} instance on which the method was called.
      */
     @SuppressWarnings("WeakerAccess")
@@ -460,7 +545,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
 
     /**
      * <p>Expect the {@code Iterable} to be sorted according to the order defined by the {@code comparator}.</p>
-     * 
+     *
      * @param comparator {@code Comparator} defining how the {@code Iterable}'s items should be sorted.
      * @return The {@code FluentIterableMatcher} instance on which the method was called.
      */
@@ -472,8 +557,8 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
     }
 
     /**
-     * <p>Expect iterated items to come in the same order in which expected values or item matchers are added. 
-     * (Via {@link FluentIterableMatcher#withItems(java.lang.Object[])} 
+     * <p>Expect iterated items to come in the same order in which expected values or item matchers are added.
+     * (Via {@link FluentIterableMatcher#withItems(java.lang.Object[])}
      * and/or {@link FluentIterableMatcher#withItemsMatching(org.hamcrest.Matcher[])})</p>
      *
      * @return The {@code FluentIterableMatcher} instance on which the method was called.
@@ -486,7 +571,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
 
     /**
      * <p>Adds {@code Matcher}s for the {@code Iterable}'s items.</p>
-     * <p>If {@link FluentIterableMatcher#ordered()} is set, 
+     * <p>If {@link FluentIterableMatcher#ordered()} is set,
      * items are expected to be aligned with the added {@code Matcher}s
      * and/or values set in {@link FluentIterableMatcher#withItems(java.lang.Object[])}.</p>
      * <p>Otherwise the {@code FluentIterableMatcher} applies all matcher to all items.</p>
@@ -524,7 +609,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         final int nrOfExistingExpectations = this.settings.expectations.length;
         expandExpectationsArray(expectedItems.length);
         for (int i = nrOfExistingExpectations, j = 0; i < settings.expectations.length && j < expectedItems.length; i++, j++) {
-            settings.expectations[i] = equalTo(expectedItems[j]);
+            settings.expectations[i] = new EqTo<X>(expectedItems[j], config.getStringifiers());
         }
         return this;
     }
@@ -548,6 +633,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
 
     /**
      * <p>Expect items in the {@code Iterable} to be unique by instance identity or {@code equals} and {@code hashCode}.</p>
+     *
      * @return The {@code FluentIterableMatcher} instance on which the method was called.
      */
     @SuppressWarnings("WeakerAccess")
@@ -555,6 +641,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         this.settings.unique = true;
         return this;
     }
+
     /**
      * <p>Expect items in the {@code Iterable} to be unique according the equality definition of the input {@code equator}.</p>
      * <p>The {@code equator} is a {@code BiPredicate} that returns {@code true} if its input arguments are to be considered equal and {@code false} otherwise.</p>
