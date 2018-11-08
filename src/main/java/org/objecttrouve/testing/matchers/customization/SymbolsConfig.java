@@ -17,7 +17,7 @@ public class SymbolsConfig implements Symbols {
     /**
      * <p>The default set of symbols used in error descriptions.
      * Favoring fanciness over nice rendering in ancient shells.</p>
-     * @return {@code Symbols} with telling signs and revealing emojis.</p>
+     * @return {@code Symbols} with telling signs and revealing emojis.
      */
     public static SymbolsConfig defaultSymbols() {
         return defaultSymbolsBuilder()

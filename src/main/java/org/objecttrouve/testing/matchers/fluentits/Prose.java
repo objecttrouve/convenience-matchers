@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 class Prose<X> {
@@ -86,10 +86,10 @@ class Prose<X> {
         final int longestActual = stringifiedActuals.values().stream().mapToInt(String::length).max().orElse(1);
         mismatchDescription.appendText("\n");
         //noinspection unchecked
-        final String line = itemResults.stream()
-            .map(result -> line(result, itemResults.size(), longestActual, stringifiedActuals.get(result)))
-            .collect(joining("\n")
-            );
+        final Stream<String> stringStream = itemResults.stream()
+            .map(result -> line(result, itemResults.size(), longestActual, stringifiedActuals.get(result)));
+        final String line = stringStream
+            .collect(Collectors.joining("\n"));
         mismatchDescription.appendText(line);
         mismatchDescription.appendText("\n\n");
     }

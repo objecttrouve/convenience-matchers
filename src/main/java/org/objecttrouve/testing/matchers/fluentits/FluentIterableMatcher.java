@@ -184,7 +184,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
                     return new Stringifiers() {
 
                         @Override
-                        public <Z> Optional<Function<Z, String>> getShortStringifier(final Z object) {
+                        public <Z> Optional<Function<Z, String>> getShortStringifier(final Z obj) {
                             return Optional.empty();
                         }
 
@@ -198,6 +198,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         );
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected FluentIterableMatcher(final Class<X> klass, final Config config) {
         this(klass, new Prose<>(config.getSymbols(), config.getStringifiers()), config);
     }
@@ -609,7 +610,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         final int nrOfExistingExpectations = this.settings.expectations.length;
         expandExpectationsArray(expectedItems.length);
         for (int i = nrOfExistingExpectations, j = 0; i < settings.expectations.length && j < expectedItems.length; i++, j++) {
-            settings.expectations[i] = new EqTo<X>(expectedItems[j], config.getStringifiers());
+            settings.expectations[i] = new EqTo<>(expectedItems[j], config.getStringifiers());
         }
         return this;
     }

@@ -18,13 +18,17 @@ public interface Stringifiers {
 
     /**
      * Short description {@code java.util.function.Function} for a class.
-     * @param object the instance to stringify.
+     * @param <X> Type of obj.
+     * @param obj the instance to stringify.
+     * @return {@code Optional} stringifier function foe {@code obj}.
      */
-    <X> Optional<Function<X, String>> getShortStringifier(final X object);
+    <X> Optional<Function<X, String>> getShortStringifier(final X obj);
 
     /**
      * Exhaustive description {@code java.util.function.Function} for a class.
-     * @param object the instance to stringify.
+     * @param <X> Type of obj.
+     * @param obj the instance to stringify.
+     * @return {@code Optional} stringifier function foe {@code obj}.
      */
-    <X> Optional<Function<X, String>> getDebugStringifier(final X object);
+    <X> Optional<Function<X, String>> getDebugStringifier(final X obj);
 }

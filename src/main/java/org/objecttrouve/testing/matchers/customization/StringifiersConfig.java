@@ -33,6 +33,7 @@ public class StringifiersConfig implements Stringifiers {
         /**
          * Define a short stringifier for a class.
          * The value returned by the stringifier {@code Function} should not be (much) longer than 30 characters.
+         * @param <X> Type of {@code klass} to stringify.
          * @param klass The class whose instances to stringify.
          * @param stringifier The function to stringify the class.
          * @return {@code this Builder}.
@@ -47,6 +48,7 @@ public class StringifiersConfig implements Stringifiers {
          * Define an exhaustive stringifier for a class.
          * The value returned by the stringifier {@code Function} should reveal all interesting properties of the class.
          * Used in debug mode.
+         * @param <X> Type of {@code klass} to stringify.
          * @param klass The class whose instances to stringify.
          * @param stringifier The function to stringify the class.
          * @return {@code this Builder}.
@@ -86,21 +88,25 @@ public class StringifiersConfig implements Stringifiers {
 
     /**
      * Short description {@code java.util.function.Function} for a class.
-     * @param object the instance to stringify.
+     * @param <X> Type of obj.
+     * @param obj the instance to stringify.
+     * @return {@code Optional} stringifier function foe {@code obj}.
      */
     @Override
-    public <X> Optional<Function<X, String>> getShortStringifier(final X object) {
-        return get(this.shortStringifiers, object);
+    public <X> Optional<Function<X, String>> getShortStringifier(final X obj) {
+        return get(this.shortStringifiers, obj);
     }
 
 
     /**
      * Exhaustive description {@code java.util.function.Function} for a class.
-     * @param object the instance to stringify.
+     * @param <X> Type of obj.
+     * @param obj the instance to stringify.
+     * @return {@code Optional} stringifier function foe {@code obj}.
      */
     @Override
-    public <X> Optional<Function<X, String>> getDebugStringifier(final X object) {
-        return get(this.debugStringifiers, object);
+    public <X> Optional<Function<X, String>> getDebugStringifier(final X obj) {
+        return get(this.debugStringifiers, obj);
     }
 
 
