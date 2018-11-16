@@ -30,6 +30,6 @@ public class FlamFactory {
         }
         final Prose prose = new Prose(config.getSymbols(), config.getStringifiers());
         //noinspection deprecation
-        return new FluentAttributeMatcher<>(prose);
+        return new FluentAttributeMatcher<T>(prose).debugging(config.isInDebugMode());
     }
 }

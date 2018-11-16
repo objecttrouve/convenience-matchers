@@ -106,14 +106,35 @@ class Prose {
         description.appendText(self);
         description.appendText(symbols.getActualNotEquals());
         description.appendText("'");
-        matcher.describeMismatch(result.getActual(), description);
+        final StringDescription desc = new StringDescription();
+        matcher.describeMismatch(result.getActual(), desc);
+        description.appendText(handleNewLines(desc));
         description.appendText("'");
         return description.toString();
     }
 
-    private String stringify(final Object actual) {
-        final Optional<Function<Object, String>> shortStringifier = stringifiers.getShortStringifier(actual);
+    private static String handleNewLines(final StringDescription desc) {
+        return handleNewLines(desc.toString());
+    }
+
+    private static String handleNewLines(final String s) {
+        return s.replaceAll("\n", "\t\n");
+    }
+
+    private String stringify(final Object actual, final boolean debugging) {
+        final Optional<Function<Object, String>> shortStringifier =
+            getStringifier(actual, debugging);
         return shortStringifier.map(stringifier -> stringifier.apply(actual)).orElseGet(() -> Objects.toString(actual));
+    }
+
+    private Optional<Function<Object, String>> getStringifier(final Object actual, final boolean debugging) {
+        if (debugging) {
+            final Optional<Function<Object, String>> debugStringifier = stringifiers.getDebugStringifier(actual);
+            if (debugStringifier.isPresent()) {
+                return debugStringifier;
+            }
+        }
+        return stringifiers.getShortStringifier(actual);
     }
 
     String matcherExpectation(final Expectation expectation){
@@ -129,7 +150,9 @@ class Prose {
         description.appendText(key);
         description.appendText(symbols.getExpectedMatches());
         description.appendText("'");
-        matcher.describeTo(description);
+        final StringDescription desc = new StringDescription();
+        matcher.describeTo(desc);
+        description.appendText(handleNewLines(desc));
         description.appendText("'");
         return description.toString();
     }
@@ -147,16 +170,16 @@ class Prose {
         }
     }
 
-    String valueMismatch(final Result result) {
-        return valueExpectation(getKey(result), result.getExpectation()) + symbols.getActualNotEquals() + "'" + stringify(result.getActual()) + "'";
+    String valueMismatch(final Result result, final boolean debugging) {
+        return valueExpectation(getKey(result), result.getExpectation(), debugging) + symbols.getActualNotEquals() + "'" + handleNewLines(stringify(result.getActual(), debugging)) + "'";
     }
 
-    private String valueExpectation(final String key, final Expectation expectation) {
-        return key + symbols.getExpectedEquals() + "'" + stringify(expectation.getExpectedValue()) + "'";
+    private String valueExpectation(final String key, final Expectation expectation, final boolean debugging) {
+        return key + symbols.getExpectedEquals() + "'" + handleNewLines(stringify(expectation.getExpectedValue(), debugging)) + "'";
     }
 
-    String valueExpectation(final Expectation expectation){
-        return valueExpectation(getKey(expectation), expectation);
+    String valueExpectation(final Expectation expectation, final boolean debugging) {
+        return valueExpectation(getKey(expectation), expectation, debugging);
     }
 
     static void join(final List<Stream<String>> mismatches, final Description mismatchDescription) {
@@ -165,5 +188,12 @@ class Prose {
            mismatchDescription.appendText(mism.collect(Collectors.joining()));
        });
        mismatchDescription.appendText("\n");
+    }
+
+    <T> void debug(final T item, final Description mismatchDescription) {
+        mismatchDescription.appendText("\n\nActual object:");
+        mismatchDescription.appendText("\n\n" + symbols.getPointingNested() + "toString():\n").appendText(Objects.toString(item));
+        final Optional<Function<T, String>> debugStringifier = this.stringifiers.getDebugStringifier(item);
+        debugStringifier.ifPresent(str -> mismatchDescription.appendText("\n\nstringified:\n").appendText(str.apply(item)).appendText("\n\n"));
     }
 }

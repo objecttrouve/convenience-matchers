@@ -26,7 +26,7 @@ public class FlimFactory {
      */
     public static <X, C extends Iterable<X>> FluentIterableMatcher<X, C> fluentIterableMatcher(final Class<X> klass, final Config config){
         final Prose<X> prose = new Prose<>(config.getSymbols(), config.getStringifiers());
-        return new FluentIterableMatcher<>(klass, prose, config);
+        return new FluentIterableMatcher<X, C>(klass, prose, config).debugging(config.isInDebugMode());
     }
 
 }

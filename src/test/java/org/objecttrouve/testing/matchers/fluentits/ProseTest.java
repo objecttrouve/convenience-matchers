@@ -22,6 +22,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class ProseTest {
 
@@ -527,7 +528,7 @@ public class ProseTest {
 
 
     @Test
-    public void describe__with_short_stringifier_for_actual_items() {
+    public void describe__with_shortStringifier_for_actual_items() {
         final ItemResult<String> r1 = ItemResult.builder("scene de menage")
             .withIndex(0)
             .matched(false)
@@ -582,6 +583,113 @@ public class ProseTest {
             "⦗9⦘⦗SCÈNE DE MÉNAGE⦘💕↕ ↔ 👯🚯\n" +
             "\n" +
             ""));
+    }
+
+    @Test
+    public void describe__with_debugStringifier_for_actual_items() {
+        final ItemResult<String> r1 = ItemResult.builder("scene de menage")
+            .withIndex(0)
+            .matched(false)
+            .withMatchers(singletonList(mwi(equalTo("scène de ménage"), 0)))
+            .build();
+        final ItemResult<String> r2 = ItemResult.builder("scene de manège")
+            .withIndex(1)
+            .matched(false)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .withMatchers(asList(mwi(equalTo("scène de ménage"), 2), mwi(endsWith("age"), 3)))
+            .build();
+        final ItemResult<String> r3 = ItemResult.builder("le mariage")
+            .withIndex(99)
+            .matched(false)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .duplicate(true)
+            .unwanted(true)
+            .withMatchers(singletonList(mwi(equalTo("scène de ménage"), 0)))
+            .build();
+        final ItemResult<String> r4 = ItemResult.builder("scène de ménage")
+            .withIndex(9999)
+            .matched(true)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .duplicate(true)
+            .unwanted(true)
+            .build();
+        final List<Finding> findings = asList(new Finding("Something isn't right."), new Finding("There seems to be chaos..."));
+        final List<ItemResult> itemResults = asList(r1, r2, r3, r4);
+        final Prose<String> prose = new Prose<>(
+            SymbolsConfig.defaultSymbols(),
+            StringifiersConfig.stringifiers()
+                .withDebugStringifier(String.class, String::toUpperCase)
+                .build()
+        );
+        final StringDescription description = new StringDescription();
+
+        prose.describe(findings.stream(), itemResults, description);
+
+        final String result = description.toString();
+        // Not relevant for overview.
+        assertThat(result, is("" +
+            "\nFindings:\n" +
+            "\"Something isn't right.\"\n" +
+            "\"There seems to be chaos...\"\n" +
+            "\n" +
+            "⦗0⦘⦗scene de menage⦘           💔⦗0⦘⦗\"scène de ménage\"⦘\n" +
+            "⦗1⦘⦗scene de manège⦘  ↕ ↔      💔⦗2⦘⦗\"scène de ménage\"⦘ 💔⦗3⦘⦗a string ending with \"age\"⦘\n" +
+            "⦗9⦘⦗le mariage     ⦘  ↕ ↔ 👯🚯 💔⦗0⦘⦗\"scène de ménage\"⦘\n" +
+            "⦗9⦘⦗scène de ménage⦘💕↕ ↔ 👯🚯\n" +
+            "\n" +
+            ""));
+    }
+
+
+    @Test
+    public void describeDebugging__with_debugStringifier() {
+        final ItemResult<String> r1 = ItemResult.builder("scene de menage")
+            .withIndex(0)
+            .matched(false)
+            .withMatchers(singletonList(mwi(equalTo("scène de ménage"), 0)))
+            .build();
+        final ItemResult<String> r2 = ItemResult.builder("scene de manège")
+            .withIndex(1)
+            .matched(false)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .withMatchers(asList(mwi(equalTo("scène de ménage"), 2), mwi(endsWith("age"), 3)))
+            .build();
+        final ItemResult<String> r3 = ItemResult.builder("le mariage")
+            .withIndex(99)
+            .matched(false)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .duplicate(true)
+            .unwanted(true)
+            .withMatchers(singletonList(mwi(equalTo("scène de ménage"), 0)))
+            .build();
+        final ItemResult<String> r4 = ItemResult.builder("scène de ménage")
+            .withIndex(9999)
+            .matched(true)
+            .breakingItemOrder(true)
+            .breakingSortOrder(true)
+            .duplicate(true)
+            .unwanted(true)
+            .build();
+        final List<ItemResult> itemResults = asList(r1, r2, r3, r4);
+        final Prose<String> prose = new Prose<>(
+            SymbolsConfig.defaultSymbols(),
+            StringifiersConfig.stringifiers()
+                .withDebugStringifier(String.class, String::toUpperCase)
+                .build()
+        );
+        final StringDescription description = new StringDescription();
+
+        prose.describeDebugging(itemResults, description);
+
+        final int length = description.toString().length();
+        if (length != 1536) {
+            fail("Length was " + length + ". Debug output changed in an unexpected way:\n\n" + description);
+        }
     }
 
 }

@@ -23,4 +23,9 @@ public interface Config {
      * @return {@code Stringifiers} to pretty-print actual instances.
      */
     Stringifiers getStringifiers();
+
+    /**
+     * @return {@code true} if matchers should run in debug mode.
+     */
+    boolean isInDebugMode();
 }

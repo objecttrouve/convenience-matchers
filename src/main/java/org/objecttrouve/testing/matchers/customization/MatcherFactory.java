@@ -89,6 +89,15 @@ public class MatcherFactory {
             return this;
         }
 
+        /**
+         * <p>Switches on debug mode for all matchers created by the resulting {@code MatcherFactory}.</p>
+         *
+         * @return {@code this Builder}.
+         */
+        public Builder debugging() {
+            this.config.debugging();
+            return this;
+        }
 
         public MatcherFactory build(){
             return new MatcherFactory(config.build());

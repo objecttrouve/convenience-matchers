@@ -104,6 +104,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
     private final Set<Finding> findings = new LinkedHashSet<>();
     private final Prose<X> prose;
     private final Config config;
+    private boolean debugging;
 
     /**
      * <p>Creates a {@code FluentIterableMatcher}.</p>
@@ -194,6 +195,11 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
                         }
                     };
                 }
+
+            @Override
+            public boolean isInDebugMode() {
+                return false;
+            }
             }
         );
     }
@@ -201,6 +207,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
     @SuppressWarnings("WeakerAccess")
     protected FluentIterableMatcher(final Class<X> klass, final Config config) {
         this(klass, new Prose<>(config.getSymbols(), config.getStringifiers()), config);
+        debugging(config.isInDebugMode());
     }
 
     FluentIterableMatcher(final Class<X> klass, final Prose<X> prose, final Config config) {
@@ -242,15 +249,19 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
     }
 
     @Override
-    protected void describeMismatchSafely(final C item, final Description mismatchDescription) {
-        this.matchesSafely(item);
+    protected void describeMismatchSafely(final C iterable, final Description mismatchDescription) {
+        this.matchesSafely(iterable);
 
         final Stream<Finding> findings = this.findings.stream();
         final List<ItemResult> itemResults = getItemResults();
         prose.describe(findings, itemResults, mismatchDescription);
 
-        super.describeMismatchSafely(item, mismatchDescription);
+        if (debugging) {
+            super.describeMismatchSafely(iterable, mismatchDescription);
+            prose.describeDebugging(itemResults, mismatchDescription);
+        }
     }
+
 
 
 
@@ -414,6 +425,13 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
             matchedExpected.add(i);
             matchedActual.add(j);
         }
+    }
+
+    FluentIterableMatcher<X, C> debugging(final boolean inDebugMode) {
+        if (inDebugMode) {
+            debugging();
+        }
+        return this;
     }
 
 
@@ -610,7 +628,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         final int nrOfExistingExpectations = this.settings.expectations.length;
         expandExpectationsArray(expectedItems.length);
         for (int i = nrOfExistingExpectations, j = 0; i < settings.expectations.length && j < expectedItems.length; i++, j++) {
-            settings.expectations[i] = new EqTo<>(expectedItems[j], config.getStringifiers());
+            settings.expectations[i] = new EqTo<>(expectedItems[j], config.getStringifiers(), debugging);
         }
         return this;
     }
@@ -654,6 +672,17 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
     public FluentIterableMatcher<X, C> unique(final BiPredicate<X, X> equator) {
         this.settings.unique = true;
         this.settings.equator = equator;
+        return this;
+    }
+
+    /**
+     * <p>Turn on debug mode for more detailed output.</p>
+     *
+     * @return FluentIterableMatcher.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public FluentIterableMatcher<X, C> debugging() {
+        this.debugging = true;
         return this;
     }
 

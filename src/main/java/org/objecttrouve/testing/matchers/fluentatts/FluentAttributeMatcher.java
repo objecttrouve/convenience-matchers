@@ -113,6 +113,7 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
     private final List<Result> results = new LinkedList<>();
     private final boolean tracking;
     private final Prose prose;
+    private boolean debugging;
 
     /**
      * New instance.
@@ -205,6 +206,7 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
      */
     protected FluentAttributeMatcher(final Config config) {
         this(new Prose(config.getSymbols(), config.getStringifiers()));
+        debugging(config.isInDebugMode());
     }
 
     FluentAttributeMatcher(final Prose prose) {
@@ -306,6 +308,17 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
         return score((expectations.size()-results.size()), expectations.size());
     }
 
+    /**
+     * <p>Turn on debug mode for more detailed output.</p>
+     *
+     * @return FluentAttributeMatcher.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public FluentAttributeMatcher<T> debugging() {
+        this.debugging = true;
+        return this;
+    }
+
     @Override
     protected boolean matchesSafely(final T item) {
         reset();
@@ -365,7 +378,16 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
     @Override
     protected void describeMismatchSafely(final T item, final Description mismatchDescription) {
         matchesSafely(item);
-        final List<Stream<String>> mismatches = recurseTheMismatch();
+        describeMismatchSafely(mismatchDescription, false);
+        if (debugging) {
+            mismatchDescription.appendText("\n\nDEBUG:\n\n");
+            describeMismatchSafely(mismatchDescription, debugging);
+            prose.debug(item, mismatchDescription);
+        }
+    }
+
+    private void describeMismatchSafely(final Description mismatchDescription, final boolean inDebugMode) {
+        final List<Stream<String>> mismatches = recurseTheMismatch(inDebugMode);
         Prose.join(mismatches, mismatchDescription);
     }
 
@@ -388,14 +410,14 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
                     allTails.add(Stream.of(matcherTail));
                 }
             } else {
-                final String valueTail = prose.valueExpectation(expectation);
+                final String valueTail = prose.valueExpectation(expectation, debugging);
                 allTails.add(Stream.of(valueTail));
             }
         }
         return allTails;
     }
 
-    private List<Stream<String>> recurseTheMismatch(){
+    private List<Stream<String>> recurseTheMismatch(final boolean inDebugMode) {
         final List<Stream<String>> allTails = new LinkedList<>();
         for (final Result result : results) {
             final Expectation expectation = result.getExpectation();
@@ -406,7 +428,7 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
                     //noinspection unchecked
                     flam.matchesSafely(result.getActual());
                     //noinspection unchecked
-                    final List<Stream<String>> tails = flam.recurseTheMismatch();
+                    final List<Stream<String>> tails = flam.recurseTheMismatch(flam.debugging);
                     tails.forEach(tail -> {
                         final Stream<String> prefixedTail = prose.prefixTail(result, tail);
                         allTails.add(prefixedTail);
@@ -416,7 +438,7 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
                     allTails.add(Stream.of(matcherTail));
                 }
             } else {
-                final String valueTail = prose.valueMismatch(result);
+                final String valueTail = prose.valueMismatch(result, inDebugMode);
                 allTails.add(Stream.of(valueTail));
             }
         }
@@ -447,4 +469,10 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
     }
 
 
+    FluentAttributeMatcher<T> debugging(final boolean inDebugMode) {
+        if (inDebugMode) {
+            this.debugging();
+        }
+        return this;
+    }
 }

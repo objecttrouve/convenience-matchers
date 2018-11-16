@@ -360,7 +360,7 @@ public class FluentAttributeMatcherTest {
         }
 
         int getHalfTheAnswer() {
-            return theAnswer/2;
+            return theAnswer / 2;
         }
 
         @Override
@@ -544,8 +544,7 @@ public class FluentAttributeMatcherTest {
             .withExpectedEquals("⩶")
             .withActualNotEquals("╪")
             .withExpectedMatches("♒")
-            .withPointingNested("⤼")
-            ;
+            .withPointingNested("⤼");
         final MatcherFactory an = ConvenientMatchers.customized().withSymbols(symbols).build();
         final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
         final Attribute<Answer, Integer> embeddedAnswer = attribute("embedded answer", Answer::getTheAnswer);
@@ -588,7 +587,6 @@ public class FluentAttributeMatcherTest {
             "\n\tanswer = 'A-42'\n"
         ));
     }
-
 
 
     @Test
@@ -705,7 +703,7 @@ public class FluentAttributeMatcherTest {
     public void customized__withShortStringifiers__describeMismatchSafely__withMatching__withValue() {
         final MatcherFactory an = ConvenientMatchers.customized()
             .withStringifiers(
-                stringifiers().withShortStringifier(Answer.class, a -> "A-"+a.theAnswer)
+                stringifiers().withShortStringifier(Answer.class, a -> "A-" + a.theAnswer)
             ).build();
         final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
         final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)//
@@ -720,14 +718,120 @@ public class FluentAttributeMatcherTest {
         ));
     }
 
+
+    @Test
+    public void customized__withShortStringifiers__debugging__globally__describeMismatchSafely__withMatching__withValue() {
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .debugging()
+            .withStringifiers(
+                stringifiers().withShortStringifier(Answer.class, a -> "A-" + a.theAnswer)
+            ).build();
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)//
+            .withValue(answer, new Answer(24));
+        final StringDescription description = new StringDescription();
+        final Question item = new Question(new Answer(42));
+
+        matching.describeMismatchSafely(item, description);
+
+        final String result = description.toString();
+        assertThat(result, startsWith("" +
+            "\n" +
+            "\tanswer = 'A-24' ≠ 'A-42'\n\n\n" +
+            "DEBUG:\n\n\n" +
+            "\tanswer = 'A-24' ≠ 'A-42'\n\n\n" +
+            "Actual object:\n\n ▶ toString():\n" +
+            ""));
+
+    }
+
+    @Test
+    public void customized__withDebugStringifiers__debugging__globally__describeMismatchSafely__withMatching__withValue() {
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .debugging()
+            .withStringifiers(
+                stringifiers()
+                    .withShortStringifier(Answer.class, a -> "A-" + a.theAnswer)
+                    .withDebugStringifier(Answer.class, a -> "The answer to everything is " + a.theAnswer + ".")
+                    .withDebugStringifier(Question.class, q -> "The question was... Err...")
+                    .withDebugStringifier(Integer.class, n -> "INT-" + n)
+            ).build();
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final Attribute<Answer, Integer> answerVal = attribute("THE answer", Answer::getTheAnswer);
+        final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)//
+            .withMatching(answer, an.instanceOf(Answer.class)
+                .with(answerVal, 42));
+        final StringDescription description = new StringDescription();
+        final Question question = new Question(new Answer(24));
+
+        matching.describeMismatchSafely(question, description);
+
+        final int length = description.toString().length();
+        final int toggling = question.toString().length();
+        if (length != 174 + toggling) {
+            fail("Stable length was " + (length - toggling) + ". Debug output changed in an unexpected way:\n\n" + description);
+        }
+    }
+
+    @Test
+    public void customized__withDebugStringifiers__debugging__top_actual__describeMismatchSafely__withMatching__withValue() {
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .withStringifiers(
+                stringifiers()
+                    .withShortStringifier(Answer.class, a -> "A-" + a.theAnswer)
+                    .withDebugStringifier(Answer.class, a -> "The answer to everything is " + a.theAnswer + ".")
+                    .withDebugStringifier(Question.class, q -> "The question was... Err...")
+            ).build();
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)
+            .debugging()//
+            .withValue(answer, new Answer(24));
+        final StringDescription description = new StringDescription();
+        final Question question = new Question(new Answer(42));
+
+        matching.describeMismatchSafely(question, description);
+
+        final int length = description.toString().length();
+        final int toggling = question.toString().length();
+        if (length != 194 + toggling) {
+            fail("Stable length was " + (length - toggling) + ". Debug output changed in an unexpected way:\n\n" + description);
+        }
+    }
+
+    @Test
+    public void customized__withDebugStringifiers__debugging__embedded_matcher__describeMismatchSafely__withMatching__withValue() {
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .withStringifiers(
+                stringifiers()
+                    .withShortStringifier(Answer.class, a -> "A-" + a.theAnswer)
+                    .withDebugStringifier(Answer.class, a -> "The answer to everything is " + a.theAnswer + ".")
+                    .withDebugStringifier(Question.class, q -> "The question was... Err...")
+                    .withDebugStringifier(Integer.class, n -> "INT-" + n)
+            ).build();
+        final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
+        final Attribute<Answer, Integer> answerVal = attribute("THE answer", Answer::getTheAnswer);
+        final FluentAttributeMatcher<Question> matching = an.instanceOf(Question.class)
+            .withMatching(answer, an.instanceOf(Answer.class)
+                .debugging()
+                .with(answerVal, 42));
+        final StringDescription description = new StringDescription();
+        final Question question = new Question(new Answer(24));
+
+        matching.describeMismatchSafely(question, description);
+
+        final int length = description.toString().length();
+        if (length != 44) {
+            fail("Length was " + length + ". Debug output changed in an unexpected way:\n\n" + description);
+        }
+    }
+
     @Test
     public void customized__with_custom_Symbols__describeMismatchSafely__withMatching__withValue() {
         final SymbolsConfig.Builder symbols = SymbolsConfig.symbols()
             .withExpectedEquals("⩶")
             .withActualNotEquals("╪")
             .withExpectedMatches("♒")
-            .withPointingNested("⤼")
-            ;
+            .withPointingNested("⤼");
         final MatcherFactory an = ConvenientMatchers.customized().withSymbols(symbols).build();
         final Attribute<Question, Answer> answer = attribute("answer", Question::getAnswer);
         final Attribute<Answer, Integer> embeddedAnswer = attribute("embedded answer", Answer::getTheAnswer);
@@ -861,7 +965,7 @@ public class FluentAttributeMatcherTest {
         matching.describeMismatchSafely(actual, description);
 
         assertThat(description.toString(), is("" +
-                "\n\tgetUntrackable/??? = 'trackable' ≠ 'untrackable'\n" +
+            "\n\tgetUntrackable/??? = 'trackable' ≠ 'untrackable'\n" +
             ""));
     }
 
@@ -965,7 +1069,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is( "\n\tgetValue = 'null' ≠ 'not null'\n"));
+        assertThat(description.toString(), is("\n\tgetValue = 'null' ≠ 'not null'\n"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -1121,7 +1225,7 @@ public class FluentAttributeMatcherTest {
     public void test__multiple_expectations__all_matching() {
         final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
             .withValue(attribute("count", ThingWithNumbers::count), 3L)//
-            .withValue(attribute("sum",ThingWithNumbers::sum), 6)//
+            .withValue(attribute("sum", ThingWithNumbers::sum), 6)//
             .withMatching(attribute("length", twn -> twn.getNumbers().size()), is(3))//
             ;//
 
@@ -1129,21 +1233,19 @@ public class FluentAttributeMatcherTest {
     }
 
 
-
-
     @Test
     public void test__multiple_expectations__some_matching__getScore() {
         final FluentAttributeMatcher<ThingWithNumbers> matching = aTracking(ThingWithNumbers.class)//
             .withValue(attribute("count", ThingWithNumbers::count), 3L)//
-            .withValue(attribute("sum",ThingWithNumbers::sum), 6)//
+            .withValue(attribute("sum", ThingWithNumbers::sum), 6)//
             .withMatching(attribute("length", twn -> twn.getNumbers().size()), is(3))//
-            .withMatching(attribute("length2", twn -> twn.getNumbers().size()*2), is(6))//
+            .withMatching(attribute("length2", twn -> twn.getNumbers().size() * 2), is(6))//
             ;//
         assertThat(new ThingWithNumbers(1, 2, 3), is(matching));
 
         final double score = matching.getScore();
 
-        assertThat(score,  is(1.0));
+        assertThat(score, is(1.0));
     }
 
     @Test
@@ -1168,10 +1270,8 @@ public class FluentAttributeMatcherTest {
 
         final double score = matching.getScore();
 
-        assertThat(score,  is(0.0));
+        assertThat(score, is(0.0));
     }
-
-
 
 
     @Test
@@ -1271,7 +1371,7 @@ public class FluentAttributeMatcherTest {
 
         matching.describeMismatchSafely(actual, description);
 
-        assertThat(description.toString(), is( "\n" +
+        assertThat(description.toString(), is("\n" +
             "\tsum = '3' ≠ '6'\n" +
             "\tgetNumbers ⩳ 'items 5,6,7' ≠ 'was <[1, 2, 3]>'" +
             "\n"));
@@ -1556,7 +1656,7 @@ public class FluentAttributeMatcherTest {
     @Test
     public void test__FluentAttributeMatcher__should_not_be_moved_or_renamed() {
         // Rename with caution!
-        // Because it's used in a sysprop that's part of the API now.
+        // Because it's used in a sysprop that's part of the API.
         // Rename anyway -> keep sysprop backwards compatible.
         assertThat(FluentAttributeMatcher.class.getCanonicalName(),
             is("org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher"));

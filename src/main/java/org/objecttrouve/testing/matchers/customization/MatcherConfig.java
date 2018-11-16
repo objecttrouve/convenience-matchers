@@ -15,10 +15,13 @@ import java.util.function.Function;
 
 public class MatcherConfig implements Config {
 
+
     public static class Builder {
 
         private Symbols symbols = SymbolsConfig.defaultSymbols();
         private Stringifiers stringifiers = StringifiersConfig.stringifiers().build();
+        private boolean debugging;
+
         /**
          * Define a set of custom symbols to be used in error messages.
          * @param symbolsBuilder A {@link SymbolsConfig.Builder} preconfigured with the desired set of symbols.
@@ -67,10 +70,21 @@ public class MatcherConfig implements Config {
             return new MatcherConfig(this);
         }
 
+        /**
+         * <p>Switches on debug mode for all matchers created the the resulting {@code MatcherConfig}.</p>
+         *
+         * @return {@code this Builder}.
+         */
+        public Builder debugging() {
+            this.debugging = true;
+            return this;
+        }
     }
 
     private final Symbols symbols;
     private final Stringifiers stringifiers;
+    private final boolean debugging;
+
 
     static Builder config(){
         return new Builder();
@@ -79,6 +93,7 @@ public class MatcherConfig implements Config {
     private MatcherConfig(final Builder builder) {
         this.symbols = builder.symbols;
         this.stringifiers = builder.stringifiers;
+        this.debugging = builder.debugging;
     }
 
     /**
@@ -95,5 +110,10 @@ public class MatcherConfig implements Config {
     @Override
     public Stringifiers getStringifiers() {
         return stringifiers;
+    }
+
+    @Override
+    public boolean isInDebugMode() {
+        return debugging;
     }
 }

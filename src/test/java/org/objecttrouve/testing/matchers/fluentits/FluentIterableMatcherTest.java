@@ -16,6 +16,7 @@ import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -24,8 +25,7 @@ import static java.util.Comparator.comparingInt;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.number.IsCloseTo.closeTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableOf;
 import static org.objecttrouve.testing.matchers.customization.StringifiersConfig.stringifiers;
@@ -2897,9 +2897,7 @@ public class FluentIterableMatcherTest {
             "⦗1⦘⦗Paper{text='The Law Of Gravity⦘    ↔   🚯 💔⦗1⦘⦗text = 'PAP!'; pages = '40'⦘\n" +
             "⦗2⦘⦗Paper{text='Booh!', pages=50} ⦘  ↕ ↔   🚯 💔⦗2⦘⦗text = 'Grave'; pages = '0'⦘\n" +
             "⦗3⦘⦗Paper{text='PAP!', pages=40}  ⦘💕↕   👯  \n" +
-            "\n" +
-            "was <[Paper{text='PAP!', pages=40}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='Booh!', pages=50}, Paper{text='PAP!', pages=40}]>"
-
+            "\n"
         ));
     }
 
@@ -2953,8 +2951,7 @@ public class FluentIterableMatcherTest {
             "⦗1⦘⦗Paper{text='Booh!', pages=50} ⦘    ↔      💔⦗2⦘⦗text = 'Booh!'; pages = '3'⦘ 💔⦗1⦘⦗text = 'Grave'; pages = '0'⦘ 💔⦗0⦘⦗text = 'PAP!'; pages = '40'⦘\n" +
             "⦗2⦘⦗Paper{text='The Law Of Gravity⦘    ↔      💔⦗2⦘⦗text = 'Booh!'; pages = '3'⦘ 💔⦗1⦘⦗text = 'Grave'; pages = '0'⦘ 💔⦗0⦘⦗text = 'PAP!'; pages = '40'⦘\n" +
             "⦗3⦘⦗Paper{text='PAP!', pages=40}  ⦘💕↕ ↔ 👯  \n" +
-            "\n" +
-            "was <[Paper{text='PAP!', pages=40}, Paper{text='Booh!', pages=50}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='PAP!', pages=40}]>"
+            "\n"
         ));
     }
 
@@ -3092,10 +3089,7 @@ public class FluentIterableMatcherTest {
             "⦗3⦘⦗Disease{name='Front National',⦘    ↔      💔⦗6⦘⦗disease name = 'schizophrénie'; treatment ▶ treatment name = 'l'éducation'; treatment ▶ inventor ⩳ 'null'; duration = '2147483647'⦘ 💔⦗3⦘⦗disease name = 'intolérance au lactose'⦘ 💔⦗2⦘⦗disease name = 'refroidissement'; treatment ▶ treatment name = 'repos au lit'; treatment ▶ inventor = 'L'Objet Trouvé'; duration = '7'⦘ 💔⦗4⦘⦗<Disease{name='encéphalopathie spongiaire bovine', cure=Treatment{name='🤯', inventor='null'}, duration=-5}>⦘ 💔⦗1⦘⦗disease name = 'démence d'Alzheimer'; treatment ▶ treatment name = 'aucune'; treatment ▶ inventor = 'Alzheimer'; duration = '6935'⦘ 💔⦗5⦘⦗<Disease{name='cancer', cure=Treatment{name='chimiothérapie ', inventor='industrie pharmaceutique'}, duration=90}>⦘ 💔⦗0⦘⦗<Disease{name='crise d'appendicite aiguë', cure=Treatment{name='l'appendicectomie', inventor='Avicenne'}, duration=1}>⦘\n" +
             "⦗4⦘⦗Disease{name='intolérance au l⦘💕↕ ↔     \n" +
             "⦗5⦘⦗Disease{name='démence d'Alzhei⦘  ↕ ↔ 👯   💔⦗1⦘⦗disease name = 'démence d'Alzheimer'; treatment ▶ treatment name = 'aucune'; treatment ▶ inventor = 'Alzheimer'; duration = '6935'⦘ 💔⦗5⦘⦗<Disease{name='cancer', cure=Treatment{name='chimiothérapie ', inventor='industrie pharmaceutique'}, duration=90}>⦘ 💔⦗4⦘⦗<Disease{name='encéphalopathie spongiaire bovine', cure=Treatment{name='🤯', inventor='null'}, duration=-5}>⦘ 💔⦗6⦘⦗disease name = 'schizophrénie'; treatment ▶ treatment name = 'l'éducation'; treatment ▶ inventor ⩳ 'null'; duration = '2147483647'⦘ 💔⦗3⦘⦗disease name = 'intolérance au lactose'⦘ 💔⦗2⦘⦗disease name = 'refroidissement'; treatment ▶ treatment name = 'repos au lit'; treatment ▶ inventor = 'L'Objet Trouvé'; duration = '7'⦘ 💔⦗0⦘⦗<Disease{name='crise d'appendicite aiguë', cure=Treatment{name='l'appendicectomie', inventor='Avicenne'}, duration=1}>⦘\n" +
-            "⦗6⦘⦗Disease{name='encéphalopathie ⦘💕↕ ↔     \n" +
-            "\n" +
-            "was <[Disease{name='crise d'appendicite aiguë', cure=Treatment{name='l'appendicectomie', inventor='Avicenne'}, duration=1}, Disease{name='refroidissement', cure=Treatment{name='repos au lit', inventor='les ancêtres'}, duration=7}, Disease{name='démence d'Alzheimer', cure=Treatment{name='aucune', inventor='Alzheimer'}, duration=7300}, Disease{name='Front National', cure=Treatment{name='l'éducation', inventor='null'}, duration=2147483647}, Disease{name='intolérance au lactose', cure=Treatment{name='éviter de consommer du lactose en grande quantité', inventor='null'}, duration=18250}, Disease{name='démence d'Alzheimer', cure=Treatment{name='aucune', inventor='Alzheimer'}, duration=7300}, Disease{name='encéphalopathie spongiaire bovine', cure=Treatment{name='🤯', inventor='null'}, duration=-5}]>"
-
+            "⦗6⦘⦗Disease{name='encéphalopathie ⦘💕↕ ↔     \n\n"
         ));
 
     }
@@ -3149,8 +3143,7 @@ public class FluentIterableMatcherTest {
             "[1][Paper{text='The Law Of Gravity]    <>  -- FAIL[1][text = 'PAP!'; pages = '40']\n" +
             "[2][Paper{text='Booh!', pages=50} ]  ^v<>  -- FAIL[2][text = 'Grave'; pages = '0']\n" +
             "[3][Paper{text='PAP!', pages=40}  ]OK^v  2+  \n" +
-            "\n" +
-            "was <[Paper{text='PAP!', pages=40}, Paper{text='The Law Of Gravity', pages=180}, Paper{text='Booh!', pages=50}, Paper{text='PAP!', pages=40}]>"
+            "\n"
         ));
     }
 
@@ -3180,10 +3173,7 @@ public class FluentIterableMatcherTest {
             "⦗0⦘⦗null⦘           💔⦗0⦘⦗<>⦘ 💔⦗1⦘⦗<>⦘ 💔⦗2⦘⦗<>⦘\n" +
             "⦗1⦘⦗null⦘           💔⦗1⦘⦗<>⦘ 💔⦗0⦘⦗<>⦘ 💔⦗2⦘⦗<>⦘\n" +
             "⦗2⦘⦗null⦘           💔⦗2⦘⦗<>⦘ 💔⦗1⦘⦗<>⦘ 💔⦗0⦘⦗<>⦘\n" +
-            "\n" +
-            "was <[null, null, null]>"
-
-
+            "\n"
         ));
     }
 
@@ -3213,10 +3203,7 @@ public class FluentIterableMatcherTest {
             "⦗0⦘⦗⦘           💔⦗0⦘⦗<null>⦘ 💔⦗1⦘⦗<null>⦘ 💔⦗2⦘⦗<null>⦘\n" +
             "⦗1⦘⦗⦘           💔⦗1⦘⦗<null>⦘ 💔⦗0⦘⦗<null>⦘ 💔⦗2⦘⦗<null>⦘\n" +
             "⦗2⦘⦗⦘           💔⦗2⦘⦗<null>⦘ 💔⦗1⦘⦗<null>⦘ 💔⦗0⦘⦗<null>⦘\n" +
-            "\n" +
-            "was <[, , ]>"
-
-
+            "\n"
         ));
     }
 
@@ -3295,9 +3282,223 @@ public class FluentIterableMatcherTest {
             "⦗3⦘⦗🤮 Front National             ⦘    ↔      💔⦗6⦘⦗disease name = 'schizophrénie'; treatment ▶ treatment name = 'l'éducation'; treatment ▶ inventor ⩳ 'null'; duration = '2147483647'⦘ 💔⦗3⦘⦗disease name = 'intolérance au lactose'⦘ 💔⦗2⦘⦗disease name = 'refroidissement'; treatment = '💉 chimiothérapie '; duration = '7'⦘ 💔⦗4⦘⦗<🤮 encéphalopathie spongiaire bovine>⦘ 💔⦗1⦘⦗disease name = 'démence d'Alzheimer'; treatment ▶ treatment name = 'aucune'; treatment ▶ inventor = 'Alzheimer'; duration = '6935'⦘ 💔⦗5⦘⦗<🤮 cancer>⦘ 💔⦗0⦘⦗<🤮 crise d'appendicite aiguë>⦘\n" +
             "⦗4⦘⦗🤮 intolérance au lactose     ⦘💕↕ ↔     \n" +
             "⦗5⦘⦗🤮 démence d'Alzheimer        ⦘  ↕ ↔ 👯   💔⦗1⦘⦗disease name = 'démence d'Alzheimer'; treatment ▶ treatment name = 'aucune'; treatment ▶ inventor = 'Alzheimer'; duration = '6935'⦘ 💔⦗5⦘⦗<🤮 cancer>⦘ 💔⦗4⦘⦗<🤮 encéphalopathie spongiaire bovine>⦘ 💔⦗6⦘⦗disease name = 'schizophrénie'; treatment ▶ treatment name = 'l'éducation'; treatment ▶ inventor ⩳ 'null'; duration = '2147483647'⦘ 💔⦗3⦘⦗disease name = 'intolérance au lactose'⦘ 💔⦗2⦘⦗disease name = 'refroidissement'; treatment = '💉 chimiothérapie '; duration = '7'⦘ 💔⦗0⦘⦗<🤮 crise d'appendicite aiguë>⦘\n" +
-            "⦗6⦘⦗🤮 encéphalopathie spongiaire ⦘💕↕ ↔     \n" +
-            "\n" +
-            "was <[Disease{name='crise d'appendicite aiguë', cure=Treatment{name='l'appendicectomie', inventor='Avicenne'}, duration=1}, Disease{name='refroidissement', cure=Treatment{name='repos au lit', inventor='les ancêtres'}, duration=7}, Disease{name='démence d'Alzheimer', cure=Treatment{name='aucune', inventor='Alzheimer'}, duration=7300}, Disease{name='Front National', cure=Treatment{name='l'éducation', inventor='null'}, duration=2147483647}, Disease{name='intolérance au lactose', cure=Treatment{name='éviter de consommer du lactose en grande quantité', inventor='null'}, duration=18250}, Disease{name='démence d'Alzheimer', cure=Treatment{name='aucune', inventor='Alzheimer'}, duration=7300}, Disease{name='encéphalopathie spongiaire bovine', cure=Treatment{name='🤯', inventor='null'}, duration=-5}]>"
+            "⦗6⦘⦗🤮 encéphalopathie spongiaire ⦘💕↕ ↔     \n\n"
         ));
+    }
+
+    @Test
+    public void customized__withDebugStringifiers__debugging__globally__describeMismatchSafely__flim_and_flam() {
+
+        final Treatment appendixOp = new Treatment("l'appendicectomie", "Avicenne");
+        final Disease appendicitis = new Disease("crise d'appendicite aiguë", appendixOp, 1);
+        final Treatment coldTherapy = new Treatment("repos au lit", "les ancêtres");
+        final Disease cold = new Disease("refroidissement", coldTherapy, 7);
+        final Treatment alzheimerTherapy = new Treatment("aucune", "Alzheimer");
+        final Disease alzheimer = new Disease("démence d'Alzheimer", alzheimerTherapy, 365 * 20);
+        final Treatment naziTherapy = new Treatment("l'éducation", null);
+        final Disease nazi = new Disease("Front National", naziTherapy, Integer.MAX_VALUE);
+        final Treatment lactoseTherapy = new Treatment("éviter de consommer du lactose en grande quantité", null);
+        final Disease lactose = new Disease("intolérance au lactose", lactoseTherapy, 365 * 50);
+        final Treatment cancerTherapy = new Treatment("chimiothérapie ", "industrie pharmaceutique");
+        final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
+        final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
+        final Disease cancer = new Disease("cancer", cancerTherapy, 90);
+        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+        final Function<Disease, String> shortStringDisease = d -> "\uD83E\uDD2E " + d.name;
+        final Function<Treatment, String> shortstringTreatment = t -> "\uD83D\uDC89 " + t.name;
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .debugging()
+            .withStringifiers(
+                stringifiers()
+                    .withShortStringifier(Disease.class, shortStringDisease)
+                    .withShortStringifier(Treatment.class, shortstringTreatment)
+                    .withDebugStringifier(Disease.class, d -> "DEBUG: " + shortStringDisease.apply(d))
+                    .withDebugStringifier(Treatment.class, t -> "DEBUG: " + shortstringTreatment.apply(t))
+            ).build();
+        final FluentIterableMatcher<Disease, Iterable<Disease>> matcher = an.iterableOf(Disease.class)
+            .ofSize(8)
+            .ordered()
+            .sorted(comparingInt(Disease::getDuration))
+            .unique()
+            .withItems(appendicitis)
+            .withItemsMatching(
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "démence d'Alzheimer")
+                    .with(treatment, an.instanceOf(Treatment.class)
+                        .with(treatmentName, "aucune")
+                        .with(inventor, "Alzheimer"))
+                    .with(duration, 365 * 19),
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "refroidissement")
+                    .with(treatment, cancerTherapy)
+                    .with(duration, 7),
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "intolérance au lactose")
+            )
+            .withItems(
+                madCowDisease,
+                cancer
+            )
+            .withItemsMatching(
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "schizophrénie")
+                    .with(treatment, an.instanceOf(Treatment.class)
+                        .with(treatmentName, "l'éducation")
+                        .with(inventor, nullValue()))
+                    .with(duration, Integer.MAX_VALUE)
+            );
+        final StringDescription issues = new StringDescription();
+
+        matcher.describeMismatchSafely(diseases, issues);
+
+        final int length = issues.toString().length();
+        if (length != 20787) {
+            fail("Length was " + length + ". Debug output changed in an unexpected way:\n\n" + issues);
+        }
+    }
+
+
+    @Test
+    public void customized__withDebugStringifiers__debugging__top_matcher__describeMismatchSafely__flim_and_flam() {
+
+        final Treatment appendixOp = new Treatment("l'appendicectomie", "Avicenne");
+        final Disease appendicitis = new Disease("crise d'appendicite aiguë", appendixOp, 1);
+        final Treatment coldTherapy = new Treatment("repos au lit", "les ancêtres");
+        final Disease cold = new Disease("refroidissement", coldTherapy, 7);
+        final Treatment alzheimerTherapy = new Treatment("aucune", "Alzheimer");
+        final Disease alzheimer = new Disease("démence d'Alzheimer", alzheimerTherapy, 365 * 20);
+        final Treatment naziTherapy = new Treatment("l'éducation", null);
+        final Disease nazi = new Disease("Front National", naziTherapy, Integer.MAX_VALUE);
+        final Treatment lactoseTherapy = new Treatment("éviter de consommer du lactose en grande quantité", null);
+        final Disease lactose = new Disease("intolérance au lactose", lactoseTherapy, 365 * 50);
+        final Treatment cancerTherapy = new Treatment("chimiothérapie ", "industrie pharmaceutique");
+        final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
+        final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
+        final Disease cancer = new Disease("cancer", cancerTherapy, 90);
+        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+        final Function<Disease, String> shortStringDisease = d -> "\uD83E\uDD2E " + d.name;
+        final Function<Treatment, String> shortstringTreatment = t -> "\uD83D\uDC89 " + t.name;
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .withStringifiers(
+                stringifiers()
+                    .withShortStringifier(Disease.class, shortStringDisease)
+                    .withShortStringifier(Treatment.class, shortstringTreatment)
+                    .withDebugStringifier(Disease.class, d -> "DEBUG: " + shortStringDisease.apply(d))
+                    .withDebugStringifier(Treatment.class, t -> "DEBUG: " + shortstringTreatment.apply(t))
+            ).build();
+        final FluentIterableMatcher<Disease, Iterable<Disease>> matcher = an.iterableOf(Disease.class)
+            .debugging()
+            .ofSize(8)
+            .ordered()
+            .sorted(comparingInt(Disease::getDuration))
+            .unique()
+            .withItems(appendicitis)
+            .withItemsMatching(
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "démence d'Alzheimer")
+                    .with(treatment, an.instanceOf(Treatment.class)
+                        .with(treatmentName, "aucune")
+                        .with(inventor, "Alzheimer"))
+                    .with(duration, 365 * 19),
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "refroidissement")
+                    .with(treatment, cancerTherapy)
+                    .with(duration, 7),
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "intolérance au lactose")
+            )
+            .withItems(
+                madCowDisease,
+                cancer
+            )
+            .withItemsMatching(
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "schizophrénie")
+                    .with(treatment, an.instanceOf(Treatment.class)
+                        .with(treatmentName, "l'éducation")
+                        .with(inventor, nullValue()))
+                    .with(duration, Integer.MAX_VALUE)
+            );
+        final StringDescription issues = new StringDescription();
+
+        matcher.describeMismatchSafely(diseases, issues);
+
+        final int length = issues.toString().length();
+        if (length != 15273) {
+            fail("Length was " + length + ". Debug output changed in an unexpected way:\n\n" + issues);
+        }
+    }
+
+
+    @Test
+    public void customized__withDebugStringifiers__debugging__embedded_matcher__describeMismatchSafely__flim_and_flam() {
+
+        final Treatment appendixOp = new Treatment("l'appendicectomie", "Avicenne");
+        final Disease appendicitis = new Disease("crise d'appendicite aiguë", appendixOp, 1);
+        final Treatment coldTherapy = new Treatment("repos au lit", "les ancêtres");
+        final Disease cold = new Disease("refroidissement", coldTherapy, 7);
+        final Treatment alzheimerTherapy = new Treatment("aucune", "Alzheimer");
+        final Disease alzheimer = new Disease("démence d'Alzheimer", alzheimerTherapy, 365 * 20);
+        final Treatment naziTherapy = new Treatment("l'éducation", null);
+        final Disease nazi = new Disease("Front National", naziTherapy, Integer.MAX_VALUE);
+        final Treatment lactoseTherapy = new Treatment("éviter de consommer du lactose en grande quantité", null);
+        final Disease lactose = new Disease("intolérance au lactose", lactoseTherapy, 365 * 50);
+        final Treatment cancerTherapy = new Treatment("chimiothérapie ", "industrie pharmaceutique");
+        final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
+        final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
+        final Disease cancer = new Disease("cancer", cancerTherapy, 90);
+        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+        final Function<Disease, String> shortStringDisease = d -> "\uD83E\uDD2E " + d.name;
+        final Function<Treatment, String> shortstringTreatment = t -> "\uD83D\uDC89 " + t.name;
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .withStringifiers(
+                stringifiers()
+                    .withShortStringifier(Disease.class, shortStringDisease)
+                    .withShortStringifier(Treatment.class, shortstringTreatment)
+                    .withDebugStringifier(Disease.class, d -> "DEBUG: " + shortStringDisease.apply(d))
+                    .withDebugStringifier(Treatment.class, t -> "DEBUG: " + shortstringTreatment.apply(t))
+            ).build();
+        final FluentIterableMatcher<Disease, Iterable<Disease>> matcher = an.iterableOf(Disease.class)
+            .ofSize(8)
+            .ordered()
+            .sorted(comparingInt(Disease::getDuration))
+            .unique()
+            .withItems(appendicitis)
+            .withItemsMatching(
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "démence d'Alzheimer")
+                    .with(treatment, an.instanceOf(Treatment.class)
+                        .with(treatmentName, "aucune")
+                        .with(inventor, "Alzheimer"))
+                    .with(duration, 365 * 19),
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "refroidissement")
+                    .with(treatment, cancerTherapy)
+                    .with(duration, 7),
+                an.instanceOf(Disease.class)
+                    .with(diseaseName, "intolérance au lactose")
+            )
+            .withItems(
+                madCowDisease,
+                cancer
+            )
+            .withItemsMatching(
+                an.instanceOf(Disease.class)
+                    .debugging()
+                    .with(diseaseName, "schizophrénie")
+                    .with(treatment, an.instanceOf(Treatment.class)
+                        .with(treatmentName, "l'éducation")
+                        .with(inventor, nullValue()))
+                    .with(duration, Integer.MAX_VALUE)
+            );
+        final StringDescription issues = new StringDescription();
+
+        matcher.describeMismatchSafely(diseases, issues);
+
+        final int length = issues.toString().length();
+        // Not applied. Let's live with it for the time being.
+        if (length != 2580) {
+            fail("Length was " + length + ". Debug output changed in an unexpected way:\n\n" + issues);
+        }
     }
 }

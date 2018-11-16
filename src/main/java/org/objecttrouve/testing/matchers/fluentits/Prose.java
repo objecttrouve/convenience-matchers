@@ -8,15 +8,13 @@
 package org.objecttrouve.testing.matchers.fluentits;
 
 import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.hamcrest.SelfDescribing;
 import org.hamcrest.StringDescription;
 import org.objecttrouve.testing.matchers.api.Stringifiers;
 import org.objecttrouve.testing.matchers.api.Symbols;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -127,4 +125,67 @@ class Prose<X> {
 
     }
 
+    void describeDebugging(final List<ItemResult> itemResults, final Description mismatchDescription) {
+        mismatchDescription.appendText("\n\nDEBUG:\n\n");
+        itemResults.forEach(itemResult -> {
+            mismatchDescription
+                .appendText("\n\n=== ACTUAL ITEM ")
+                .appendText(symbols.getLeftBracket())
+                .appendText(String.valueOf(itemResult.getIndex()))
+                .appendText(symbols.getRightBracket())
+                .appendText(" ===================================================================================================\n\n")
+                .appendText(symbols.getLeftBracket())
+                .appendText(itemResult.isMatched() ? symbols.getIterableItemMatchesSymbol() : symbols.getIterableItemNotMatchesSymbol())
+                .appendText(symbols.getRightBracket())
+            ;
+            final Object actual = itemResult.getActual();
+            final String stringifiedActual = Optional.ofNullable(actual)
+                .flatMap(stringifiers::getDebugStringifier)
+                .orElse(Objects::toString)
+                .apply(actual);
+            mismatchDescription
+                .appendText(symbols.getLeftBracket())
+                .appendText(stringifiedActual)
+                .appendText(symbols.getRightBracket());
+            mismatchDescription.appendText(":");
+            //noinspection unchecked
+            final List<ItemResult.MatcherWithIndex> mismatchedItemMatchers = itemResult.getMismatchedItemMatchers();
+            mismatchedItemMatchers.forEach(mm ->
+            {
+                mismatchDescription
+                    .appendText("\n\n\t--- MISMATCHED MATCHER ")
+                    .appendText(symbols.getLeftBracket())
+                    .appendText(String.valueOf(mm.getIndex()))
+                    .appendText(symbols.getRightBracket())
+                    .appendText(" --------------------------------------------------------------------------\n");
+                mismatchDescription.appendText("\n\tActual ")
+                    .appendText(symbols.getLeftBracket())
+                    .appendText(itemResult.isMatched() ? symbols.getIterableItemMatchesSymbol() : symbols.getIterableItemNotMatchesSymbol())
+                    .appendText(symbols.getRightBracket())
+                    .appendText(":\n\n\t\t")
+                    .appendText(stringifiedActual.replaceAll("\n", "\n\t\t"))
+                    .appendText("\n\n");
+
+                mismatchDescription.appendText("\tMatcher expected:\n");
+                final StringDescription selfDesc = new StringDescription();
+                final Matcher matcher = mm.getMatcher();
+                matcher.matches(actual);
+                matcher.describeTo(selfDesc);
+                final String prettySelf = selfDesc.toString().replaceAll("\n", "\n\t\t");
+                mismatchDescription
+                    .appendText("\n\t\t")
+                    .appendText(prettySelf)
+                    .appendText("\n");
+                mismatchDescription.appendText("\n\tMatcher described mismatch:\n");
+                final StringDescription mmDesc = new StringDescription();
+                matcher.describeMismatch(actual, mmDesc);
+                final String pretty = mmDesc.toString().replaceAll("\n", "\n\t\t");
+                mismatchDescription
+                    .appendText("\n\t\t")
+                    .appendText(pretty)
+                    .appendText("\n");
+            });
+            mismatchDescription.appendText("\n\n");
+        });
+    }
 }

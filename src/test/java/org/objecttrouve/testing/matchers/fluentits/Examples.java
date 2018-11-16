@@ -9,10 +9,13 @@ package org.objecttrouve.testing.matchers.fluentits;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.objecttrouve.testing.matchers.ConvenientMatchers;
+import org.objecttrouve.testing.matchers.customization.MatcherFactory;
 import org.objecttrouve.testing.matchers.fluentatts.Attribute;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -22,6 +25,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableOf;
+import static org.objecttrouve.testing.matchers.customization.StringifiersConfig.stringifiers;
 import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 
@@ -641,10 +645,10 @@ public class Examples {
         }
     }
 
-    private static final Attribute<Disease, String> diseaseName = attribute("disease name", Disease::getName);
+    private static final Attribute<Disease, String> diseaseName = attribute("disease-name", Disease::getName);
     private static final Attribute<Disease, Integer> duration = attribute("duration", Disease::getDuration);
     private static final Attribute<Disease, Treatment> treatment = attribute("treatment", Disease::getCure);
-    private static final Attribute<Treatment, String> treatmentName = attribute("treatment name", Treatment::getName);
+    private static final Attribute<Treatment, String> treatmentName = attribute("treatment-name", Treatment::getName);
     private static final Attribute<Treatment, String> inventor = attribute("inventor", Treatment::getInventor);
 
     @Test
@@ -703,6 +707,280 @@ public class Examples {
         ));
 
     }
+
+
+    @Test
+    public void flim_and_flam__debugging__globally() {
+
+        final Function<Treatment, String> treatmentStringFunction = t -> "'" + t.name + "' by '" + t.inventor + "'";
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .debugging()
+            .withStringifiers(
+                stringifiers()
+                    .withShortStringifier(Treatment.class, t -> t.name)
+                    .withDebugStringifier(Treatment.class, treatmentStringFunction)
+                    .withShortStringifier(Disease.class, d -> d.name)
+                    .withDebugStringifier(Disease.class, d -> "'" + d.name + "' lasting " + d.duration + " days waiting for " + treatmentStringFunction.apply(d.cure))
+            ).build();
+        final Treatment appendixOp = new Treatment("l'appendicectomie", "Avicenne");
+        final Disease appendicitis = new Disease("crise d'appendicite aiguë", appendixOp, 1);
+        final Treatment coldTherapy = new Treatment("repos au lit", "les ancêtres");
+        final Disease cold = new Disease("refroidissement", coldTherapy, 7);
+        final Treatment alzheimerTherapy = new Treatment("aucune", "Alzheimer");
+        final Disease alzheimer = new Disease("démence d'Alzheimer", alzheimerTherapy, 365 * 20);
+        final Treatment naziTherapy = new Treatment("l'éducation", null);
+        final Disease nazi = new Disease("Front National", naziTherapy, Integer.MAX_VALUE);
+        final Treatment lactoseTherapy = new Treatment("éviter de consommer du lactose en grande quantité", null);
+        final Disease lactose = new Disease("intolérance au lactose", lactoseTherapy, 365 * 50);
+        final Treatment cancerTherapy = new Treatment("chimiothérapie ", "industrie pharmaceutique");
+        final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
+        final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
+        final Disease cancer = new Disease("cancer", cancerTherapy, 90);
+        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+
+        assertThat(diseases, is(
+            an.iterableOf(Disease.class)
+                .ofSize(8)
+                .ordered()
+                .sorted(comparingInt(Disease::getDuration))
+                .unique()
+                .withItems(appendicitis)
+                .withItemsMatching(
+                    an.instanceOf(Disease.class)
+                        .with(diseaseName, "démence d'Alzheimer")
+                        .with(treatment, an.instanceOf(Treatment.class)
+                            .with(treatmentName, "aucune")
+                            .with(inventor, "Alzheimer"))
+                        .with(duration, 365 * 19),
+                    an.instanceOf(Disease.class)
+                        .with(diseaseName, "refroidissement")
+                        .with(treatment, an.instanceOf(Treatment.class)
+                            .with(treatmentName, "repos au lit")
+                            .with(inventor, "L'Objet Trouvé"))
+                        .with(duration, 7),
+                    an.instanceOf(Disease.class).with(diseaseName, "intolérance au lactose")
+                )
+                .withItems(
+                    madCowDisease,
+                    cancer
+                )
+                .withItemsMatching(
+                    an.instanceOf(Disease.class)
+                        .with(diseaseName, "schizophrénie")
+                        .with(treatment, an.instanceOf(Treatment.class)
+                            .with(treatmentName, "l'éducation")
+                            .with(inventor, nullValue()))
+                        .with(duration, Integer.MAX_VALUE)
+                )
+        ));
+
+    }
+
+
+    @Test
+    public void flim_and_flam__debugging__focused_on_list() {
+
+        final Function<Treatment, String> treatmentStringFunction = t -> "'" + t.name + "' by '" + t.inventor + "'";
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .withStringifiers(
+                stringifiers()
+                    .withShortStringifier(Treatment.class, t -> t.name)
+                    .withDebugStringifier(Treatment.class, treatmentStringFunction)
+                    .withShortStringifier(Disease.class, d -> d.name)
+                    .withDebugStringifier(Disease.class, d -> "'" + d.name + "' lasting " + d.duration + " days waiting for " + treatmentStringFunction.apply(d.cure))
+            ).build();
+        final Treatment appendixOp = new Treatment("l'appendicectomie", "Avicenne");
+        final Disease appendicitis = new Disease("crise d'appendicite aiguë", appendixOp, 1);
+        final Treatment coldTherapy = new Treatment("repos au lit", "les ancêtres");
+        final Disease cold = new Disease("refroidissement", coldTherapy, 7);
+        final Treatment alzheimerTherapy = new Treatment("aucune", "Alzheimer");
+        final Disease alzheimer = new Disease("démence d'Alzheimer", alzheimerTherapy, 365 * 20);
+        final Treatment naziTherapy = new Treatment("l'éducation", null);
+        final Disease nazi = new Disease("Front National", naziTherapy, Integer.MAX_VALUE);
+        final Treatment lactoseTherapy = new Treatment("éviter de consommer du lactose en grande quantité", null);
+        final Disease lactose = new Disease("intolérance au lactose", lactoseTherapy, 365 * 50);
+        final Treatment cancerTherapy = new Treatment("chimiothérapie ", "industrie pharmaceutique");
+        final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
+        final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
+        final Disease cancer = new Disease("cancer", cancerTherapy, 90);
+        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+
+        assertThat(diseases, is(
+            an.iterableOf(Disease.class)
+                .debugging()
+                .ofSize(8)
+                .ordered()
+                .sorted(comparingInt(Disease::getDuration))
+                .unique()
+                .withItems(appendicitis)
+                .withItemsMatching(
+                    an.instanceOf(Disease.class)
+                        .with(diseaseName, "démence d'Alzheimer")
+                        .with(treatment, an.instanceOf(Treatment.class)
+                            .with(treatmentName, "aucune")
+                            .with(inventor, "Alzheimer"))
+                        .with(duration, 365 * 19),
+                    an.instanceOf(Disease.class)
+                        .with(diseaseName, "refroidissement")
+                        .with(treatment, an.instanceOf(Treatment.class)
+                            .with(treatmentName, "repos au lit")
+                            .with(inventor, "L'Objet Trouvé"))
+                        .with(duration, 7),
+                    an.instanceOf(Disease.class).with(diseaseName, "intolérance au lactose")
+                )
+                .withItems(
+                    madCowDisease,
+                    cancer
+                )
+                .withItemsMatching(
+                    an.instanceOf(Disease.class)
+                        .with(diseaseName, "schizophrénie")
+                        .with(treatment, an.instanceOf(Treatment.class)
+                            .with(treatmentName, "l'éducation")
+                            .with(inventor, nullValue()))
+                        .with(duration, Integer.MAX_VALUE)
+                )
+        ));
+
+    }
+
+
+    @Test
+    public void flim_and_flam__debugging__focused_on_item() {
+
+        final Function<Treatment, String> treatmentStringFunction = t -> "'" + t.name + "' by '" + t.inventor + "'";
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .withStringifiers(
+                stringifiers()
+                    .withShortStringifier(Treatment.class, t -> t.name)
+                    .withDebugStringifier(Treatment.class, treatmentStringFunction)
+                    .withShortStringifier(Disease.class, d -> d.name)
+                    .withDebugStringifier(Disease.class, d -> "'" + d.name + "' lasting " + d.duration + " days waiting for " + treatmentStringFunction.apply(d.cure))
+            ).build();
+        final Treatment appendixOp = new Treatment("l'appendicectomie", "Avicenne");
+        final Disease appendicitis = new Disease("crise d'appendicite aiguë", appendixOp, 1);
+        final Treatment coldTherapy = new Treatment("repos au lit", "les ancêtres");
+        final Disease cold = new Disease("refroidissement", coldTherapy, 7);
+        final Treatment alzheimerTherapy = new Treatment("aucune", "Alzheimer");
+        final Disease alzheimer = new Disease("démence d'Alzheimer", alzheimerTherapy, 365 * 20);
+        final Treatment naziTherapy = new Treatment("l'éducation", null);
+        final Disease nazi = new Disease("Front National", naziTherapy, Integer.MAX_VALUE);
+        final Treatment lactoseTherapy = new Treatment("éviter de consommer du lactose en grande quantité", null);
+        final Disease lactose = new Disease("intolérance au lactose", lactoseTherapy, 365 * 50);
+        final Treatment cancerTherapy = new Treatment("chimiothérapie ", "industrie pharmaceutique");
+        final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
+        final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
+        final Disease cancer = new Disease("cancer", cancerTherapy, 90);
+        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+
+        assertThat(diseases, is(
+            an.iterableOf(Disease.class)
+                .ofSize(8)
+                .ordered()
+                .sorted(comparingInt(Disease::getDuration))
+                .unique()
+                .withItems(appendicitis)
+                .withItemsMatching(
+                    an.instanceOf(Disease.class)
+                        .debugging() // No impact, need to switch on debugging for the list, too.
+                        .with(diseaseName, "démence d'Alzheimer")
+                        .with(treatment, an.instanceOf(Treatment.class)
+                            .with(treatmentName, "aucune")
+                            .with(inventor, "Alzheimer"))
+                        .with(duration, 365 * 19),
+                    an.instanceOf(Disease.class)
+                        .with(diseaseName, "refroidissement")
+                        .with(treatment, an.instanceOf(Treatment.class)
+                            .with(treatmentName, "repos au lit")
+                            .with(inventor, "L'Objet Trouvé"))
+                        .with(duration, 7),
+                    an.instanceOf(Disease.class).with(diseaseName, "intolérance au lactose")
+                )
+                .withItems(
+                    madCowDisease,
+                    cancer
+                )
+                .withItemsMatching(
+                    an.instanceOf(Disease.class)
+                        .with(diseaseName, "schizophrénie")
+                        .with(treatment, an.instanceOf(Treatment.class)
+                            .with(treatmentName, "l'éducation")
+                            .with(inventor, nullValue()))
+                        .with(duration, Integer.MAX_VALUE)
+                )
+        ));
+
+    }
+
+
+    @Test
+    public void flim_and_flam__debugging__focused_on_list_and_single_item() {
+
+        final Function<Treatment, String> treatmentStringFunction = t -> "'" + t.name + "' by '" + t.inventor + "'";
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .debugging()
+            .withStringifiers(
+                stringifiers()
+                    .withShortStringifier(Treatment.class, t -> t.name)
+                    .withDebugStringifier(Treatment.class, treatmentStringFunction)
+                    .withShortStringifier(Disease.class, d -> d.name)
+                    .withDebugStringifier(Disease.class, d -> "'" + d.name + "' lasting " + d.duration + " days waiting for " + treatmentStringFunction.apply(d.cure))
+            ).build();
+        final Treatment appendixOp = new Treatment("l'appendicectomie", "Avicenne");
+        final Disease appendicitis = new Disease("crise d'appendicite aiguë", appendixOp, 1);
+        final Treatment coldTherapy = new Treatment("repos au lit", "les ancêtres");
+        final Disease cold = new Disease("refroidissement", coldTherapy, 7);
+        final Treatment alzheimerTherapy = new Treatment("aucune", "Alzheimer");
+        final Disease alzheimer = new Disease("démence d'Alzheimer", alzheimerTherapy, 365 * 20);
+        final Treatment naziTherapy = new Treatment("l'éducation", null);
+        final Disease nazi = new Disease("Front National", naziTherapy, Integer.MAX_VALUE);
+        final Treatment lactoseTherapy = new Treatment("éviter de consommer du lactose en grande quantité", null);
+        final Disease lactose = new Disease("intolérance au lactose", lactoseTherapy, 365 * 50);
+        final Treatment cancerTherapy = new Treatment("chimiothérapie ", "industrie pharmaceutique");
+        final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
+        final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
+        final Disease cancer = new Disease("cancer", cancerTherapy, 90);
+        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+
+        assertThat(diseases, is(
+            an.iterableOf(Disease.class)
+                .ofSize(8)
+                .ordered()
+                .sorted(comparingInt(Disease::getDuration))
+                .unique()
+                .withItems(appendicitis)
+                .withItemsMatching(
+                    an.instanceOf(Disease.class)
+                        .debugging() // No impact, need to switch on debugging for the list, too.
+                        .with(diseaseName, "démence d'Alzheimer")
+                        .with(treatment, an.instanceOf(Treatment.class)
+                            .with(treatmentName, "aucune")
+                            .with(inventor, "Alzheimer"))
+                        .with(duration, 365 * 19),
+                    an.instanceOf(Disease.class)
+                        .with(diseaseName, "refroidissement")
+                        .with(treatment, an.instanceOf(Treatment.class)
+                            .with(treatmentName, "repos au lit")
+                            .with(inventor, "L'Objet Trouvé"))
+                        .with(duration, 7),
+                    an.instanceOf(Disease.class).with(diseaseName, "intolérance au lactose")
+                )
+                .withItems(
+                    madCowDisease,
+                    cancer
+                )
+                .withItemsMatching(
+                    an.instanceOf(Disease.class)
+                        .with(diseaseName, "schizophrénie")
+                        .with(treatment, an.instanceOf(Treatment.class)
+                            .with(treatmentName, "l'éducation")
+                            .with(inventor, nullValue()))
+                        .with(duration, Integer.MAX_VALUE)
+                )
+        ));
+
+    }
+
 
 
 }

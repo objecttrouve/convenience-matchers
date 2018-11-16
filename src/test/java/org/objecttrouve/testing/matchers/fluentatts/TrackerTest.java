@@ -1,7 +1,7 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2017 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 
@@ -23,8 +23,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 
+@SuppressWarnings({"ConstantConditions", "ResultOfMethodCallIgnored"})
 public class TrackerTest {
 
+    @SuppressWarnings("UnusedReturnValue")
     private static class Something {
 
         private final String it;
@@ -33,18 +35,18 @@ public class TrackerTest {
             this.it = it;
         }
 
-        public String getIt() {
+        String getIt() {
             return it;
         }
 
-        public String getItAgain() {
+        String getItAgain() {
             return it;
         }
     }
 
     private static class IdleThing {
 
-        public void procrastinate() {
+        void procrastinate() {
             // Relax...
         }
     }
@@ -57,7 +59,7 @@ public class TrackerTest {
             this.something = something;
         }
 
-        public Something something() {
+        Something something() {
             return something;
         }
     }
@@ -198,7 +200,7 @@ public class TrackerTest {
             this.identity = identity;
         }
 
-        public String getIdentity() {
+        String getIdentity() {
             return identity;
         }
     }
@@ -210,7 +212,7 @@ public class TrackerTest {
             this.personalities = new ArrayList<>(Arrays.asList(personalities));
         }
 
-        public List<Personality> getPersonalities() {
+        List<Personality> getPersonalities() {
             return personalities;
         }
     }
@@ -246,7 +248,7 @@ public class TrackerTest {
             this.untrackable = Arrays.asList(untrackable);
         }
 
-        public List<String> getUntrackable() {
+        List<String> getUntrackable() {
             return untrackable;
         }
     }
