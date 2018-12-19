@@ -9,12 +9,11 @@ package org.objecttrouve.testing.matchers.customization;
 
 import org.objecttrouve.testing.matchers.api.Config;
 import org.objecttrouve.testing.matchers.api.Stringifiers;
+import org.objecttrouve.testing.matchers.api.Symbols;
 import org.objecttrouve.testing.matchers.fluentatts.FlamFactory;
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
 import org.objecttrouve.testing.matchers.fluentits.FlimFactory;
 import org.objecttrouve.testing.matchers.fluentits.FluentIterableMatcher;
-
-import java.util.function.Function;
 
 /**
  * Factory for {@link FluentAttributeMatcher} and {@link FluentIterableMatcher} instances.
@@ -22,44 +21,68 @@ import java.util.function.Function;
 public class MatcherFactory {
 
     /**
-     * Builder to configure a customization for {@link FluentAttributeMatcher} and {@link FluentIterableMatcher} instances.
+     * <p>
+     * Builder to configure {@link FluentAttributeMatcher} and {@link FluentIterableMatcher} instances
+     * created by the <code>MatcherFactory</code>. Via a fluent DSL.
+     * </p>
      */
     public static class Builder {
 
         private final MatcherConfig.Builder config = MatcherConfig.config();
 
-
         /**
-         * Use the default symbols in error messages.
-         * Fancy but potentially poor in primitive shells.
-         * @return {@code this Builder}.
+         * <p>
+         *     Configures default {@link Symbols} for error messages.
+         * </p>
+         * <p>
+         *     The default symbols are fancy in modern shells but potentially poor in more primitive environments.
+         * </p>
+         *
+         * @return <code>this</code> <code>Builder</code>
          */
         public Builder withDefaultSymbols() {
             return withSymbols(SymbolsConfig.defaultSymbols());
         }
 
         /**
-         * Use only ASCII symbols in error messages.
-         * Less fancy but suitable for primitive shells.
-         * @return {@code this Builder}.
+         * <p>
+         *     Configures ASCII {@link Symbols} for error messages.
+         * </p>
+         * <p>
+         *     Less fancy than the default symbols but robust in primitive environments.
+         * </p>
+         *
+         * @return <code>this</code> <code>Builder</code>
          */
         public Builder withAsciiSymbols() {
             return withSymbols(SymbolsConfig.asciiSymbols());
         }
 
         /**
-         * Define a set of custom symbols to be used in error messages.
-         * @param symbolsBuilder A {@link SymbolsConfig.Builder} preconfigured with the desired set of symbols.
-         * @return {@code this Builder}.
+         * <p>
+         *     Configures custom {@link Symbols} for error messages.
+         * </p>
+         * <p>
+         *     Whatever pleases the developer.
+         * </p>
+         *
+         * @param symbolsBuilder <code>SymbolsConfig.Builder</code> preconfigured with custom symbols
+         * @return <code>this</code> <code>Builder</code>
          */
         public Builder withSymbols(final SymbolsConfig.Builder symbolsBuilder) {
             return withSymbols(symbolsBuilder.build());
         }
 
         /**
-         * Define a set of custom symbols to be used in error messages.
-         * @param symbols The desired set of  {@link SymbolsConfig}.
-         * @return {@code this Builder}.
+         * <p>
+         *     Configures custom {@link Symbols} for error messages.
+         * </p>
+         * <p>
+         *     Whatever pleases the developer.
+         * </p>
+         *
+         * @param symbols <code>SymbolsConfig</code> with custom symbols
+         * @return <code>this</code> <code>Builder</code>
          */
         @SuppressWarnings("WeakerAccess")
         public Builder withSymbols(final SymbolsConfig symbols) {
@@ -68,20 +91,30 @@ public class MatcherFactory {
         }
 
         /**
-         * <p>Define a set of {@link Function}s that provide a short String description of an object.</p>
-         * <p>(Useful when a tested class doesn't have a useful {@code Object#toString()} method.)</p>
-         * @param stringifiersBuilder A {@link StringifiersConfig.Builder} preconfigured with mappings for classes and stringifier functions.
-         * @return {@code this Builder}.
+         * <p>
+         *     Configures custom {@link Stringifiers} for objects involved in a test.
+         * </p>
+         * <p>
+         *     Stringifier functions supersede the <code>toString</code>-implementations of the respective objects.
+         * </p>
+         *
+         * @param stringifiersBuilder <code>StringifiersConfig.Builder</code> preconfigured with custom stringifier mappings
+         * @return <code>this</code> <code>Builder</code>
          */
         public Builder withStringifiers(final StringifiersConfig.Builder stringifiersBuilder){
             return withStringifiers(stringifiersBuilder.build());
         }
 
         /**
-         * <p>Define a set of {@link Function}s that provide a short String description of an object.</p>
-         * <p>(Useful when a tested class doesn't have a useful {@code Object#toString()} method.)</p>
-         * @param stringifiers A set of {@link Stringifiers} preconfigured with mappings for classes and stringifier functions.
-         * @return {@code this Builder}.
+         * <p>
+         *     Configures custom {@link Stringifiers} for objects involved in a test.
+         * </p>
+         * <p>
+         *     Stringifier functions supersede the <code>toString</code>-implementations of the respective objects.
+         * </p>
+         *
+         * @param stringifiers <code>StringifiersConfig</code> with custom stringifier mappings
+         * @return <code>this</code> <code>Builder</code>
          */
         @SuppressWarnings("WeakerAccess")
         public Builder withStringifiers(final Stringifiers stringifiers) {
@@ -90,9 +123,9 @@ public class MatcherFactory {
         }
 
         /**
-         * <p>Switches on debug mode for all matchers created by the resulting {@code MatcherFactory}.</p>
+         * <p>Switches on debug mode for all matchers created by the {@code MatcherFactory}.</p>
          *
-         * @return {@code this Builder}.
+         * @return <code>this</code> <code>Builder</code>
          */
         public Builder debugging() {
             this.config.debugging();
@@ -106,6 +139,13 @@ public class MatcherFactory {
 
     private final Config config;
 
+    /**
+     * <p>
+     * Returns a builder to configure a <code>MatcherFactory</code> with a fluent DSL.
+     * </p>
+     *
+     * @return new <code>Builder</code>
+     */
     public static Builder factory(){
         return new Builder();
     }
@@ -119,9 +159,9 @@ public class MatcherFactory {
      * Factory method for a {@link FluentAttributeMatcher}
      * to match an <i>actual</i> object's properties.</p>
      *
-     * @param klass The expected class of the actual object.
-     * @param <T> Expected type of the actual object.
-     * @return FluentAttributeMatcher.
+     * @param klass expected class of the actual object
+     * @param <T> expected type of the actual object
+     * @return FluentAttributeMatcher for an actual object
      */
     public <T> FluentAttributeMatcher<T> instanceOf(final Class<T> klass) {
        return FlamFactory.fluentAttributeMatcher(klass, config);
@@ -131,10 +171,10 @@ public class MatcherFactory {
      * <p>Factory method for a {@link FluentIterableMatcher}
      * to match an <i>actual</i> {@code Iterable}'s properties.</p>
      *
-     * @param klass The expected class of the actual {@code Iterable}.
-     * @param <X> Expected type of the actual {@code Iterable}'s items.
-     * @param <C> Expected type of the actual {@code Iterable}.
-     * @return FluentAttributeMatcher.
+     * @param klass expected class of the actual {@code Iterable}
+     * @param <X> expected type of the actual {@code Iterable}'s items
+     * @param <C> expected type of the actual {@code Iterable}
+     * @return FluentAttributeMatcher for an actual iterable
      */
     public <X, C extends Iterable<X>> FluentIterableMatcher<X, C> iterableOf(final Class<X> klass){
         return FlimFactory.fluentIterableMatcher(klass, config);

@@ -189,7 +189,7 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
         }, new Stringifiers() {
 
             @Override
-            public <Z> Optional<Function<Z, String>> getShortStringifier(final Z obj) {
+            public <Z> Optional<Function<Z, String>> getShortStringifier(final Z object) {
                 return Optional.empty();
             }
 

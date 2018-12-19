@@ -7,25 +7,42 @@
 
 package org.objecttrouve.testing.matchers.api;
 
-import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
-import org.objecttrouve.testing.matchers.fluentits.FluentIterableMatcher;
-
 /**
- * Configuration settings for  {@link FluentAttributeMatcher} and {@link FluentIterableMatcher} instances. */
+ * <p>
+ *    Configuration settings for convenient matcher instances.
+ * </p>
+ * <p>
+ *    Convenient matchers have configurable behavior:
+ * </p>
+ * <ul>
+ *    <li>unicode characters used to express particular mismatch characteristics</li>
+ *    <li>printing of objects involved</li>
+ *    <li>debug mode / additonal verbose output</li>
+ * </ul>
+ * <p>
+ *    The <code>Config</code> is the single source of truth for all such settings.
+ * </p>
+ */
 public interface Config {
 
     /**
-     * @return Set of {@code Symbols} to be used in error descriptions.
+     * Gets the <code>Set</code> of <code>Symbols</code> to be used in error descriptions.
+     *
+     * @return <code>Set</code> of <code>Symbols</code> for nice error descriptions
      */
     Symbols getSymbols();
 
     /**
-     * @return {@code Stringifiers} to pretty-print actual instances.
+     * Gets the <code>Stringifiers</code> to pretty-print objects.
+     *
+     * @return <code>Stringifiers</code> to pretty-print objects
      */
     Stringifiers getStringifiers();
 
     /**
-     * @return {@code true} if matchers should run in debug mode.
+     * Gets the debug mode flag.
+     *
+     * @return <code>true</code> when debug output enabled
      */
     boolean isInDebugMode();
 }

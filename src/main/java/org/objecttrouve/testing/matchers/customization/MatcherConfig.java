@@ -11,11 +11,14 @@ import org.objecttrouve.testing.matchers.api.Config;
 import org.objecttrouve.testing.matchers.api.Stringifiers;
 import org.objecttrouve.testing.matchers.api.Symbols;
 
-import java.util.function.Function;
-
+/**
+ * Standard {@link Config} implementation.
+ */
 public class MatcherConfig implements Config {
 
-
+    /**
+     * A <code>Config</code> builder with a fluent interface.
+     */
     public static class Builder {
 
         private Symbols symbols = SymbolsConfig.defaultSymbols();
@@ -23,9 +26,12 @@ public class MatcherConfig implements Config {
         private boolean debugging;
 
         /**
-         * Define a set of custom symbols to be used in error messages.
-         * @param symbolsBuilder A {@link SymbolsConfig.Builder} preconfigured with the desired set of symbols.
-         * @return {@code this Builder}.
+         * <p>
+         *     Sets custom {@link Symbols} to be used in error messages.
+         * </p>
+         *
+         * @param symbolsBuilder <code>SymbolsConfig.Builder</code> preconfigured with the desired set of symbols
+         * @return <code>this</code> <code>Builder</code>
          */
         @SuppressWarnings("unused")
         public Builder withSymbols(final SymbolsConfig.Builder symbolsBuilder ) {
@@ -33,9 +39,12 @@ public class MatcherConfig implements Config {
         }
 
         /**
-         * Define a set of custom symbols to be used in error messages.
-         * @param symbols The desired set of  {@link SymbolsConfig}.
-         * @return {@code this Builder}.
+         * <p>
+         *     Sets custom {@link Symbols} to be used in error messages.
+         * </p>
+         *
+         * @param symbols <code>Symbols</code> with the desired set of signs
+         * @return <code>this</code> <code>Builder</code>
          */
         @SuppressWarnings("WeakerAccess")
         public Builder withSymbols(final Symbols symbols) {
@@ -44,10 +53,15 @@ public class MatcherConfig implements Config {
         }
 
         /**
-         * <p>Define a set of {@link Function}s that provide a short String description of an object.</p>
-         * <p>(Useful when a tested class doesn't have a useful {@code Object#toString()} method.)</p>
-         * @param stringifiersBuilder A {@link StringifiersConfig.Builder} preconfigured with mappings for classes and stringifier functions.
-         * @return {@code this Builder}.
+         * <p>
+         *     Sets custom {@link Stringifiers} that provide helpful <code>String</code> descriptions of objects.
+         * </p>
+         * <p>
+         *     (Useful when a tested class doesn't have a useful <code>Object#toString()</code> method.)
+         * </p>
+         *
+         * @param stringifiersBuilder <code>StringifiersConfig.Builder</code> preconfigured with mappings from <code>Class</code> to stringifier <code>Function</code>
+         * @return <code>this</code> <code>Builder</code>
          */
         @SuppressWarnings("unused")
         public Builder withStringifiers(final StringifiersConfig.Builder stringifiersBuilder){
@@ -55,10 +69,15 @@ public class MatcherConfig implements Config {
         }
 
         /**
-         * <p>Define a set of {@link Function}s that provide a short String description of an object.</p>
-         * <p>(Useful when a tested class doesn't have a useful {@code Object#toString()} method.)</p>
-         * @param stringifiers A set of {@link Stringifiers} preconfigured with mappings for classes and stringifier functions.
-         * @return {@code this Builder}.
+         * <p>
+         *     Sets custom {@link Stringifiers} that provide helpful <code>String</code> descriptions of objects.
+         * </p>
+         * <p>
+         *     (Useful when a tested class doesn't have a useful <code>Object#toString()</code> method.)
+         * </p>
+         *
+         * @param stringifiers <code>Stringifiers</code> with mappings from <code>Class</code> to stringifier <code>Function</code>
+         * @return <code>this</code> <code>Builder</code>
          */
         @SuppressWarnings("WeakerAccess")
         public Builder withStringifiers(final Stringifiers stringifiers) {
@@ -66,14 +85,23 @@ public class MatcherConfig implements Config {
             return this;
         }
 
+        /**
+         * <p>
+         * Builds a {@link Config} configured with this builder's current settings.
+         * </p>
+         *
+         * @return <code>Config</code> with customized settings
+         */
         public Config build(){
             return new MatcherConfig(this);
         }
 
         /**
-         * <p>Switches on debug mode for all matchers created the the resulting {@code MatcherConfig}.</p>
+         * <p>
+         *     Turns on debug mode for all matchers using the resulting {@link Config}.
+         * </p>
          *
-         * @return {@code this Builder}.
+         * @return <code>this</code> <code>Builder</code>
          */
         public Builder debugging() {
             this.debugging = true;
@@ -86,6 +114,13 @@ public class MatcherConfig implements Config {
     private final boolean debugging;
 
 
+    /**
+     * <p>
+     * Returns a builder to create a <code>Config</code> with a fluent DSL.
+     * </p>
+     *
+     * @return new <code>Builder</code>
+     */
     static Builder config(){
         return new Builder();
     }
@@ -96,17 +131,11 @@ public class MatcherConfig implements Config {
         this.debugging = builder.debugging;
     }
 
-    /**
-     * @return Set of {@code Symbols} to be used in error descriptions.
-     */
     @Override
     public Symbols getSymbols() {
         return symbols;
     }
 
-    /**
-     * @return {@code Stringifiers} to pretty-print actual instances.
-     */
     @Override
     public Stringifiers getStringifiers() {
         return stringifiers;

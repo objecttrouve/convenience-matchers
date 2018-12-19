@@ -185,7 +185,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
                     return new Stringifiers() {
 
                         @Override
-                        public <Z> Optional<Function<Z, String>> getShortStringifier(final Z obj) {
+                        public <Z> Optional<Function<Z, String>> getShortStringifier(final Z object) {
                             return Optional.empty();
                         }
 

@@ -7,67 +7,142 @@
 
 package org.objecttrouve.testing.matchers.api;
 
+/**
+ * <p>
+ * Convenient matchers use lovely expressive symbols to highlight particular characteristics of a test result.
+ * <br>
+ * Such as <code>:two_hearts:</code> to indicate a match. Or <code>:broken_heart:</code> to indicate a mismatch.
+ * </p>
+ * <p>
+ * Depending on the environment, these fancy symbols aren't always displayed nicely.
+ * <br>
+ * Some developers might even prefer mathematic notation over romantic.
+ * </p>
+ * <p>
+ * Therefore the set of symbols can be customized.
+ * <br>
+ * The customized symbols are transported as an instance of <code>Symbols</code>.
+ * </p>
+ */
 public interface Symbols {
+
     /**
-     * Like {@link Symbols#getExpectedMatches()}, just with value expectations.
-     * @return The symbol between the attribute description and the expected value.
+     * <p>
+     *     Gets a symbol with vaguely the semantics of "equals".
+     * </p>
+     * <p>
+     *     Inserted between the description of an attribute and the <i>expected</i> value of that attribute.
+     * </p>
+     *
+     * @return symbol between attribute description and the expected value
      */
+
     String getExpectedEquals();
 
     /**
-     * @return The symbol between the expected value and the actual value.
+     * <p>
+     *     Gets a symbol with vaguely the semantics of "not equals".
+     * </p>
+     * <p>
+     *     Inserted between the the <i>expected</i> value of an attribute and the <i>actual</i> value of that attribute.
+     *     <br>
+     *     Inserted between the <i>self</i> description of a matcher and the <i>mismatch</i> descripton of that same matcher.
+     *  </p>
+     *
+     * @return symbol between (description of) expected and (description of) actual
      */
     String getActualNotEquals();
 
     /**
-     * Setter.
-     * Like {@link Symbols#getExpectedEquals()}, just with {@code org.hamcrest.Matcher}  expectations.
-     * @return The symbol between the attribute description and the matcher description of the expected value.
+     * <p>
+     *     Gets a symbol with vaguely the semantics of "matches".
+     * </p>
+     * <p>
+     *     Inserted between the description of an attribute and the <i>self</i> description of a matcher provided for that attribute's value.
+     * </p>
+     *
+     * @return symbol between attribute description and matcher self description
      */
     String getExpectedMatches();
 
     /**
-     * @return Separator between nested attribute descriptions.
+     * <p>
+     *     Gets a separator symbol to segregate nested attribute names.
+     * </p>
+     * @return separator between nested attribute descriptions
      */
     String getPointingNested();
 
     /**
-     * @return Symbol to indicate that the item matched the expectation.
+     * <p>
+     *     Gets a symbol that indicates an item matched all expectations.
+     * </p>
+     *
+     * @return symbol to indicate a match
      */
     String getIterableItemMatchesSymbol();
 
     /**
-     * @return Symbol to indicate that a {@code Matcher} failed on the item.
+     * <p>
+     *     Gets a symbol that indicates an item didn't match all expectations.
+     * </p>
+     *
+     * @return symbol to indicate a mismatch
      */
     String getIterableItemNotMatchesSymbol();
 
     /**
-     * @return Symbol to indicate that the item should appear elsewhere given the expected order of items.
+     * <p>
+     *     Gets a symbol that indicates an item is not at the expected position, given a particular item order.
+     * </p>
+     *
+     * @return symbol to indicate an unexpected order of items
      */
     String getIterableItemBadItemOrderSymbol();
 
     /**
-     * @return Symbol to indicate that the item should appear elsewhere given the expected sort order.
+     * <p>
+     *     Gets a symbol that indicates an item is not at the expected position, given a particular sort order.
+     * </p>
+     *
+     * @return symbol to indicate an unexpected sorting of items
      */
     String getIterableItemBadSortOrderSymbol();
 
     /**
-     * @return Symbol to indicate that the item is duplicated.
+     * <p>
+     *     Gets a symbol that indicates an item is duplicated.
+     * </p>
+     *
+     * @return symbol to highlight a duplicate
      */
     String getIterableItemDuplicateSymbol();
 
+
     /**
-     * @return Symbol to indicate that the item should not occur in the {@code Iterable} at all.
+     * <p>
+     *     Gets a symbol that indicates an item is unexpected and unwanted.
+     * </p>
+     *
+     * @return symbol to highlight an unwanted item
      */
     String getIterableItemUnwantedSymbol();
 
     /**
-     * @return Right bracket to group objects.
+     * <p>
+     *     Gets a right bracket used to group descriptions.
+     * </p>
+     *
+     * @return right bracket
      */
     String getRightBracket();
 
     /**
-     * @return Left bracket to group objects.
+     * <p>
+     *     Gets a left bracket used to group descriptions.
+     * </p>
+     *
+     * @return left bracket
      */
     String getLeftBracket();
 }
