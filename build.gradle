@@ -17,7 +17,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.5"
+        classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.7"
         classpath 'net.researchgate:gradle-release:2.6.0'
     }
 }
