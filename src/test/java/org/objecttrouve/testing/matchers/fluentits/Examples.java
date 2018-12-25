@@ -13,7 +13,6 @@ import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import org.objecttrouve.testing.matchers.customization.MatcherFactory;
 import org.objecttrouve.testing.matchers.fluentatts.Attribute;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -668,7 +667,7 @@ public class Examples {
         final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
         final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
         final Disease cancer = new Disease("cancer", cancerTherapy, 90);
-        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+        final List<Disease> diseases = asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
 
         assertThat(diseases, is(
             anIterableOf(Disease.class)
@@ -736,7 +735,7 @@ public class Examples {
         final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
         final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
         final Disease cancer = new Disease("cancer", cancerTherapy, 90);
-        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+        final List<Disease> diseases = asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
 
         assertThat(diseases, is(
             an.iterableOf(Disease.class)
@@ -803,7 +802,7 @@ public class Examples {
         final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
         final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
         final Disease cancer = new Disease("cancer", cancerTherapy, 90);
-        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+        final List<Disease> diseases = asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
 
         assertThat(diseases, is(
             an.iterableOf(Disease.class)
@@ -871,7 +870,7 @@ public class Examples {
         final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
         final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
         final Disease cancer = new Disease("cancer", cancerTherapy, 90);
-        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+        final List<Disease> diseases = asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
 
         assertThat(diseases, is(
             an.iterableOf(Disease.class)
@@ -940,7 +939,7 @@ public class Examples {
         final Treatment madCowTherapy = new Treatment("\uD83E\uDD2F", null);
         final Disease madCowDisease = new Disease("encéphalopathie spongiaire bovine", madCowTherapy, -5);
         final Disease cancer = new Disease("cancer", cancerTherapy, 90);
-        final List<Disease> diseases = Arrays.asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
+        final List<Disease> diseases = asList(appendicitis, cold, alzheimer, nazi, lactose, alzheimer, madCowDisease);
 
         assertThat(diseases, is(
             an.iterableOf(Disease.class)
@@ -981,6 +980,30 @@ public class Examples {
 
     }
 
+    @Test
+    public void customized() {
+
+        final Function<String, String> truncated = s -> s.substring(0, 3) + "...";
+        final Function<String, String> detailed = s -> s + " (" + s.length() + ")";
+        final Attribute<String, String> prefix = attribute("prefix", s -> s.substring(0, 4));
+
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .debugging()
+            .withAsciiSymbols()
+            .withStringifiers(stringifiers()
+                .withShortStringifier(String.class, truncated)
+                .withDebugStringifier(String.class, detailed)
+            )
+            .build();
+
+        final List<String> items = asList("This", "prints", "pretty", ".....");
+
+        assertThat(items, is(
+            an.iterableOf(String.class)
+                .withItemsMatching(
+                    an.instanceOf(String.class)
+                        .with(prefix, "Xxxx"))));
+    }
 
 
 }

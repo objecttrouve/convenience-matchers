@@ -5,10 +5,12 @@ Convenience library with custom [Hamcrest](http://hamcrest.org/JavaHamcrest/) Ma
 Particularly focused on maximizing the expressiveness of error messages.  
 With a simple fluent DSL.
 
+
+
 API
 ----
 
-### `FluentAttributeMatcher`
+### Matching Objects: `FluentAttributeMatcher`
 
 A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) extension to check multiple target object attributes at once.  
 Offers a fluent builder API. Attributes of the target object are simply phrased as lambda expressions. 
@@ -66,23 +68,9 @@ If you provide nice names you get nice output in case of a mismatch.
 ![Error description by FluentAttributeMatcher](https://github.com/objecttrouve/convenience-matchers/blob/master/doc/img/FluentAttributeMatcher-test-output.png)
 
 
-#### Why (not)?
 
-##### Benefits 
-* Check all relevant properties of an object on one go.
-* Ignore irrelevant properties at the same time. 
-* Match nested structures in a uniform way.
-* Human friendly DSL.
-* Human friendly output in case of a mismatch.
 
-##### Drawbacks
-* Performance is traded for convenience.
-    * (When compared to the minimal logic you could alternatively use to test the same features. Less convenient, of course.)
-    * (Check [benchmarks](https://github.com/objecttrouve/convenience-matchers/tree/master/benchmarks/) or run [JMH](https://github.com/objecttrouve/convenience-matchers/tree/master/src/jmh/java/org/objecttrouve/testing) if it's crucial.)
-* Requires a minimum of syntactic sugaring.
-* Heavy dependencies (but deprecated, to be removed with v1.0). 
-
-### `FluentIterableMatcher`
+### Matching Iterables: `FluentIterableMatcher`
 
 A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) with fluently formulatable expectations about an `Iterable`.   
 Such as the size, the items, the sort order or the uniqueness of items.   
@@ -174,22 +162,71 @@ If items are represented by `ScorableMatcher`s and multiple such matchers match 
 (Unless you call `exactly().ordered()`. In this case the value or matcher added exactly at the item's position is assumed to be the correct one.)  
 
 
-#### Pro/Con
+### Customization
 
-##### Benefits 
-* Instantaneous overview of which items matched and which didn't.
+No faible for fancy symbols? Crappy `toString`? Need some debug output? Here you go...
+
+```java
+
+    @Test
+    public void customized() {
+
+        final Function<String, String> truncated = s -> s.substring(0, 3) + "...";
+        final Function<String, String> detailed = s -> s + " (" + s.length() + ")";
+        final Attribute<String, String> prefix = attribute("prefix", s -> s.substring(0, 4));
+
+        final MatcherFactory an = ConvenientMatchers.customized()
+            .debugging()
+            .withAsciiSymbols()
+            .withStringifiers(stringifiers()
+                .withShortStringifier(String.class, truncated)
+                .withDebugStringifier(String.class, detailed)
+            )
+            .build();
+
+        final List<String> items = asList("This", "prints", "pretty", ".....");
+
+        assertThat(items, is(
+            an.iterableOf(String.class)
+                .withItemsMatching(
+                    an.instanceOf(String.class)
+                        .with(prefix, "Xxxx"))));
+    }
+
+```
+
+
+
+Why (not)?
+-----------
+
+### Benefits 
+
+#### Matching
+
+* Fluent DSL that allows for focusing on the relevant aspects. 
+* Human friendly configurable output in case of a mismatch.
+* Compensate poor or absent `toString` implementations.
+
+#### Matching Objects
+
+* Check all relevant properties of an object on one go.
+* Ignore irrelevant properties at the same time. 
+* Match nested structures in a uniform way.
+
+#### Matching Iterables
+
+* Instantaneous overview of which items in an `Iterable` matched and which didn't.
 * Clear indication of which actual item breaks sort order or expected order of items.
 * Easy identification of unwanted duplicates. 
 * Easy identification of unwanted items.
-* Symbols are so lovely that they comfort you in case of a mismatch.
-* Fluent DSL that allows for focusing on the relevant aspects. 
+* Fancy comforting error descriptions.
 
-##### Drawbacks
+### Drawbacks
+
 * Performance is traded for convenience.
-    * (When compared to the minimal logic you could use otherwise.)
-    * (Check [benchmarks](https://github.com/objecttrouve/convenience-matchers/tree/master/benchmarks/) or run [JMH](https://github.com/objecttrouve/convenience-matchers/tree/master/src/jmh/java/org/objecttrouve/testing) if it's crucial.)
-* Heavy dependencies (but deprecated, to be removed with v1.0).
-* Lovely symbols aren't always displayed nicely. (And therefore there's a plan for an optional ASCII-only flavor by v1.0.)
+* Needs a minimum of syntactic sugaring.
+* Heavy dependencies (but deprecated, to be removed with v1.0). 
 
 
 Alternatives
