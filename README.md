@@ -5,6 +5,7 @@ Convenience library with custom [Hamcrest](http://hamcrest.org/JavaHamcrest/) Ma
 Particularly focused on maximizing the expressiveness of error messages.  
 With a simple fluent DSL.
 
+<img src="https://travis-ci.org/objecttrouve/42graphs.svg?branch=master" align="left" title="Travis build" alt="Latest build on travis">
 
 
 API
