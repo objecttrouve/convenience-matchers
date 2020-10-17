@@ -20,7 +20,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.7"
+        classpath "me.champeau.gradle:jmh-gradle-plugin:0.5.2"
         classpath 'net.researchgate:gradle-release:2.7.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
