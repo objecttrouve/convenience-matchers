@@ -227,9 +227,8 @@ Why (not)?
 
 ### Drawbacks
 
-* Performance is traded for convenience.
+* Some performance is traded for convenience.
 * Needs a minimum of syntactic sugaring.
-* Heavy dependencies (but deprecated, to be removed with v1.0). 
 
 
 Alternatives
