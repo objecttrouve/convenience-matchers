@@ -6,12 +6,13 @@
  */
 package org.objecttrouve.testing.boilerplate;
 
+import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
 
 public class Flatts {
 
     public static <T> FluentAttributeMatcher<T> aNonTracking(@SuppressWarnings("UnusedParameters") final Class<T> clazz) {
-        return new FluentAttributeMatcher<>();
+        return ConvenientMatchers.a(clazz);
     }
 
 }

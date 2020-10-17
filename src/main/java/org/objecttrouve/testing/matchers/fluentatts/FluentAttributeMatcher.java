@@ -12,13 +12,10 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.objecttrouve.testing.matchers.api.Config;
 import org.objecttrouve.testing.matchers.api.ScorableMatcher;
-import org.objecttrouve.testing.matchers.api.Stringifiers;
-import org.objecttrouve.testing.matchers.api.Symbols;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -115,88 +112,6 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
     private final Prose prose;
     private boolean debugging;
 
-    /**
-     * New instance.
-     *
-     * @deprecated C'tor will be removed by v1.0. Use {@link FluentAttributeMatcher#FluentAttributeMatcher(org.objecttrouve.testing.matchers.api.Config)} or customization methods in {@code ConvenientMatchers}.
-     */
-    @Deprecated
-    public FluentAttributeMatcher() {
-
-        // Avoid package cycles and live with redundancy until this c'tor goes away.
-        this.prose = new Prose(new Symbols() {
-            @Override
-            public String getExpectedEquals() {
-                return " = ";
-            }
-
-            @Override
-            public String getActualNotEquals() {
-                return " \u2260 ";
-            }
-
-            @Override
-            public String getExpectedMatches() {
-                return " \u2A73 ";
-            }
-
-            @Override
-            public String getPointingNested() {
-                return " ▶ ";
-            }
-
-            @Override
-            public String getIterableItemMatchesSymbol() {
-                return "";
-            }
-
-            @Override
-            public String getIterableItemNotMatchesSymbol() {
-                return "";
-            }
-
-            @Override
-            public String getIterableItemBadItemOrderSymbol() {
-                return "";
-            }
-
-            @Override
-            public String getIterableItemBadSortOrderSymbol() {
-                return "";
-            }
-
-            @Override
-            public String getIterableItemDuplicateSymbol() {
-                return null;
-            }
-
-            @Override
-            public String getIterableItemUnwantedSymbol() {
-                return "";
-            }
-
-            @Override
-            public String getRightBracket() {
-                return "";
-            }
-
-            @Override
-            public String getLeftBracket() {
-                return "";
-            }
-        }, new Stringifiers() {
-
-            @Override
-            public <Z> Optional<Function<Z, String>> getShortStringifier(final Z object) {
-                return Optional.empty();
-            }
-
-            @Override
-            public <Z> Optional<Function<Z, String>> getDebugStringifier(final Z object) {
-                return Optional.empty();
-            }
-        });
-    }
     /**
      * New instance.
      *
