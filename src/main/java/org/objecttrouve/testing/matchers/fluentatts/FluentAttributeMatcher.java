@@ -127,22 +127,6 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
     }
 
     /**
-     * Builder method to set up checking {@code Objects.equals(getter.apply(), expectedValue)}.
-     *
-     * @param expectedValue the expected value
-     * @param getter        Function returning the value to be checked
-     * @param <O>           type of the value returned by the getter
-     * @return FluentAttributeMatcher
-     * @deprecated Method will be removed with version 1.0.0. Use {@link FluentAttributeMatcher#with(org.objecttrouve.testing.matchers.fluentatts.Attribute, java.lang.Object)}.
-     */
-    @Deprecated
-    public <O> FluentAttributeMatcher<T> with(final Function<T, O> getter, final O expectedValue) {
-        check(getter);
-        expectations.add(new Expectation<>(null, getter, (actual) -> Objects.equals(actual, expectedValue), expectedValue, null));
-        return this;
-    }
-
-    /**
      * <p>Builder method to formulate an expectation about a particular property of an <i>actual</i> {@code Object}.</p>
      * <p>If the  {@code expectedValue} is a {@code org.hamcrest.Matcher},
      * the call is delegated to {@link FluentAttributeMatcher#withMatching(org.objecttrouve.testing.matchers.fluentatts.Attribute, org.hamcrest.Matcher)},
@@ -175,24 +159,6 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
     public <O> FluentAttributeMatcher<T> withValue(final Attribute<T, O> attribute, final O expectedValue) {
         check(attribute);
         expectations.add(new Expectation<>(attribute.getName(), attribute.getGetter(), (actual) -> Objects.equals(actual, expectedValue), expectedValue, null));
-        return this;
-    }
-
-    /**
-     * Builder method to set up checking {@code matcher.matches(getter.apply())}.
-     *
-     * @param matcher {@code org.hamcrest.Matcher} to be applied
-     * @param getter  Function returning the value to be checked
-     * @param <O>     type of the value returned by the getter
-     * @return FluentAttributeMatcher
-     * @deprecated Method will be removed with version 1.0.0. Use {@link FluentAttributeMatcher#with(org.objecttrouve.testing.matchers.fluentatts.Attribute, java.lang.Object)}.
-     */
-    @SuppressWarnings("WeakerAccess")
-    @Deprecated
-    public <O> FluentAttributeMatcher<T> having(final Function<T, O> getter, final Matcher<O> matcher) {
-        check(getter);
-        check(matcher);
-        expectations.add(new Expectation<>(null, getter, matcher::matches, null, matcher));
         return this;
     }
 
