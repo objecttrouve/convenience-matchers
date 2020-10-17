@@ -243,6 +243,15 @@ Download
 
 Artifacts available at the [Maven Repository](https://mvnrepository.com/artifact/org.objecttrouve/convenience-matchers).
 
+Build
+------
+
+To build at home, run
+
+```./gradlew clean build -x signArchives```
+
+Contributions welcome!
+
 License
 -------
 [MIT License](https://opensource.org/licenses/MIT)
