@@ -610,7 +610,7 @@ public class FluentAttributeMatcherTest {
 
         assertThat(description.toString(), is("" +
             "\n" +
-            "\tanswer ▶ embedded answer ▶ byteval ⩳ 'null' ≠ 'was <42>'\n" +
+            "\tanswer ▶ embedded answer ▶ byteval ⩳ 'null' ≠ 'was <42b>'\n" +
             "\tanswer ▶ embedded answer ▶ doubleval ⩳ 'null' ≠ 'was <42.0>'\n" +
             "\tanswer ▶ half answer ⩳ 'a value less than <1>' ≠ '<21> was greater than <1>'\n"
         ));
@@ -637,7 +637,7 @@ public class FluentAttributeMatcherTest {
 
         assertThat(description.toString(), is("" +
             "\n" +
-            "\tanswer ▶ embedded answer ▶ byteval ⩳ 'null' ≠ 'was <42>'\n" +
+            "\tanswer ▶ embedded answer ▶ byteval ⩳ 'null' ≠ 'was <42b>'\n" +
             "\tanswer ▶ embedded answer ▶ doubleval = '1.0' ≠ '42.0'\n" +
             "\tanswer ▶ half answer = '1' ≠ '21'\n"
         ));
@@ -665,7 +665,7 @@ public class FluentAttributeMatcherTest {
 
         assertThat(description.toString(), is("" +
             "\n" +
-            "\tanswer ▶ embedded answer ▶ byteval ⩳ 'null' ≠ 'was <42>'\n" +
+            "\tanswer ▶ embedded answer ▶ byteval ⩳ 'null' ≠ 'was <42b>'\n" +
             "\tanswer ▶ embedded answer ▶ doubleval = '1.0' ≠ '42.0'\n" +
             "\tanswer ▶ half answer = '1' ≠ '21'\n"
         ));
@@ -693,7 +693,7 @@ public class FluentAttributeMatcherTest {
 
         assertThat(description.toString(), is("" +
             "\n" +
-            "\tanswer >> embedded answer >> byteval =~ 'null' != 'was <42>'\n" +
+            "\tanswer >> embedded answer >> byteval =~ 'null' != 'was <42b>'\n" +
             "\tanswer >> embedded answer >> doubleval = '1.0' != '42.0'\n" +
             "\tanswer >> half answer = '1' != '21'\n"
         ));
@@ -852,7 +852,7 @@ public class FluentAttributeMatcherTest {
 
         assertThat(description.toString(), is("" +
             "\n" +
-            "\tanswer⤼embedded answer⤼byteval♒'null'╪'was <42>'\n" +
+            "\tanswer⤼embedded answer⤼byteval♒'null'╪'was <42b>'\n" +
             "\tanswer⤼embedded answer⤼doubleval⩶'1.0'╪'42.0'\n" +
             "\tanswer⤼half answer⩶'1'╪'21'\n"
         ));

@@ -51,7 +51,7 @@ archivesBaseName = "convenience-matchers"
 
 
 dependencies {
-    api group: 'org.hamcrest', name: 'hamcrest-core', version: '1.3'
+    api group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
     implementation group: 'cglib', name: 'cglib', version: '3.2.10'
     implementation group: 'org.objenesis', name: 'objenesis', version: '3.0.1'
 
