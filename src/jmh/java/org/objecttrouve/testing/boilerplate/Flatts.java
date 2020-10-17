@@ -11,10 +11,7 @@ import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
 public class Flatts {
 
     public static <T> FluentAttributeMatcher<T> aNonTracking(@SuppressWarnings("UnusedParameters") final Class<T> clazz) {
-        return new FluentAttributeMatcher<>(false);
+        return new FluentAttributeMatcher<>();
     }
 
-    public static <T> FluentAttributeMatcher<T> aTracking(@SuppressWarnings("UnusedParameters") final Class<T> clazz) {
-        return new FluentAttributeMatcher<>(true);
-    }
 }

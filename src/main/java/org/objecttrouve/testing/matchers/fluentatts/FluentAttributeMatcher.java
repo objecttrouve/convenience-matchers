@@ -107,11 +107,11 @@ import static org.objecttrouve.testing.matchers.fluentatts.Scorer.score;
  * </pre>
  *
  */
+@SuppressWarnings("rawtypes")
 public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements ScorableMatcher {
 
     private final List<Expectation<T, ?>> expectations = new LinkedList<>();
     private final List<Result> results = new LinkedList<>();
-    private final boolean tracking;
     private final Prose prose;
     private boolean debugging;
 
@@ -119,12 +119,10 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
      * New instance.
      *
      * @deprecated C'tor will be removed by v1.0. Use {@link FluentAttributeMatcher#FluentAttributeMatcher(org.objecttrouve.testing.matchers.api.Config)} or customization methods in {@code ConvenientMatchers}.
-     * @param tracking attempt (expensively!) to create human-readable descriptions of attribute lambdas
      */
-    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
-    public FluentAttributeMatcher(final boolean tracking) {
-        this.tracking = tracking;
+    public FluentAttributeMatcher() {
+
         // Avoid package cycles and live with redundancy until this c'tor goes away.
         this.prose = new Prose(new Symbols() {
             @Override
@@ -211,7 +209,6 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
 
     FluentAttributeMatcher(final Prose prose) {
         this.prose = prose;
-        this.tracking = false;
     }
 
     /**
@@ -338,26 +335,18 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
 
     private <O> Result<O> matching(final T item, final Expectation<T, O> exp) {
 
-        final TrackedActual<O> tract = getActual(item, exp.getGetter(), shouldTrack(exp));
+        final Actual<O> tract = getActual(item, exp.getGetter());
         final boolean matched = exp.getExpectation().test(tract.getActual());
         //noinspection unchecked
-        return new Result(matched, tract.getTrackedCalls(), exp, tract.getActual());
+        return new Result(matched, exp, tract.getActual());
     }
 
     private <O> boolean shouldTrack(final Expectation<T, O> exp) {
-        return this.tracking && exp.getDescription() == null;
+        return false;
     }
 
-    private <O> TrackedActual<O> getActual(final T item, final Function<T, O> getter, final boolean trackCall) {
-        if (trackCall) {
-            final TrackingTree calls = TrackingTree.trackingCalls();
-            final T track = Tracker.track(item, calls);
-            final O actual = apply(track, getter);
-            calls.stopTracking();
-            return new TrackedActual<>(actual, calls);
-        } else {
-            return new TrackedActual<>(apply(item, getter), null);
-        }
+    private <O> Actual<O> getActual(final T item, final Function<T, O> getter) {
+        return new Actual<>(apply(item, getter));
     }
 
     private <O> O apply(final T target, final Function<T, O> getter) {
@@ -365,7 +354,7 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
             return getter.apply(target);
         } catch (final ClassCastException e) {
             //noinspection unchecked
-            results.add(new Result(false, null, new Expectation(Prose.typeMatchExpectationDescription, null, null, Prose.typeMismatchMsg(target), null), target.getClass().getName()));
+            results.add(new Result(false, new Expectation(Prose.typeMatchExpectationDescription, null, null, Prose.typeMismatchMsg(target), null), target.getClass().getName()));
             return null;
         }
     }

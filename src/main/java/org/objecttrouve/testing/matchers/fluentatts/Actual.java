@@ -7,17 +7,11 @@
 
 package org.objecttrouve.testing.matchers.fluentatts;
 
-class TrackedActual<O> {
+class Actual<O> {
     private final O actual;
-    private final TrackingTree trackedCalls;
 
-    TrackedActual(final O actual, final TrackingTree trackedCalls) {
+    Actual(final O actual) {
         this.actual = actual;
-        this.trackedCalls = trackedCalls;
-    }
-
-    TrackingTree getTrackedCalls() {
-        return trackedCalls;
     }
 
     O getActual() {

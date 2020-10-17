@@ -10,13 +10,11 @@ package org.objecttrouve.testing.matchers.fluentatts;
 class Result<O> {
 
     private final boolean matched;
-    private final TrackingTree called;
     private final Expectation expectation;
     private final O actual;
 
-    Result(final boolean matched, final TrackingTree called, final Expectation expectation, final O actual) {
+    Result(final boolean matched, final Expectation expectation, final O actual) {
         this.matched = matched;
-        this.called = called;
         this.expectation = expectation;
         this.actual = actual;
     }
@@ -28,10 +26,6 @@ class Result<O> {
 
     boolean isNotMatched(){
         return !isMatched();
-    }
-
-    TrackingTree getCalled() {
-        return called;
     }
 
     Expectation getExpectation() {
