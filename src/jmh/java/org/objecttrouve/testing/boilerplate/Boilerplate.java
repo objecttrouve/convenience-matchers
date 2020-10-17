@@ -1,7 +1,7 @@
 /*
  * Released under the terms of the MIT License.
  *
- * Copyright (c) 2018 objecttrouve.org <un.object.trouve@gmail.com>
+ * Copyright (c) 2020 objecttrouve.org <un.object.trouve@gmail.com>
  *
  */
 package org.objecttrouve.testing.boilerplate;
