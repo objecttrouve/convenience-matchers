@@ -18,17 +18,10 @@ import org.objecttrouve.testing.matchers.fluentits.FluentIterableMatcher;
  */
 public class ConvenientMatchers {
 
-    private static final boolean tracking = tracking();
-
-    private static final String sysPropTracking = "org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher.tracking";
     private static final MatcherFactory defaultFactory = MatcherFactory.factory().build();
 
     private ConvenientMatchers(){
         /* Not there. */
-    }
-
-    private static boolean tracking() {
-        return Boolean.parseBoolean(System.getProperty(sysPropTracking, "false"));
     }
 
     /**
@@ -62,16 +55,6 @@ public class ConvenientMatchers {
     public static <T> FluentAttributeMatcher<T> an(final Class<T> klass) {
         return a(klass);
     }
-
-    /**
-     * @deprecated The associated feature is deprecated. Don't use it at all.
-     * @return {@code true} if lambda tracking is enabled, {@code false} otherwise.
-     */
-    @Deprecated
-    public static boolean isTracking() {
-        return tracking;
-    }
-
 
     /**
      * <p>Factory method for a {@link FluentIterableMatcher}
