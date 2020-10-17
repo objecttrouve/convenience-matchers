@@ -12,6 +12,7 @@ import org.hamcrest.Matcher;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+@SuppressWarnings("rawtypes")
 class Expectation<T, O> {
     private final String getterDescription;
     private final Function<T, O> getter;

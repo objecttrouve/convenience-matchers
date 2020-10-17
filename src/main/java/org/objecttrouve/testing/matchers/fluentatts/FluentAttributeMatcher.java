@@ -341,10 +341,6 @@ public class FluentAttributeMatcher<T> extends TypeSafeMatcher<T> implements Sco
         return new Result(matched, exp, tract.getActual());
     }
 
-    private <O> boolean shouldTrack(final Expectation<T, O> exp) {
-        return false;
-    }
-
     private <O> Actual<O> getActual(final T item, final Function<T, O> getter) {
         return new Actual<>(apply(item, getter));
     }

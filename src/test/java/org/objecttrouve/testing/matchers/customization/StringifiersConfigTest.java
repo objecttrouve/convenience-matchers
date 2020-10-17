@@ -15,9 +15,10 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 
+@SuppressWarnings({"StringOperationCanBeSimplified", "OptionalGetWithoutIsPresent"})
 public class StringifiersConfigTest {
 
     @Test
@@ -49,7 +50,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<String, String>> stringifier = stringifiers.getShortStringifier(new String());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply("four");
         assertThat(result, is("4"));
     }
@@ -58,12 +58,11 @@ public class StringifiersConfigTest {
     public void getDebugStringifier__finds__by_class(){
 
         final Stringifiers stringifiers = StringifiersConfig.stringifiers()
-            .withDebugStringifier(String.class, s -> s + String.valueOf(s.length()))
+            .withDebugStringifier(String.class, s -> s + s.length())
             .build();
 
         final Optional<Function<String, String>> stringifier = stringifiers.getDebugStringifier(new String());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply("four");
         assertThat(result, is("four4"));
     }
@@ -73,14 +72,13 @@ public class StringifiersConfigTest {
 
         final Stringifiers stringifiers = StringifiersConfig.stringifiers()
             .withShortStringifier(Integer.class, String::valueOf)
-            .withDebugStringifier(String.class, s -> s + String.valueOf(s.length()))
+            .withDebugStringifier(String.class, s -> s + s.length())
             .withShortStringifier(String.class, s -> String.valueOf(s.length()))
             .withShortStringifier(List.class, String::valueOf)
             .build();
 
         final Optional<Function<String, String>> stringifier = stringifiers.getShortStringifier(new String());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply("four");
         assertThat(result, is("4"));
     }
@@ -91,13 +89,12 @@ public class StringifiersConfigTest {
         final Stringifiers stringifiers = StringifiersConfig.stringifiers()
             .withDebugStringifier(Integer.class, String::valueOf)
             .withDebugStringifier(List.class, String::valueOf)
-            .withDebugStringifier(String.class, s -> s + String.valueOf(s.length()))
+            .withDebugStringifier(String.class, s -> s + s.length())
             .withShortStringifier(String.class, s -> String.valueOf(s.length()))
             .build();
 
         final Optional<Function<String, String>> stringifier = stringifiers.getDebugStringifier(new String());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply("four");
         assertThat(result, is("four4"));
     }
@@ -120,7 +117,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Mammal, String>> stringifier = stringifiers.getShortStringifier(new Whale());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Whale());
         assertThat(result, is("mammal"));
     }
@@ -134,7 +130,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Mammal, String>> stringifier = stringifiers.getDebugStringifier(new Whale());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Whale());
         assertThat(result, is("MAMMAL"));
     }
@@ -147,7 +142,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getShortStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("yummi"));
     }
@@ -160,7 +154,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getDebugStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("YUMMI"));
     }
@@ -173,7 +166,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getShortStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("organic"));
     }
@@ -186,7 +178,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getDebugStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("ORGANIC"));
     }
@@ -202,7 +193,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getShortStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("yummi"));
     }
@@ -218,7 +208,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getDebugStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("YUMMI"));
     }
@@ -232,7 +221,7 @@ public class StringifiersConfigTest {
             .withShortStringifier(LifeForm.class, x -> LifeForm.class.getSimpleName().toLowerCase())
             .withShortStringifier(Organic.class, x -> Organic.class.getSimpleName().toLowerCase())
             .withShortStringifier(Integer.class, String::valueOf)
-            .withDebugStringifier(String.class, s -> s + String.valueOf(s.length()))
+            .withDebugStringifier(String.class, s -> s + s.length())
             .withShortStringifier(String.class, s -> String.valueOf(s.length()))
             .withShortStringifier(List.class, String::valueOf)
             .withDebugStringifier(Yummi.class, x -> Yummi.class.getSimpleName().toUpperCase())
@@ -243,7 +232,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getShortStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("yummi"));
     }
@@ -258,7 +246,7 @@ public class StringifiersConfigTest {
             .withShortStringifier(Organic.class, x -> Organic.class.getSimpleName().toLowerCase())
             .withShortStringifier(Salmon.class, x -> Salmon.class.getSimpleName().toLowerCase())
             .withShortStringifier(Integer.class, String::valueOf)
-            .withDebugStringifier(String.class, s -> s + String.valueOf(s.length()))
+            .withDebugStringifier(String.class, s -> s + s.length())
             .withShortStringifier(String.class, s -> String.valueOf(s.length()))
             .withShortStringifier(List.class, String::valueOf)
             .withDebugStringifier(Yummi.class, x -> Yummi.class.getSimpleName().toUpperCase())
@@ -269,7 +257,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getShortStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("salmon"));
     }
@@ -282,7 +269,7 @@ public class StringifiersConfigTest {
             .withShortStringifier(LifeForm.class, x -> LifeForm.class.getSimpleName().toLowerCase())
             .withShortStringifier(Organic.class, x -> Organic.class.getSimpleName().toLowerCase())
             .withShortStringifier(Integer.class, String::valueOf)
-            .withDebugStringifier(String.class, s -> s + String.valueOf(s.length()))
+            .withDebugStringifier(String.class, s -> s + s.length())
             .withShortStringifier(String.class, s -> String.valueOf(s.length()))
             .withShortStringifier(List.class, String::valueOf)
             .withDebugStringifier(Yummi.class, x -> Yummi.class.getSimpleName().toUpperCase())
@@ -293,7 +280,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getShortStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("fish"));
     }
@@ -304,7 +290,7 @@ public class StringifiersConfigTest {
             .withShortStringifier(LifeForm.class, x -> LifeForm.class.getSimpleName().toLowerCase())
             .withShortStringifier(Organic.class, x -> Organic.class.getSimpleName().toLowerCase())
             .withShortStringifier(Integer.class, String::valueOf)
-            .withDebugStringifier(String.class, s -> s + String.valueOf(s.length()))
+            .withDebugStringifier(String.class, s -> s + s.length())
             .withShortStringifier(String.class, s -> String.valueOf(s.length()))
             .withShortStringifier(List.class, String::valueOf)
             .withDebugStringifier(Yummi.class, x -> Yummi.class.getSimpleName().toUpperCase())
@@ -315,7 +301,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getShortStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("lifeform"));
     }
@@ -330,7 +315,7 @@ public class StringifiersConfigTest {
             .withDebugStringifier(Organic.class, x -> Organic.class.getSimpleName().toUpperCase())
             .withDebugStringifier(Integer.class, String::valueOf)
             .withDebugStringifier(List.class, String::valueOf)
-            .withDebugStringifier(String.class, s -> s + String.valueOf(s.length()))
+            .withDebugStringifier(String.class, s -> s + s.length())
             .withShortStringifier(String.class, s -> String.valueOf(s.length()))
             .withShortStringifier(Yummi.class, x -> Yummi.class.getSimpleName().toLowerCase())
             .withShortStringifier(Fish.class, x -> Fish.class.getSimpleName().toLowerCase())
@@ -341,7 +326,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getDebugStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("SALMON"));
     }
@@ -355,7 +339,7 @@ public class StringifiersConfigTest {
             .withDebugStringifier(Organic.class, x -> Organic.class.getSimpleName().toUpperCase())
             .withDebugStringifier(Integer.class, String::valueOf)
             .withDebugStringifier(List.class, String::valueOf)
-            .withDebugStringifier(String.class, s -> s + String.valueOf(s.length()))
+            .withDebugStringifier(String.class, s -> s + s.length())
             .withShortStringifier(String.class, s -> String.valueOf(s.length()))
             .withShortStringifier(Yummi.class, x -> Yummi.class.getSimpleName().toLowerCase())
             .withShortStringifier(Fish.class, x -> Fish.class.getSimpleName().toLowerCase())
@@ -366,7 +350,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getDebugStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("YUMMI"));
     }
@@ -379,7 +362,7 @@ public class StringifiersConfigTest {
             .withDebugStringifier(Organic.class, x -> Organic.class.getSimpleName().toUpperCase())
             .withDebugStringifier(Integer.class, String::valueOf)
             .withDebugStringifier(List.class, String::valueOf)
-            .withDebugStringifier(String.class, s -> s + String.valueOf(s.length()))
+            .withDebugStringifier(String.class, s -> s + s.length())
             .withShortStringifier(String.class, s -> String.valueOf(s.length()))
             .withShortStringifier(Yummi.class, x -> Yummi.class.getSimpleName().toLowerCase())
             .withShortStringifier(Fish.class, x -> Fish.class.getSimpleName().toLowerCase())
@@ -390,7 +373,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getDebugStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("ANIMAL"));
     }
@@ -402,7 +384,7 @@ public class StringifiersConfigTest {
             .withDebugStringifier(Organic.class, x -> Organic.class.getSimpleName().toUpperCase())
             .withDebugStringifier(Integer.class, String::valueOf)
             .withDebugStringifier(List.class, String::valueOf)
-            .withDebugStringifier(String.class, s -> s + String.valueOf(s.length()))
+            .withDebugStringifier(String.class, s -> s + s.length())
             .withShortStringifier(String.class, s -> String.valueOf(s.length()))
             .withShortStringifier(Yummi.class, x -> Yummi.class.getSimpleName().toLowerCase())
             .withShortStringifier(Fish.class, x -> Fish.class.getSimpleName().toLowerCase())
@@ -413,7 +395,6 @@ public class StringifiersConfigTest {
 
         final Optional<Function<Salmon, String>> stringifier = stringifiers.getDebugStringifier(new Salmon());
 
-        //noinspection ConstantConditions
         final String result = stringifier.get().apply(new Salmon());
         assertThat(result, is("LIFEFORM"));
     }

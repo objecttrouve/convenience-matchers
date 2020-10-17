@@ -21,12 +21,14 @@ import java.util.function.Function;
  * Provides useful string descriptions
  * when the respective class doesn't have a suitable <code>toString</code>-implementation.</p>
  */
+@SuppressWarnings("rawtypes")
 public class StringifiersConfig implements Stringifiers {
 
 
     /**
      * <p>Builder for stringifier mappings via a fluent DSL.</p>
      */
+    @SuppressWarnings("rawtypes")
     public static class Builder {
 
         private Map<Class<?>, Function> shortStringifiers = new HashMap<>();
@@ -137,10 +139,7 @@ public class StringifiersConfig implements Stringifiers {
         }
         final Class superclass = klass.getSuperclass();
         if (superclass != null) {
-            final Function f = lookup(map, superclass);
-            if (f != null) {
-                return f;
-            }
+            return lookup(map, superclass);
         }
         return null;
     }

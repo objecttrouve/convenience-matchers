@@ -84,6 +84,7 @@ import static java.util.stream.StreamSupport.stream;
  * </code>
  * </pre>
  */
+@SuppressWarnings("rawtypes")
 public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMatcher<C> implements ScorableMatcher {
 
     private static final Finding theNullCollectionFinding = new Finding("Actual collection was null.");
@@ -229,7 +230,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
             return false;
         }
 
-        //noinspection unchecked,ConstantConditions
+        // noinspection unchecked
         actual = (X[]) stream(iterable.spliterator(), false).toArray();
         matchMatrix = new double[settings.expectations.length][actual.length];
 
@@ -459,7 +460,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         }
 
         @Override
-        public int compareTo(final ScoredMismatch o) {
+        public int compareTo(@SuppressWarnings("NullableProblems") final ScoredMismatch o) {
             return Comparator
                 .comparingDouble(ScoredMismatch::getScore).reversed()
                 .thenComparing(sm -> Math.abs(sm.actual - sm.matcher))
@@ -692,8 +693,8 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         arraycopy(matchers, 0, this.settings.expectations, nrOfExistingExpectations, matchers.length);
     }
 
-    private void expandExpectationsArray(final int nrOfdditionalItems) {
-        final Matcher[] array = new Matcher[this.settings.expectations.length + nrOfdditionalItems];
+    private void expandExpectationsArray(final int nrOfAdditionalItems) {
+        final Matcher[] array = new Matcher[this.settings.expectations.length + nrOfAdditionalItems];
         arraycopy(this.settings.expectations, 0, array, 0, this.settings.expectations.length);
         //noinspection unchecked
         this.settings.expectations = array;

@@ -14,13 +14,13 @@ import org.objecttrouve.testing.matchers.customization.StringifiersConfig;
 import java.util.function.Function;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.objecttrouve.testing.matchers.customization.StringifiersConfig.stringifiers;
 
 public class EqToTest {
 
 
-    private class It {
+    private static class It {
         private final String it;
 
         private It(final String it) {

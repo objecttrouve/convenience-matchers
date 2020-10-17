@@ -28,7 +28,7 @@ public class ConvenientMatchers {
     }
 
     private static boolean tracking() {
-        return Boolean.valueOf(System.getProperty(sysPropTracking, "false"));
+        return Boolean.parseBoolean(System.getProperty(sysPropTracking, "false"));
     }
 
     /**

@@ -7,6 +7,7 @@
 
 package org.objecttrouve.testing.matchers.fluentatts;
 
+@SuppressWarnings("rawtypes")
 class Result<O> {
 
     private final boolean matched;

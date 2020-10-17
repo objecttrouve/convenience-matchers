@@ -21,9 +21,10 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
+@SuppressWarnings("rawtypes")
 public class ProseTest {
 
 
@@ -310,7 +311,6 @@ public class ProseTest {
             .matched(true)
             .build();
 
-        //noinspection unchecked
         final String line = boolProse.line(r1, 1, 4, "true");
 
         assertThat(line, is("⦗0⦘⦗true⦘💕        "));
@@ -323,7 +323,6 @@ public class ProseTest {
             .breakingItemOrder(true)
             .build();
 
-        //noinspection unchecked
         final String line = boolProse.line(r1, 1, 4, "true");
 
         assertThat(line, is("⦗0⦘⦗true⦘    ↔     "));
@@ -336,7 +335,6 @@ public class ProseTest {
             .breakingSortOrder(true)
             .build();
 
-        //noinspection unchecked
         final String line = boolProse.line(r1, 1, 4, "true");
 
         assertThat(line, is("⦗1⦘⦗true⦘  ↕       "));
@@ -349,7 +347,6 @@ public class ProseTest {
             .duplicate(true)
             .build();
 
-        //noinspection unchecked
         final String line = boolProse.line(r, 100, 4, "true");
 
         assertThat(line, is("⦗ 22⦘⦗true⦘      👯  "));
@@ -362,7 +359,6 @@ public class ProseTest {
             .unwanted(true)
             .build();
 
-        //noinspection unchecked
         final String line = boolProse.line(r, 1000, 10, "true");
 
         assertThat(line, is("⦗  22⦘⦗true      ⦘        🚯"));
@@ -377,7 +373,6 @@ public class ProseTest {
             .withMatchers(singletonList(mwi(nullValue(), 3)))
             .build();
 
-        //noinspection unchecked
         final String line = boolProse.line(r, 1000, 3, "true");
 
         assertThat(line, is("⦗  22⦘⦗tru⦘           💔⦗3⦘⦗null⦘"));
@@ -419,7 +414,6 @@ public class ProseTest {
             .unwanted(true)
             .build();
 
-        //noinspection unchecked
         final String line1 = stringProse.line(r1, 100, 15, "scene de menage");
         final String line2 = stringProse.line(r2, 100, 15, "scene de manège");
         final String line3 = stringProse.line(r3, 100, 15, "le mariage");
@@ -463,7 +457,6 @@ public class ProseTest {
             .unwanted(true)
             .build();
 
-        //noinspection unchecked
         final String line3 = prose.line(r3, 100, 15, "le mariage");
         final String line4 = prose.line(r4, 100, 15, "scène de ménage");
 

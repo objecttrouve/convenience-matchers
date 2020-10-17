@@ -14,6 +14,7 @@ import java.util.List;
 
 class ItemResult<X> {
 
+    @SuppressWarnings("rawtypes")
     static class MatcherWithIndex {
         private final Matcher matcher;
         private final int index;

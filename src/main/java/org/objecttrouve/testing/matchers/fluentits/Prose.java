@@ -23,6 +23,7 @@ import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
+@SuppressWarnings("rawtypes")
 class Prose<X> {
 
     private static final int actualItemMaxLength = 30;

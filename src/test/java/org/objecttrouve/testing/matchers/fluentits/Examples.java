@@ -21,7 +21,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparingInt;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableOf;
 import static org.objecttrouve.testing.matchers.customization.StringifiersConfig.stringifiers;
@@ -527,7 +527,7 @@ public class Examples {
     }
 
     private static final Attribute<String, String> prefix = attribute("prefix", s -> s.substring(0, 2));
-    private static final Attribute<String, String> suffix = attribute("suffix", s -> s.substring(2, s.length()));
+    private static final Attribute<String, String> suffix = attribute("suffix", s -> s.substring(2));
     private static final Attribute<String, Integer> length = attribute("length", String::length);
 
 

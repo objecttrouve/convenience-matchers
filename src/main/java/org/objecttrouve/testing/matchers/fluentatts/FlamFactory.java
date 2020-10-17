@@ -29,7 +29,6 @@ public class FlamFactory {
             throw new IllegalArgumentException("Class arg must not be null.");
         }
         final Prose prose = new Prose(config.getSymbols(), config.getStringifiers());
-        //noinspection deprecation
         return new FluentAttributeMatcher<T>(prose).debugging(config.isInDebugMode());
     }
 }

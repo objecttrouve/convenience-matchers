@@ -15,8 +15,8 @@ import static java.lang.Double.compare;
 import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.number.IsCloseTo.closeTo;
-import static org.junit.Assert.assertThat;
 import static org.objecttrouve.testing.matchers.fluentatts.Scorer.score;
 
 public class ScorerTest {
