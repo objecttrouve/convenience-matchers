@@ -49,7 +49,7 @@ dependencies {
     def junitVersion = '4.13.2'
     testImplementation group: 'junit', name: 'junit', version: junitVersion
 
-    def jmhVersion = '1.3.4'
+    def jmhVersion = '1.34'
     jmh "org.openjdk.jmh:jmh-core:$jmhVersion"
     jmh "org.openjdk.jmh:jmh-generator-annprocess:$jmhVersion"
     jmh group: 'junit', name: 'junit', version: junitVersion
