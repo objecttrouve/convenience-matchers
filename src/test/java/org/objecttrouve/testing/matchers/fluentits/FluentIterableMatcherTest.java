@@ -7,9 +7,13 @@
 
 package org.objecttrouve.testing.matchers.fluentits;
 
+import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicReference;
 import org.hamcrest.StringDescription;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.objecttrouve.testing.matchers.ConvenientMatchers;
+import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableLike;
 import org.objecttrouve.testing.matchers.customization.MatcherFactory;
 import org.objecttrouve.testing.matchers.fluentatts.Attribute;
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
@@ -3501,4 +3505,66 @@ public class FluentIterableMatcherTest {
             fail("Length was " + length + ". Debug output changed in an unexpected way:\n\n" + issues);
         }
     }
+
+    @Test
+    public void factoryForBetterTyping() {
+
+        final List<AtomicReference<String>> refs = new LinkedList<>();
+        AtomicReference<String> ref = new AtomicReference<>("hello");
+        refs.add(ref);
+
+        assertThat(refs, is(anIterableLike(refs).withItems(ref)));
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static class Comp<C extends Comparable> implements Comparable<Comp>{
+        C c;
+
+        Comp(C c) {
+            this.c = c;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public int compareTo(@NotNull Comp comp) {
+            return c.compareTo(comp.c);
+        }
+    }
+
+    @Test
+    public void factoryForBetterTypingCanSort() {
+
+        final List<Comp<String>> refs = new LinkedList<>();
+        Comp<String> ref1 = new Comp<>("hello");
+        Comp<String> ref2 = new Comp<>("goodbye");
+        refs.add(ref2);
+        refs.add(ref1);
+
+        assertThat(refs, is(anIterableLike(refs).withItems(ref1).sorted()));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void factoryForBetterTypingCanSort2() {
+
+        final List<Comp<String>> refs = new LinkedList<>();
+        Comp<String> ref1 = new Comp<>("hello");
+        Comp<String> ref2 = new Comp<>("goodbye");
+        refs.add(ref1);
+        refs.add(ref2);
+
+        assertThat(refs, is(anIterableLike(refs).withItems(ref1).sorted()));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void factoryForBetterTypingNotComparable() {
+
+        final List<AtomicReference<String>> refs = new LinkedList<>();
+        AtomicReference<String> ref1 = new AtomicReference<>("a");
+        AtomicReference<String> ref2 = new AtomicReference<>("b");
+        refs.add(ref1);
+        refs.add(ref2);
+
+        assertThat(refs, is(anIterableLike(refs).withItems(ref2).sorted()));
+    }
+
 }

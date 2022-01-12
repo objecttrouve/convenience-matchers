@@ -115,9 +115,6 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
 
     FluentIterableMatcher(final Class<X> klass, final Prose<X> prose, final Config config) {
         this.config = config;
-        if (klass == null) {
-            throw new IllegalArgumentException("Argument 'klass' must not be null.");
-        }
         settings.klass = klass;
         this.prose = prose;
     }
@@ -257,10 +254,10 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
             final Finding unsorted = new Finding("Collection is not sorted.");
             for (int k = 0, l = 1; l < actual.length; k++, l++) {
                 if (settings.comparator == null) {
-                    final Comparable x1 = (Comparable) actual[k];
-                    final Comparable x2 = (Comparable) actual[l];
+                    final Comparable x1 = castComparable(k);
+                    final Comparable x2 = castComparable(l);
                     //noinspection unchecked
-                    if (x1.compareTo(x2) > 0) {
+                    if (x1 == null || x2 == null || x1.compareTo(x2) > 0) {
                         this.unsorted.add(l);
                         findings.add(unsorted);
                     }
@@ -287,6 +284,16 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
                 findings.add(new Finding("Detected duplicates."));
             }
         }
+    }
+
+    private Comparable castComparable(int k) {
+        final X x = actual[k];
+        final Class<?> xClass = x.getClass();
+        if (!Comparable.class.isAssignableFrom(xClass)){
+            findings.add(new Finding("class '" + xClass + "' not comparable"));
+            return null;
+        }
+        return (Comparable) x;
     }
 
     private void reset() {
@@ -454,7 +461,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
      */
     @SuppressWarnings("WeakerAccess")
     public FluentIterableMatcher<X, C> sorted() {
-        if (!Comparable.class.isAssignableFrom(settings.klass)) {
+        if (settings.klass != null && !Comparable.class.isAssignableFrom(settings.klass)) {
             final String msg = "" +
                 "Class " + settings.klass.getSimpleName() + " does not implement " + Comparable.class.getSimpleName() + ". " +
                 "Either implement that interface or " +
