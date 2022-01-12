@@ -140,7 +140,7 @@ uploadArchives {
                 developers {
                     developer {
                         id 'objecttrouve'
-                        name "L'objet trouvé"
+                        name "O Trouvé"
                         email 'un.object.trouve@gmail.com'
                     }
                 }
