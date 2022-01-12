@@ -6,3 +6,4 @@ sandbox.iml
 convenience-matchers.iml
 /out
 /docSrc/**
+/tmp
