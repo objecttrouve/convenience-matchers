@@ -70,6 +70,19 @@ public class ConvenientMatchers {
     }
 
     /**
+     * <p>Factory method for a {@link FluentIterableMatcher}
+     * to match an <i>actual</i> {@code Iterable}'s properties.</p>
+     *
+     * @param iterable iterable to steal type from.
+     * @param <X> Expected type of the actual {@code Iterable}'s items.
+     * @param <C> Expected type of the actual {@code Iterable}.
+     * @return FluentAttributeMatcher.
+     */
+    public static <X, C extends Iterable<X>> FluentIterableMatcher<X, C> anIterableLike(final C iterable){
+        return defaultFactory.iterableLike(iterable);
+    }
+
+    /**
      * <p>Retrieve a {@link MatcherFactory} on which symbols, stringifiers and other settings can be configured.</p>
      * @return {@link MatcherFactory}*/
     public static MatcherFactory.Builder customized(){

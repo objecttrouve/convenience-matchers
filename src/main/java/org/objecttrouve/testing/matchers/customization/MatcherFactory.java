@@ -180,4 +180,16 @@ public class MatcherFactory {
         return FlimFactory.fluentIterableMatcher(klass, config);
     }
 
+    /**
+     * <p>Factory method for a {@link FluentIterableMatcher}
+     * to match an <i>actual</i> {@code Iterable}'s properties.</p>
+     *
+     * @param iterable for typping
+     * @param <C> expected type of the actual {@code Iterable}
+     * @return FluentAttributeMatcher for an actual iterable
+     */
+    public <X, C extends Iterable<X>> FluentIterableMatcher<X, C> iterableLike(final C iterable){
+        return FlimFactory.fluentIterableMatcherLike(iterable, config);
+    }
+
 }

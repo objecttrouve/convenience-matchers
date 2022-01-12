@@ -29,4 +29,19 @@ public class FlimFactory {
         return new FluentIterableMatcher<X, C>(klass, prose, config).debugging(config.isInDebugMode());
     }
 
+    /**
+     * <p>Factory method for a {@link FluentIterableMatcher}
+     * to match an <i>actual</i> {@code Iterable}'s properties.</p>
+     *
+     * @param iterable to steal type from
+     * @param <X> Expected type of the actual {@code Iterable}'s items.
+     * @param <C> Expected type of the actual {@code Iterable}.
+     * @param config The {@link Config} to apply to the matcher.
+     * @return FluentAttributeMatcher.
+     */
+    public static <X, C extends Iterable<X>> FluentIterableMatcher<X, C> fluentIterableMatcherLike(@SuppressWarnings("unused") final C iterable, final Config config){
+        final Prose<X> prose = new Prose<>(config.getSymbols(), config.getStringifiers());
+        return new FluentIterableMatcher<X, C>(null, prose, config).debugging(config.isInDebugMode());
+    }
+
 }
