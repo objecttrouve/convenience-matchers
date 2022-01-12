@@ -53,13 +53,14 @@ archivesBaseName = "convenience-matchers"
 dependencies {
     api group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
 
-    testImplementation group: 'junit', name: 'junit', version: '4.13.1'
+    def junitVersion = '4.13.2'
+    testImplementation group: 'junit', name: 'junit', version: junitVersion
 //    testImplementation group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 
     def jmhVersion = '1.3.4'
     jmh "org.openjdk.jmh:jmh-core:$jmhVersion"
     jmh "org.openjdk.jmh:jmh-generator-annprocess:$jmhVersion"
-    jmh group: 'junit', name: 'junit', version: '4.31.1'
+    jmh group: 'junit', name: 'junit', version: junitVersion
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
 }
