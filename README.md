@@ -5,7 +5,6 @@ Convenience library with custom [Hamcrest](http://hamcrest.org/JavaHamcrest/) Ma
 Particularly focused on maximizing the expressiveness of error messages.  
 With a simple fluent DSL.
 
-[<img src="https://travis-ci.org/objecttrouve/convenience-matchers.svg?branch=master" alt="Travis build"/>](https://travis-ci.org/objecttrouve/convenience-matchers)
 
 [<img src="https://maven-badges.herokuapp.com/maven-central/org.objecttrouve/convenience-matchers/badge.svg" alt="Latest release in Maven Repository"/>](https://mvnrepository.com/artifact/org.objecttrouve/convenience-matchers)
 
