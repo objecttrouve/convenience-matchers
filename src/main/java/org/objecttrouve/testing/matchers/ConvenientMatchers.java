@@ -7,9 +7,12 @@
 
 package org.objecttrouve.testing.matchers;
 
+import java.util.Map;
 import org.objecttrouve.testing.matchers.customization.MatcherFactory;
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
+import org.objecttrouve.testing.matchers.fluentits.FlimFactory;
 import org.objecttrouve.testing.matchers.fluentits.FluentIterableMatcher;
+import org.objecttrouve.testing.matchers.fluentits.FluentMapMatcher;
 
 /**
  * <p>
@@ -80,6 +83,10 @@ public class ConvenientMatchers {
      */
     public static <X, C extends Iterable<X>> FluentIterableMatcher<X, C> anIterableLike(final C iterable){
         return defaultFactory.iterableLike(iterable);
+    }
+
+    public static <K, V> FluentMapMatcher<K, V> aMapLike(final Map<K, V> map){
+        return defaultFactory.aMapLike(map);
     }
 
     /**

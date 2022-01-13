@@ -7,6 +7,7 @@
 
 package org.objecttrouve.testing.matchers.fluentits;
 
+import java.util.Map;
 import org.objecttrouve.testing.matchers.api.Config;
 
 /**
@@ -42,6 +43,10 @@ public class FlimFactory {
     public static <X, C extends Iterable<X>> FluentIterableMatcher<X, C> fluentIterableMatcherLike(@SuppressWarnings("unused") final C iterable, final Config config){
         final Prose<X> prose = new Prose<>(config.getSymbols(), config.getStringifiers());
         return new FluentIterableMatcher<X, C>(null, prose, config).debugging(config.isInDebugMode());
+    }
+
+    public static <K, V> FluentMapMatcher<K, V> aMapLike(final Map<K, V> map){
+        return new FluentMapMatcher<>(map);
     }
 
 }
