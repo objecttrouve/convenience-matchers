@@ -2,7 +2,6 @@ package org.objecttrouve.testing.matchers.fluentits;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.hamcrest.MatcherAssert;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import org.junit.Test;
