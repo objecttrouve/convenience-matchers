@@ -9,6 +9,10 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.objecttrouve.testing.matchers.ConvenientMatchers;
+import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
+import org.objecttrouve.testing.matchers.fluentatts.Attribute;
+import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
+import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
 
 public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
 
@@ -69,6 +73,14 @@ public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
     public FluentMapMatcher<K, V> withKeyVal(final K key, final V value){
         MapEntry<K, V> entry = new MapEntry<>(key, value);
         delegate.withItems(entry);
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public FluentMapMatcher<K, V> withKeyValMatching(final Matcher<K> keyMatcher, final Matcher<V> valueMatcher){
+        delegate.withItemsMatching(a(Map.Entry.class)
+                .withMatching(attribute("key", m -> (K) m.getKey()), keyMatcher)
+                .withMatching(attribute("value", m -> (V) m.getValue()), valueMatcher));
         return this;
     }
 
