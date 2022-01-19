@@ -8,6 +8,10 @@ With a simple fluent DSL.
 
 [<img src="https://maven-badges.herokuapp.com/maven-central/org.objecttrouve/convenience-matchers/badge.svg" alt="Latest release in Maven Repository"/>](https://mvnrepository.com/artifact/org.objecttrouve/convenience-matchers)
 
+ToC
+----
+
+[[_TOC_]]
 
 API
 ----
