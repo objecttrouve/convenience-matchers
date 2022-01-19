@@ -153,7 +153,7 @@ The main goal, however, is to have an error message that immediately tells *whic
 
 The above example produces the following error message: 
 
-![Error description by FluentIterableMatcher](https://github.com/objecttrouve/convenience-matchers/blob/master/doc/img/FluentIterableMatcher-output.png)
+![Error description by FluentIterableMatcher](https://github.com/objecttrouve/convenience-matchers/blob/master/doc/img/FluentIterableMatcher-test-output.png)
 
 The mismatch description starts with a summary of expectations followed by a summary of findings.   
 Afterwards it's getting interesting.   
