@@ -1,18 +1,14 @@
 package org.objecttrouve.testing.matchers.fluentits;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
-import org.objecttrouve.testing.matchers.fluentatts.Attribute;
 import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
-import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
 
 public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
 
