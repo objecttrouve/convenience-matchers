@@ -1,7 +1,9 @@
 package org.objecttrouve.testing.matchers.fluentits;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -58,6 +60,36 @@ public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
                     ", v=" + value +
                     '}';
         }
+
+    }
+
+    private static class MapEntryComparator<K, V> implements Comparator<Map.Entry<K, V>>{
+
+        private final Comparator<K> keyComparator;
+
+        private MapEntryComparator(Comparator<K> keyComparator) {
+            this.keyComparator = keyComparator;
+
+        }
+
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        @Override
+        public int compare(Map.Entry<K, V> entry1, Map.Entry<K, V> entry2) {
+            if(keyComparator != null){
+                return keyComparator.compare(Optional.ofNullable(entry1).map(Map.Entry::getKey).orElse(null), Optional.ofNullable(entry2).map(Map.Entry::getKey).orElse(null));
+            }
+            if (entry1 == null || entry2 == null){
+                throw new IllegalArgumentException("null entry not supported");
+            }
+            K k1 = entry1.getKey();
+            K k2 = entry2.getKey();
+            if (!(k1 instanceof Comparable && k2 instanceof Comparable)){
+                throw new IllegalArgumentException("key not comparable");
+            }
+            Comparable c1 = (Comparable) k1;
+            Comparable c2 = (Comparable) k2;
+            return c1.compareTo(c2);
+        }
     }
 
     private final FluentIterableMatcher<Map.Entry<K, V>, Set<Map.Entry<K, V>>> delegate;
@@ -69,6 +101,15 @@ public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
     public FluentMapMatcher<K, V> withKeyVal(final K key, final V value){
         MapEntry<K, V> entry = new MapEntry<>(key, value);
         delegate.withItems(entry);
+        return this;
+    }
+
+    public FluentMapMatcher<K, V> sorted(){
+        return sorted(null);
+    }
+
+    public FluentMapMatcher<K, V> sorted(final Comparator<K> keyComparator){
+        delegate.sorted(new MapEntryComparator<>(keyComparator));
         return this;
     }
 
