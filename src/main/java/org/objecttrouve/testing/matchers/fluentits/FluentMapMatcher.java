@@ -53,9 +53,9 @@ public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
 
         @Override
         public String toString() {
-            return "MapEntry{" +
-                    "key=" + key +
-                    ", value=" + value +
+            return "{" +
+                    "k=" + key +
+                    ", v=" + value +
                     '}';
         }
     }
