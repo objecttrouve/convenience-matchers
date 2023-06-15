@@ -344,6 +344,10 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         return this;
     }
 
+    void addFinding(Finding finding) {
+        this.findings.add(finding);
+    }
+
 
     private static class ScoredMismatch implements Comparable<ScoredMismatch> {
         private final int actual;

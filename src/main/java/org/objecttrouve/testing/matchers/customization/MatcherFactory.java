@@ -7,6 +7,7 @@
 
 package org.objecttrouve.testing.matchers.customization;
 
+import java.util.Map;
 import org.objecttrouve.testing.matchers.api.Config;
 import org.objecttrouve.testing.matchers.api.Stringifiers;
 import org.objecttrouve.testing.matchers.api.Symbols;
@@ -14,6 +15,7 @@ import org.objecttrouve.testing.matchers.fluentatts.FlamFactory;
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
 import org.objecttrouve.testing.matchers.fluentits.FlimFactory;
 import org.objecttrouve.testing.matchers.fluentits.FluentIterableMatcher;
+import org.objecttrouve.testing.matchers.fluentits.FluentMapMatcher;
 
 /**
  * Factory for {@link FluentAttributeMatcher} and {@link FluentIterableMatcher} instances.
@@ -190,6 +192,10 @@ public class MatcherFactory {
      */
     public <X, C extends Iterable<X>> FluentIterableMatcher<X, C> iterableLike(final C iterable){
         return FlimFactory.fluentIterableMatcherLike(iterable, config);
+    }
+
+    public <K, V> FluentMapMatcher<K, V> aMapLike(final Map<K, V> map){
+        return FlimFactory.aMapLike(map);
     }
 
 }
