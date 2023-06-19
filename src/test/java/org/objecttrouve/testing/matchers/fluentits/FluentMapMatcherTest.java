@@ -5,12 +5,16 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Function;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import org.hamcrest.StringDescription;
 import org.junit.Test;
+import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.aMapLike;
+import org.objecttrouve.testing.matchers.customization.MatcherFactory;
+import static org.objecttrouve.testing.matchers.customization.StringifiersConfig.stringifiers;
 
 
 public class FluentMapMatcherTest {
@@ -174,6 +178,36 @@ public class FluentMapMatcherTest {
                 "⦗2⦘⦗3=3⦘  ↕       \n\n";
 
         FluentMapMatcher<Integer, String> matcher = aMapLike(map).sorted(comparator);
+
+        checkMismatchDescription(map, matcher, expectedDescription);
+    }
+
+    @Test
+    public void describeMismatchSafelyCustomStringifier() {
+
+        //noinspection rawtypes
+        Function<Map.Entry, String> stringifier = e -> e.getKey() + " ↘️ " + e.getValue();
+        final MatcherFactory a = ConvenientMatchers.customized()
+                .withStringifiers(
+                        stringifiers()
+                                .withShortStringifier(Map.Entry.class, stringifier)
+                ).build();
+
+
+        final Map<Integer, String> map = new HashMap<>();
+        map.put(1, "1");
+        map.put(2, "2");
+
+        //noinspection ConcatenationWithEmptyString
+        String expectedDescription = "" +
+                "\nFindings:\n" +
+                "\"Not all expectations were fulfilled.\"\n\n" +
+                "⦗0⦘⦗1 ↘️ 1⦘           💔⦗0⦘⦗<2 ↘️ 1>⦘ 💔⦗1⦘⦗<1 ↘️ 2>⦘\n" +
+                "⦗1⦘⦗2 ↘️ 2⦘           💔⦗1⦘⦗<1 ↘️ 2>⦘ 💔⦗0⦘⦗<2 ↘️ 1>⦘\n\n";
+
+        FluentMapMatcher<Integer, String> matcher = a.mapLike(map)
+                .withKeyVal(2, "1")
+                .withKeyVal(1, "2");
 
         checkMismatchDescription(map, matcher, expectedDescription);
     }

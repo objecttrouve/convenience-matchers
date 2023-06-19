@@ -194,8 +194,13 @@ public class MatcherFactory {
         return FlimFactory.fluentIterableMatcherLike(iterable, config);
     }
 
+    // TODO needed?
     public <K, V> FluentMapMatcher<K, V> aMapLike(final Map<K, V> map){
         return FlimFactory.aMapLike(map);
+    }
+
+    public <K, V> FluentMapMatcher<K, V> mapLike(final Map<K, V> map){
+        return FlimFactory.aMapLike(map, config);
     }
 
 }

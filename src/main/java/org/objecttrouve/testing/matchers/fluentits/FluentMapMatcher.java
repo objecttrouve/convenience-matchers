@@ -10,6 +10,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
+import org.objecttrouve.testing.matchers.api.Config;
 import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
@@ -96,6 +97,11 @@ public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
 
     FluentMapMatcher(final Map<K, V> typedMap) {
         this.delegate = ConvenientMatchers.anIterableLike(typedMap.entrySet());
+    }
+
+
+    FluentMapMatcher(@SuppressWarnings("unused") Map<K, V> map, Prose<Map.Entry<K, V>> prose, Config config) {
+        this.delegate = new FluentIterableMatcher<>(null, prose, config);
     }
 
     public FluentMapMatcher<K, V> withKeyVal(final K key, final V value){

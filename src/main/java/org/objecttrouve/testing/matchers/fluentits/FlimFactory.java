@@ -49,4 +49,9 @@ public class FlimFactory {
         return new FluentMapMatcher<>(map);
     }
 
+    public static <K, V> FluentMapMatcher<K, V> aMapLike(final Map<K, V> map, final Config config){
+        final Prose<Map.Entry<K, V>> prose = new Prose<>(config.getSymbols(), config.getStringifiers());
+        return new FluentMapMatcher<>(map, prose, config);
+    }
+
 }
