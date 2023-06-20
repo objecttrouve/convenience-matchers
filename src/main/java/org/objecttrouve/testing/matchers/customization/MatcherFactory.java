@@ -194,11 +194,28 @@ public class MatcherFactory {
         return FlimFactory.fluentIterableMatcherLike(iterable, config);
     }
 
-    // TODO needed?
+    /**
+     * <p>Factory method for a {@link FluentMapMatcher}
+     * to match an <i>actual</i> {@code Map}'s properties.</p>
+     *
+     * @param map for type inference
+     * @param <K> Expected type of the actual {@code Map}'s keys.
+     * @param <V> Expected type of the actual {@code Map}s values.
+     * @return FluentMapMatcher.
+     */
     public <K, V> FluentMapMatcher<K, V> aMapLike(final Map<K, V> map){
         return FlimFactory.aMapLike(map);
     }
 
+    /**
+     * <p>Factory method for a {@link FluentMapMatcher}
+     * to match an <i>actual</i> {@code Map}'s properties.</p>
+     *
+     * @param map for type inference
+     * @param <K> Expected type of the actual {@code Map}'s keys.
+     * @param <V> Expected type of the actual {@code Map}s values.
+     * @return FluentMapMatcher.
+     */
     public <K, V> FluentMapMatcher<K, V> mapLike(final Map<K, V> map){
         return FlimFactory.aMapLike(map, config);
     }

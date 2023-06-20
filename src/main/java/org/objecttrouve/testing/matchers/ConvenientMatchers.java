@@ -10,7 +10,6 @@ package org.objecttrouve.testing.matchers;
 import java.util.Map;
 import org.objecttrouve.testing.matchers.customization.MatcherFactory;
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
-import org.objecttrouve.testing.matchers.fluentits.FlimFactory;
 import org.objecttrouve.testing.matchers.fluentits.FluentIterableMatcher;
 import org.objecttrouve.testing.matchers.fluentits.FluentMapMatcher;
 
@@ -66,7 +65,7 @@ public class ConvenientMatchers {
      * @param klass The expected class of the actual {@code Iterable}.
      * @param <X> Expected type of the actual {@code Iterable}'s items.
      * @param <C> Expected type of the actual {@code Iterable}.
-     * @return FluentAttributeMatcher.
+     * @return FluentIterableMatcher.
      */
     public static <X, C extends Iterable<X>> FluentIterableMatcher<X, C> anIterableOf(final Class<X> klass){
         return defaultFactory.iterableOf(klass);
@@ -79,12 +78,21 @@ public class ConvenientMatchers {
      * @param iterable iterable to steal type from.
      * @param <X> Expected type of the actual {@code Iterable}'s items.
      * @param <C> Expected type of the actual {@code Iterable}.
-     * @return FluentAttributeMatcher.
+     * @return FluentIterableMatcher.
      */
     public static <X, C extends Iterable<X>> FluentIterableMatcher<X, C> anIterableLike(final C iterable){
         return defaultFactory.iterableLike(iterable);
     }
 
+    /**
+     * <p>Factory method for a {@link FluentMapMatcher}
+     * to match an <i>actual</i> {@code Map}'s properties.</p>
+     *
+     * @param map for type inference
+     * @param <K> Expected type of the actual {@code Map}'s keys.
+     * @param <V> Expected type of the actual {@code Map}s values.
+     * @return FluentMapMatcher.
+     */
     public static <K, V> FluentMapMatcher<K, V> aMapLike(final Map<K, V> map){
         return defaultFactory.aMapLike(map);
     }

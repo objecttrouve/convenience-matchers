@@ -23,7 +23,7 @@ public class FlimFactory {
      * @param <C> Expected type of the actual {@code Iterable}.
      * @param klass The expected class of the actual {@code Iterable}.
      * @param config The {@link Config} to apply to the matcher.
-     * @return FluentAttributeMatcher.
+     * @return FluentIterableMatcher.
      */
     public static <X, C extends Iterable<X>> FluentIterableMatcher<X, C> fluentIterableMatcher(final Class<X> klass, final Config config){
         final Prose<X> prose = new Prose<>(config.getSymbols(), config.getStringifiers());
@@ -38,17 +38,36 @@ public class FlimFactory {
      * @param <X> Expected type of the actual {@code Iterable}'s items.
      * @param <C> Expected type of the actual {@code Iterable}.
      * @param config The {@link Config} to apply to the matcher.
-     * @return FluentAttributeMatcher.
+     * @return FluentIterableMatcher.
      */
     public static <X, C extends Iterable<X>> FluentIterableMatcher<X, C> fluentIterableMatcherLike(@SuppressWarnings("unused") final C iterable, final Config config){
         final Prose<X> prose = new Prose<>(config.getSymbols(), config.getStringifiers());
         return new FluentIterableMatcher<X, C>(null, prose, config).debugging(config.isInDebugMode());
     }
 
+    /**
+     * <p>Factory method for a {@link FluentMapMatcher}
+     * to match an <i>actual</i> {@code Map}'s properties.</p>
+     *
+     * @param map for type inference
+     * @param <K> Expected type of the actual {@code Map}'s keys.
+     * @param <V> Expected type of the actual {@code Map}s values.
+     * @return FluentMapMatcher.
+     */
     public static <K, V> FluentMapMatcher<K, V> aMapLike(final Map<K, V> map){
         return new FluentMapMatcher<>(map);
     }
 
+    /**
+     * <p>Factory method for a {@link FluentMapMatcher}
+     * to match an <i>actual</i> {@code Map}'s properties.</p>
+     *
+     * @param map for type inference
+     * @param <K> Expected type of the actual {@code Map}'s keys.
+     * @param <V> Expected type of the actual {@code Map}s values.
+     * @param config The {@link Config} to apply to the matcher.
+     * @return FluentMapMatcher.
+     */
     public static <K, V> FluentMapMatcher<K, V> aMapLike(final Map<K, V> map, final Config config){
         final Prose<Map.Entry<K, V>> prose = new Prose<>(config.getSymbols(), config.getStringifiers());
         return new FluentMapMatcher<>(map, prose, config);
