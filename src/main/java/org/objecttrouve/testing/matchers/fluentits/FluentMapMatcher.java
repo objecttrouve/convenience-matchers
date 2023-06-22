@@ -179,7 +179,7 @@ public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
         return this;
     }
 
-    public FluentMapMatcher<K,V> debugging(boolean inDebugMode) {
+    FluentMapMatcher<K,V> debugging(boolean inDebugMode) {
         delegate.debugging(inDebugMode);
         return this;
     }
