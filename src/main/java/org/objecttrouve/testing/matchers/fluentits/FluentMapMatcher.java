@@ -110,6 +110,18 @@ public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
         return this;
     }
 
+    /**
+     * <p>Sets the expected number of items in the <i>actual</i> {@code Map}.</p>
+     *
+     * @param expectedSize The expected number of items in the {@code Iterable}.
+     * @return The {@code FluentMapMatcher} instance on which the method was called.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public FluentMapMatcher<K, V> ofSize(final int expectedSize) {
+       delegate.ofSize(expectedSize);
+       return this;
+    }
+
     public FluentMapMatcher<K, V> sorted(){
         return sorted(null);
     }

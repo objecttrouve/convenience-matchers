@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Function;
+import org.hamcrest.CoreMatchers;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -279,6 +281,44 @@ public class FluentMapMatcherTest {
         checkMismatchDescription(map, matcher, expectedDescription);
 
     }
+
+
+    @Test
+    public void ofSize(){
+        final Map<Integer, String> map = new HashMap<>();
+        map.put(1, "1");
+        map.put(2, "2");
+
+        assertThat(map, is(aMapLike(map).ofSize(2)));
+    }
+
+    @Test
+    public void ofSizeMismatch(){
+        final Map<Integer, String> map = new HashMap<>();
+        map.put(1, "1");
+        map.put(2, "2");
+
+        assertThat(map, not(is(aMapLike(map).ofSize(3))));
+    }
+
+    @Test
+    public void describeMismatchSafelyOfSize(){
+        final Map<Integer, String> map = new HashMap<>();
+        map.put(1, "1");
+        map.put(2, "2");
+
+        String expectedDescription = "\n" +
+                "Findings:\n" +
+                "\"Size mismatch. Expected: 3. Actual was: 2.\"\n\n" +
+                "⦗0⦘⦗1=1⦘          \n" +
+                "⦗1⦘⦗2=2⦘          \n\n";
+
+        FluentMapMatcher<Integer, String> matcher = aMapLike(map).ofSize(3);
+
+        checkMismatchDescription(map, matcher, expectedDescription);
+
+    }
+
 
     private static void checkMismatchDescription(Map<Integer, String> map, FluentMapMatcher<Integer, String> matcher, String expectedDescription) {
         boolean matches = matcher.matchesSafely(map);
