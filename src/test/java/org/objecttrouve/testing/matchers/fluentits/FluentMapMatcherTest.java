@@ -212,6 +212,74 @@ public class FluentMapMatcherTest {
         checkMismatchDescription(map, matcher, expectedDescription);
     }
 
+    @Test
+    public void describeMismatchSafelyDebuggingWithCustomStringifier() {
+
+        //noinspection rawtypes
+        Function<Map.Entry, String> shortStringifier = e -> e.getKey() + " ↘️ " + e.getValue();
+        //noinspection rawtypes
+        Function<Map.Entry, String> debugStringifier = e -> e.getKey() + " ↗️ " + e.getValue();
+        final MatcherFactory a = ConvenientMatchers.customized()
+                .withStringifiers(
+                        stringifiers()
+                                .withShortStringifier(Map.Entry.class, shortStringifier)
+                                .withDebugStringifier(Map.Entry.class, debugStringifier)
+                ).build();
+
+
+        final Map<Integer, String> map = new HashMap<>();
+        map.put(1, "1");
+        map.put(2, "2");
+
+        //noinspection ConcatenationWithEmptyString
+        String expectedDescription = "" +
+                "\nFindings:\n" +
+                "\"Not all expectations were fulfilled.\"\n\n" +
+                "⦗0⦘⦗1 ↘️ 1⦘           💔⦗0⦘⦗<2 ↗️ 1>⦘ 💔⦗1⦘⦗<1 ↗️ 2>⦘\n⦗1⦘⦗2 ↘️ 2⦘           💔⦗1⦘⦗<1 ↗️ 2>⦘ 💔⦗0⦘⦗<2 ↗️ 1>⦘\n\n" +
+                "was <[1=1, 2=2]>\n\n" +
+                "DEBUG:\n\n\n\n" +
+                "=== ACTUAL ITEM ⦗0⦘ ===================================================================================================\n\n" +
+                "⦗💔⦘⦗1 ↗️ 1⦘:\n\n" +
+                "\t--- MISMATCHED MATCHER ⦗0⦘ --------------------------------------------------------------------------\n\n" +
+                "\tActual ⦗💔⦘:\n\n" +
+                "\t\t1 ↗️ 1\n\n" +
+                "\tMatcher expected:\n\n" +
+                "\t\t<2 ↗️ 1>\n\n" +
+                "\tMatcher described mismatch:\n\n" +
+                "\t\t<2 ↗️ 1> was <1 ↗️ 1>\n\n\n" +
+                "\t--- MISMATCHED MATCHER ⦗1⦘ --------------------------------------------------------------------------\n\n" +
+                "\tActual ⦗💔⦘:\n\n" +
+                "\t\t1 ↗️ 1\n\n" +
+                "\tMatcher expected:\n\n" +
+                "\t\t<1 ↗️ 2>\n\n" +
+                "\tMatcher described mismatch:\n\n" +
+                "\t\t<1 ↗️ 2> was <1 ↗️ 1>\n\n\n\n\n" +
+                "=== ACTUAL ITEM ⦗1⦘ ===================================================================================================\n\n" +
+                "⦗💔⦘⦗2 ↗️ 2⦘:\n\n" +
+                "\t--- MISMATCHED MATCHER ⦗1⦘ --------------------------------------------------------------------------\n\n" +
+                "\tActual ⦗💔⦘:\n\n" +
+                "\t\t2 ↗️ 2\n\n" +
+                "\tMatcher expected:\n\n" +
+                "\t\t<1 ↗️ 2>\n\n" +
+                "\tMatcher described mismatch:\n\n" +
+                "\t\t<1 ↗️ 2> was <2 ↗️ 2>\n\n\n" +
+                "\t--- MISMATCHED MATCHER ⦗0⦘ --------------------------------------------------------------------------\n\n" +
+                "\tActual ⦗💔⦘:\n\n" +
+                "\t\t2 ↗️ 2\n\n" +
+                "\tMatcher expected:\n\n" +
+                "\t\t<2 ↗️ 1>\n\n" +
+                "\tMatcher described mismatch:\n\n" +
+                "\t\t<2 ↗️ 1> was <2 ↗️ 2>\n\n\n";
+
+        FluentMapMatcher<Integer, String> matcher = a.mapLike(map)
+                .debugging(true)
+                .withKeyVal(2, "1")
+                .withKeyVal(1, "2");
+
+        checkMismatchDescription(map, matcher, expectedDescription);
+
+    }
+
     private static void checkMismatchDescription(Map<Integer, String> map, FluentMapMatcher<Integer, String> matcher, String expectedDescription) {
         boolean matches = matcher.matchesSafely(map);
         assertThat(matches, is(false));

@@ -127,6 +127,11 @@ public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
         return this;
     }
 
+    public FluentMapMatcher<K,V> debugging(boolean inDebugMode) {
+        delegate.debugging(inDebugMode);
+        return this;
+    }
+
     @Override
     protected boolean matchesSafely(Map<K, V> map) {
         return delegate.matches(map.entrySet());
