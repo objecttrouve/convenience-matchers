@@ -7,24 +7,25 @@
 
 package org.objecttrouve.testing.matchers.fluentits;
 
+import static java.lang.System.arraycopy;
+import static java.util.Collections.singletonList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
+import static java.util.stream.Collectors.toList;
+import java.util.stream.Stream;
+import static java.util.stream.StreamSupport.stream;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.objecttrouve.testing.matchers.api.Config;
 import org.objecttrouve.testing.matchers.api.ScorableMatcher;
-import org.objecttrouve.testing.matchers.api.Stringifiers;
-import org.objecttrouve.testing.matchers.api.Symbols;
-
-import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
-import static java.lang.System.arraycopy;
-import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.StreamSupport.stream;
 
 /**
  * <p>
@@ -108,6 +109,10 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
     private boolean debugging;
 
     @SuppressWarnings("WeakerAccess")
+    /*
+     * Use {@link org.objecttrouve.testing.matchers.fluentits.FluentIterableMatcher.FluentIterableMatcher(java.lang.Class<X>, org.objecttrouve.testing.matchers.fluentits.Prose<X>, org.objecttrouve.testing.matchers.api.Config)}.
+     */
+    @Deprecated
     protected FluentIterableMatcher(final Class<X> klass, final Config config) {
         this(klass, new Prose<>(config.getSymbols(), config.getStringifiers()), config);
         debugging(config.isInDebugMode());
@@ -344,11 +349,6 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         return this;
     }
 
-    void addFinding(Finding finding) {
-        this.findings.add(finding);
-    }
-
-
     private static class ScoredMismatch implements Comparable<ScoredMismatch> {
         private final int actual;
         private final int matcher;
@@ -466,6 +466,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
     @SuppressWarnings("WeakerAccess")
     public FluentIterableMatcher<X, C> sorted() {
         if (settings.klass != null && !Comparable.class.isAssignableFrom(settings.klass)) {
+            //noinspection ConcatenationWithEmptyString
             final String msg = "" +
                 "Class " + settings.klass.getSimpleName() + " does not implement " + Comparable.class.getSimpleName() + ". " +
                 "Either implement that interface or " +
