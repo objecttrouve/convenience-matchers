@@ -13,6 +13,16 @@ import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
 import org.objecttrouve.testing.matchers.api.Config;
 import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
+/**
+ * <p>
+ * A {@code org.hamcrest.TypeSafeMatcher} implementation
+ * to check multiple characteristics of an <i>actual</i> {@code Map}
+ * at the same time.
+ * </p>
+ * <p>Offers a fluent API to express expectations about the actual {@code Map}
+ * such as size, sortedness or the expected items.</p>
+ * <p>
+ */
 public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
 
 
@@ -104,6 +114,15 @@ public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
         this.delegate = new FluentIterableMatcher<>(null, prose, config);
     }
 
+
+    /**
+     * <p>Adds expected key/value pair.</p>
+     * <p>For each expected key/value pair, there must be at least one matching entry.</p>
+     *
+     * @param key Expected key.
+     * @param value Expected value for {code key}.
+     * @return The {@code FluentMapMatcher} instance on which the method was called.
+     */
     public FluentMapMatcher<K, V> withKeyVal(final K key, final V value){
         MapEntry<K, V> entry = new MapEntry<>(key, value);
         delegate.withItems(entry);
@@ -122,15 +141,36 @@ public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
        return this;
     }
 
+    /**
+     * <p>Expect the {@code Map} to be sorted by key in the natural item order.</p>
+     * <p>Applicable only if the keys in the {@code Map} implement {@code java.lang.Comparable}.</p>
+     * <p>If the items aren't {@code Comparable}, use {@link FluentMapMatcher#sorted(java.util.Comparator)}.</p>
+     *
+     * @return The {@code FluentMapMatcher} instance on which the method was called.
+     */
     public FluentMapMatcher<K, V> sorted(){
         return sorted(null);
     }
 
+    /**
+     * <p>Expect the {@code Map} to be sorted by key according to the order defined by the {@code keyComparator}.</p>
+     *
+     * @param keyComparator {@code Comparator} defining how the {@code Map}'s items should be sorted.
+     * @return The {@code FluentMapMatcher} instance on which the method was called.
+     */
     public FluentMapMatcher<K, V> sorted(final Comparator<K> keyComparator){
         delegate.sorted(new MapEntryComparator<>(keyComparator));
         return this;
     }
 
+    /**
+     * <p>Adds {@code Matcher}s for the {@code Map}'s key/value pairs.</p>
+     * <p>For each {@code Matcher}, there must be at least one matching item.</p>
+     *
+     * @param keyMatcher {@code Matcher}s to be applied to the {@code Map}'s keys.
+     * @param valueMatcher {@code Matcher}s to be applied to the {@code Map}'s values, corresponding to the matched key.
+     * @return The {@code FluentMapMatcher} instance on which the method was called.
+     */
     @SuppressWarnings("unchecked")
     public FluentMapMatcher<K, V> withKeyValMatching(final Matcher<K> keyMatcher, final Matcher<V> valueMatcher){
         delegate.withItemsMatching(a(Map.Entry.class)
