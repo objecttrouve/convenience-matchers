@@ -7,9 +7,13 @@
 
 package org.objecttrouve.testing.matchers.fluentits;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.objecttrouve.testing.matchers.ConvenientMatchers;
+import static org.objecttrouve.testing.matchers.ConvenientMatchers.aMapLike;
 import org.objecttrouve.testing.matchers.customization.MatcherFactory;
 import org.objecttrouve.testing.matchers.fluentatts.Attribute;
 
@@ -28,6 +32,7 @@ import static org.objecttrouve.testing.matchers.customization.StringifiersConfig
 import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 
+@SuppressWarnings("NewClassNamingConvention")
 @Ignore("Failing intentionally.")
 public class Examples {
 
@@ -1003,6 +1008,73 @@ public class Examples {
                 .withItemsMatching(
                     an.instanceOf(String.class)
                         .with(prefix, "Xxxx"))));
+    }
+
+
+    @Test
+    public void mapMatcherKeyValMismatch(){
+        final Map<String, String> map = new HashMap<>();
+        map.put("key1", "value1");
+        map.put("key2", "value2");
+
+        assertThat(map, is(
+                aMapLike(map)
+                        .withKeyVal("key2", "value1")
+                        .withKeyVal("key1", "value2")
+                        .withKeyVal("key2", "value2")
+        ));
+    }
+
+    @Test
+    public void mapMatcherKeyValMatcherMismatch(){
+        final Map<String, String> map = new HashMap<>();
+        map.put("key1", "value1");
+        map.put("key2", "value2");
+
+        assertThat(map, is(
+                aMapLike(map)
+                        .withKeyValMatching(equalTo("key2"), equalTo("value1"))
+                        .withKeyValMatching(equalTo("key2"), equalTo("value2"))
+        ));
+    }
+
+    @Test
+    public void mapMatcherSizeMismatch(){
+        final Map<String, String> map = new HashMap<>();
+        map.put("key1", "value1");
+        map.put("key2", "value2");
+
+        assertThat(map, is(
+                aMapLike(map)
+                        .ofSize(4)
+        ));
+    }
+
+    @Test
+    public void mapMatcherSortMismatch(){
+        final Map<String, String> map = new LinkedHashMap<>();
+        map.put("key2", "value2");
+        map.put("key1", "value1");
+
+        assertThat(map, is(
+                aMapLike(map)
+                        .sorted()
+                        .ofSize(3)
+                        .withKeyVal("key0", "val0")
+                        .withKeyValMatching(equalTo("key3"), equalTo("val3"))
+        ));
+    }
+
+    @Test
+    public void mapMatcherMultiple(){
+        final Map<String, String> map = new LinkedHashMap<>();
+        map.put("key2", "value2");
+        map.put("key1", "value1");
+
+        assertThat(map, is(
+                aMapLike(map)
+                        .sorted()
+        ));
     }
 
 
