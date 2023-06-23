@@ -11,6 +11,7 @@ import org.hamcrest.TypeSafeMatcher;
 import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
 import org.objecttrouve.testing.matchers.api.Config;
+import org.objecttrouve.testing.matchers.api.ScorableMatcher;
 import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
 /**
@@ -23,7 +24,7 @@ import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
  * such as size, sortedness or the expected items.</p>
  * <p>
  */
-public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
+public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> implements ScorableMatcher {
 
 
     private static class MapEntry<K, V> implements Map.Entry<K, V>{
@@ -182,6 +183,12 @@ public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> {
     FluentMapMatcher<K,V> debugging(boolean inDebugMode) {
         delegate.debugging(inDebugMode);
         return this;
+    }
+
+
+    @Override
+    public double getScore() {
+        return delegate.getScore();
     }
 
     @Override
