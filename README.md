@@ -1,25 +1,22 @@
-Convenience Matchers
-====================
+# Convenience Matchers: Fluent Matchers For Hamcrest Assertions
 
-Convenience library with custom [Hamcrest](http://hamcrest.org/JavaHamcrest/) Matcher derivates for more comfortable unit testing.  
-Particularly focused on maximizing the expressiveness of error messages.  
-With a simple fluent DSL.
-
+Convenience library with custom [Hamcrest](http://hamcrest.org/JavaHamcrest/) matcher derivates.<br>
+Fluent API to formulate multiple coherent expectations in a single line assertion.<br>
+Customizable object printing for highly revealing test output.<br>
 
 [<img src="https://maven-badges.herokuapp.com/maven-central/org.objecttrouve/convenience-matchers/badge.svg" alt="Latest release in Maven Repository"/>](https://mvnrepository.com/artifact/org.objecttrouve/convenience-matchers)
 
-
-API
-----
+## API
 
 ### Matching Objects: `FluentAttributeMatcher`
 
-A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) extension to check multiple target object attributes at once.  
-Offers a fluent builder API. Attributes of the target object are simply phrased as lambda expressions. 
+Yet another [approach for verifying multiple properties in a single line assertion](https://www.baeldung.com/java-testing-single-assert-multiple-properties). 
+The `FluentAttributeMatcher` is a [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) with a fluent builder API. 
+The API represents target object attributes as named lambda expressions. 
+Naming the object properties is particularly helpful for comprehensible output.
+The matcher allows to jointly verify properties that belong conceptually together and, at the same time, to ignore irrelevant properties. 
 
-#### Basic Concept 
-
-Best illustrated with an example:
+Here's an example:
 
 ```java
 
@@ -57,38 +54,24 @@ public class Example {
 
 (See also the [full example](https://github.com/objecttrouve/convenience-matchers/blob/master/src/test/java/org/objecttrouve/testing/matchers/fluentatts/Example.java).)
 
-Object properties are described with named lambdas or method references (`Attribute`s).  
-The `Attribute`'s logic returns the actual value form the object.  
-That value is then compared to the expected value or matched against a provided `Matcher`.  
-The `FluentAttributeMatcher` implements the builder pattern so that it can be configured in a fluent style.    
 
-
-#### Interpreting The Output
-
-If you provide nice names you get nice output in case of a mismatch.
+Since you provided revealing names for the object properties, you get helpful output in case a test fails. 
 
 ![Error description by FluentAttributeMatcher](https://github.com/objecttrouve/convenience-matchers/blob/master/doc/img/FluentAttributeMatcher-test-output.png)
 
 
-
-
 ### Matching Iterables: `FluentIterableMatcher`
 
-A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) with fluently formulatable expectations about an `Iterable`.   
-Such as the size, the items, the sort order or the uniqueness of items.   
-If items are represented by [`ScorableMatcher`](https://github.com/objecttrouve/convenience-matchers/blob/master/src/main/java/org/objecttrouve/testing/matchers/api/ScorableMatcher.java) instances, the best fit is presented first.
+A [`TypeSafeMatcher`](http://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/TypeSafeMatcher.html) with fluently formulatable expectations about an `Iterable`:
+* Size
+* Items
+* (Sort) order
+* Uniqueness
 
-#### Concept & Goals
+Matchers can be nested. 
+If expected items are represented by implementations of the [`ScorableMatcher`](https://github.com/objecttrouve/convenience-matchers/blob/master/src/main/java/org/objecttrouve/testing/matchers/api/ScorableMatcher.java) interface, the best match is presented first.
 
-Have you ever spent time wondering *which* item caused a mismatch when a collection `Matcher` failed?   
-Have you ever asked yourself whether that matcher was sensitive to the size of the `Collection`?   
-Have you ever wondered if the item order was playing a role?  
-
-The `FluentIterableMatcher` addresses such sources of confusion.   
-It produces an error description that tells you exactly which items in the `Iterable` need more attention.   
-It has a fluent API to specify requirements beyond items, such as size or order.   
-
-Here's a typical example:
+Example:
 
 ```java
 // [...]
@@ -99,7 +82,7 @@ public class Examples {
 
     // [...]
     
-      @Test
+        @Test
         public void heavyMismatch() {
     
             final List<String> strings = asList(
@@ -131,38 +114,44 @@ public class Examples {
 }
 ```
 
-(See also the [full example](https://github.com/objecttrouve/convenience-matchers/blob/master/src/test/java/org/objecttrouve/testing/matchers/fluentits/Examples.java).)
+(See also the [full code](https://github.com/objecttrouve/convenience-matchers/blob/master/src/test/java/org/objecttrouve/testing/matchers/fluentits/Examples.java).)
 
-You can fluently express the essential requirements you might have about an `Iterable`: 
-
-* The size.
-* The items.
-    * By expected item.
-    * By matcher.
-* Is the iterable sorted? 
-* Are items in the same order as specified? 
-* No duplicates. 
-* Are there any unexpected items?
-
-The main goal, however, is to have an error message that immediately tells *which* items were not matched and *which* expectation was unmet, if any.
-
-
-#### Reading The Output
-
-##### Mismatch Description
+In case of an assertion failure, you get immediate feedback about the nature of the mismatch.
 
 The above example produces the following error message: 
 
 ![Error description by FluentIterableMatcher](https://github.com/objecttrouve/convenience-matchers/blob/master/doc/img/FluentIterableMatcher-test-output.png)
 
-The mismatch description starts with a summary of expectations followed by a summary of findings.   
-Afterwards it's getting interesting.   
+The mismatch description starts with a summary of expectations followed by a summary of findings.
 The actual items are presented in the order in which they were iterated.   
 After each actual item there's a sequence of symbols that indicate if the actual item was matched or (in what way) not matched.  
 At the end of each line there's a sequence of the expected values or matchers for the item that were not matched.  
 If items are represented by `ScorableMatcher`s and multiple such matchers match only partially, the best match is presented first.  
 (Unless you call `exactly().ordered()`. In this case the value or matcher added exactly at the item's position is assumed to be the correct one.)  
 
+### Matching Maps: `FluentMapMatcher`
+
+You can also use the fluent API to formulate expectation about `Map`s: Items, size and sortedness.
+
+```java
+
+    @Test
+    public void mapMatcher() {
+    
+        final Map<String, String> map = new TreeMap<>();
+        map.put("key2", "value2");
+        map.put("key1", "value1");
+
+        assertThat(map, is(
+                aMapLike(map)
+                        .sorted()
+                        .ofSize(2)
+                        .withKeyVal("key1", "value1")
+                        .withKeyValMatching(equalTo("key2"), equalTo("value2"))
+        ));
+    }
+
+```
 
 ### Customization
 
@@ -206,28 +195,28 @@ Why (not)?
 
 #### Matching
 
-* Fluent DSL that allows for focusing on the relevant aspects. 
-* Human friendly configurable output in case of a mismatch.
-* Compensate poor or absent `toString` implementations.
+* Fluent DSL that allows for focusing on the relevant aspects
+* Human friendly configurable output in case of a mismatch
+* Compensate poor or absent `toString` implementations
 
 #### Matching Objects
 
-* Check all relevant properties of an object on one go.
-* Ignore irrelevant properties at the same time. 
-* Match nested structures in a uniform way.
+* Check all relevant properties of an object on one go
+* Ignore irrelevant properties at the same time
+* Match nested structures in a uniform way, aligned with the test object structure
 
-#### Matching Iterables
+#### Matching Maps And Iterables
 
-* Instantaneous overview of which items in an `Iterable` matched and which didn't.
-* Clear indication of which actual item breaks sort order or expected order of items.
-* Easy identification of unwanted duplicates. 
-* Easy identification of unwanted items.
-* Fancy comforting error descriptions.
+* Instantaneous overview of which items in an `Iterable` matched and which didn't
+* Clear indication of which actual item breaks sort order or expected order of items
+* Easy identification of unwanted duplicates
+* Easy identification of unwanted items
+* Revealing error descriptions
 
 ### Drawbacks
 
-* Some performance is traded for convenience.
-* Needs a minimum of syntactic sugaring.
+* Performance tradeoffs
+* Needs some syntactic sugaring
 
 
 Alternatives
@@ -236,6 +225,7 @@ Alternatives
 There's choice!
 * [Google Truth](https://google.github.io/truth/)
 * [AssertJ](http://joel-costigliola.github.io/assertj/)
+* [JUnit 5, `assertAll`](https://junit.org/junit5/docs/5.0.0-M2/api/org/junit/jupiter/api/Assertions.html#assertAll-org.junit.jupiter.api.Executable...-)
 
 Download
 ---------
