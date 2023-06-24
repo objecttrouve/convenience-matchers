@@ -10,6 +10,7 @@ package org.objecttrouve.testing.matchers.fluentits;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.objecttrouve.testing.matchers.ConvenientMatchers;
@@ -1074,6 +1075,21 @@ public class Examples {
         assertThat(map, is(
                 aMapLike(map)
                         .sorted()
+        ));
+    }
+
+    @Test
+    public void mapMatcherHappyPath(){
+        final Map<String, String> map = new TreeMap<>();
+        map.put("key2", "value2");
+        map.put("key1", "value1");
+
+        assertThat(map, is(
+                aMapLike(map)
+                        .sorted()
+                        .ofSize(2)
+                        .withKeyVal("key1", "value1")
+                        .withKeyValMatching(equalTo("key2"), equalTo("value2"))
         ));
     }
 
