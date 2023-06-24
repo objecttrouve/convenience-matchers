@@ -1051,7 +1051,7 @@ public class Examples {
     }
 
     @Test
-    public void mapMatcherSortMismatch(){
+    public void mapMatcherMultiple(){
         final Map<String, String> map = new LinkedHashMap<>();
         map.put("key2", "value2");
         map.put("key1", "value1");
@@ -1066,7 +1066,7 @@ public class Examples {
     }
 
     @Test
-    public void mapMatcherMultiple(){
+    public void mapMatcherSortMismatch(){
         final Map<String, String> map = new LinkedHashMap<>();
         map.put("key2", "value2");
         map.put("key1", "value1");
