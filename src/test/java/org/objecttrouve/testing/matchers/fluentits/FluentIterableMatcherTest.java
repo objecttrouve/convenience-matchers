@@ -10,7 +10,6 @@ package org.objecttrouve.testing.matchers.fluentits;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicReference;
 import org.hamcrest.StringDescription;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableLike;
@@ -3526,7 +3525,7 @@ public class FluentIterableMatcherTest {
 
         @SuppressWarnings("unchecked")
         @Override
-        public int compareTo(@NotNull Comp comp) {
+        public int compareTo(final Comp comp) {
             return c.compareTo(comp.c);
         }
     }
