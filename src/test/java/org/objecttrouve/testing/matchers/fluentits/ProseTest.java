@@ -24,7 +24,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "ConcatenationWithEmptyString"})
 public class ProseTest {
 
 
