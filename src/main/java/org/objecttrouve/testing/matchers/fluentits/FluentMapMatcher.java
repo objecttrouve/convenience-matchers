@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
@@ -163,6 +164,26 @@ public class FluentMapMatcher<K, V> extends TypeSafeMatcher<Map<K, V>> implement
         delegate.sorted(new MapEntryComparator<>(keyComparator));
         return this;
     }
+
+    public FluentMapMatcher<K, V> ordered() {
+        delegate.ordered();
+        return this;
+    }
+
+
+    @SafeVarargs
+    public final FluentMapMatcher<K, V> withKeys(final K... keys) {
+        for (final K key : keys) {
+            withKey(key);
+        }
+        return this;
+    }
+
+    public FluentMapMatcher<K, V> withKey(K key) {
+        withKeyValMatching(Matchers.equalTo(key), (Matcher<V>) Matchers.anything());
+        return this;
+    }
+
 
     /**
      * <p>Adds {@code Matcher}s for the {@code Map}'s key/value pairs.</p>

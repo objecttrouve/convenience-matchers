@@ -61,6 +61,49 @@ public class FluentMapMatcherTest {
     }
 
     @Test
+    public void testMapMatcherMatcherKeyOnlyArg(){
+        final Map<Integer, String> map = new HashMap<>();
+        map.put(1, "1");
+        map.put(2, "2");
+
+        assertThat(map, is(aMapLike(map)
+                .withKey(1)
+                .withKey(2)));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testMapMatcherMatcherKeyOnlyArgFail(){
+        final Map<Integer, String> map = new HashMap<>();
+        map.put(1, "1");
+        map.put(2, "2");
+
+        assertThat(map, is(aMapLike(map)
+                .withKey(4)
+                .withKey(3)));
+    }
+
+    @Test
+    public void testMapMatcherMatcherKeysOnlyArg(){
+        final Map<Integer, String> map = new HashMap<>();
+        map.put(1, "1");
+        map.put(2, "2");
+
+        assertThat(map, is(aMapLike(map)
+                .withKeys(1, 2)));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testMapMatcherMatcherKeysOnlyArgFail(){
+        final Map<Integer, String> map = new HashMap<>();
+        map.put(1, "1");
+        map.put(2, "2");
+
+        assertThat(map, is(aMapLike(map)
+                .withKeys(4, 3)));
+    }
+
+
+    @Test
     public void testMapMatcherSorted(){
         final Map<Integer, String> map = new TreeMap<>();
         map.put(1, "1");
@@ -100,6 +143,18 @@ public class FluentMapMatcherTest {
         map.put(1, "1");
 
         assertThat(map, is(aMapLike(map).sorted(comparator)));
+    }
+
+    @Test
+    public void testMapMatcherOrdered(){
+        final Map<Integer, String> map = new LinkedHashMap<>();
+        map.put(3, "3");
+        map.put(2, "2");
+        map.put(1, "1");
+
+        assertThat(map, is(aMapLike(map)
+                .ordered()
+        ));
     }
 
     @Test
