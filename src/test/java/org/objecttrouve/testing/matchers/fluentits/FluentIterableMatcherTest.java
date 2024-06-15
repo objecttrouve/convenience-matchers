@@ -9,18 +9,20 @@ package org.objecttrouve.testing.matchers.fluentits;
 
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicReference;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.hamcrest.StringDescription;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.objecttrouve.testing.matchers.ConvenientMatchers;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableLike;
 import org.objecttrouve.testing.matchers.customization.MatcherFactory;
 import org.objecttrouve.testing.matchers.fluentatts.Attribute;
 import org.objecttrouve.testing.matchers.fluentatts.FluentAttributeMatcher;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -28,12 +30,12 @@ import static java.util.Comparator.comparingInt;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.number.IsCloseTo.closeTo;
-import static org.junit.Assert.*;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.a;
 import static org.objecttrouve.testing.matchers.ConvenientMatchers.anIterableOf;
 import static org.objecttrouve.testing.matchers.customization.StringifiersConfig.stringifiers;
 import static org.objecttrouve.testing.matchers.fluentatts.Attribute.attribute;
 
+@SuppressWarnings({"rawtypes", "ConcatenationWithEmptyString"})
 public class FluentIterableMatcherTest {
 
     @Test
@@ -53,6 +55,7 @@ public class FluentIterableMatcherTest {
     }
 
 
+    @SuppressWarnings("ConstantValue")
     @Test
     public void matchesSafely__mismatch__empty_expectation__no_requirements__null_actual__plain_matchesSafely_call() {
 
@@ -2436,9 +2439,9 @@ public class FluentIterableMatcherTest {
                 .withItemsMatching(m1, m2, m3)
         );
 
-        assertTrue(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(0)).getMatcher() == m2);
-        assertTrue(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(1)).getMatcher() == m3);
-        assertTrue(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(2)).getMatcher() == m1);
+        assertSame(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(0)).getMatcher(), m2);
+        assertSame(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(1)).getMatcher(), m3);
+        assertSame(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(2)).getMatcher(), m1);
     }
 
     @Test
@@ -2466,9 +2469,9 @@ public class FluentIterableMatcherTest {
                 .withItemsMatching(m1, m2, m3)
         );
 
-        assertTrue(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(0)).getMatcher() == m1);
-        assertTrue(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(1)).getMatcher() == m2);
-        assertTrue(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(2)).getMatcher() == m3);
+        assertSame(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(0)).getMatcher(), m1);
+        assertSame(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(1)).getMatcher(), m2);
+        assertSame(((ItemResult.MatcherWithIndex) itemResults.get(0).getMismatchedItemMatchers().get(2)).getMatcher(), m3);
     }
 
     @Test
@@ -2501,12 +2504,12 @@ public class FluentIterableMatcherTest {
         final ItemResult.MatcherWithIndex mAt0 = mismatchedItemMatchers.get(0);
         final ItemResult.MatcherWithIndex mAt1 = mismatchedItemMatchers.get(1);
         final ItemResult.MatcherWithIndex mAt2 = mismatchedItemMatchers.get(2);
-        assertTrue(mAt0.getMatcher() == m3);
-        assertTrue(mAt1.getMatcher() == m2);
-        assertTrue(mAt2.getMatcher() == m1);
-        assertTrue(mAt0.getIndex() == 2);
-        assertTrue(mAt1.getIndex() == 1);
-        assertTrue(mAt2.getIndex() == 0);
+        assertSame(mAt0.getMatcher(), m3);
+        assertSame(mAt1.getMatcher(), m2);
+        assertSame(mAt2.getMatcher(), m1);
+        assertEquals(2, mAt0.getIndex());
+        assertEquals(1, mAt1.getIndex());
+        assertEquals(0, mAt2.getIndex());
 
     }
 
