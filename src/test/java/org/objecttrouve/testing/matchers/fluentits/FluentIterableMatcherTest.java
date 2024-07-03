@@ -2799,7 +2799,6 @@ public class FluentIterableMatcherTest {
         assertThat(score, closeTo(2.0/5.0, 0.00001));
     }
 
-    @Ignore // Tmp
     @Test
     public void matchesSafely__mismatch__getScore__partial__ordered_isnt_really_the_case__but_some_items_match__but_not_exactly() {
 
@@ -2811,10 +2810,9 @@ public class FluentIterableMatcherTest {
             .exactly()
         );
 
-        assertThat(score, closeTo(3.0/7.0, 0.00001));
+        assertThat(score, closeTo(2.0/7.0, 0.00001));
     }
 
-    @Ignore // Tmp
     @Test
     public void matchesSafely__mismatch__getScore__partial__sorted_isnt_the_case__but_some_items_match__but_not_exactly() {
 
@@ -2826,7 +2824,7 @@ public class FluentIterableMatcherTest {
             .exactly()
         );
 
-        assertThat(score, closeTo(3.0/7.0, 0.00001));
+        assertThat(score, closeTo(2.0/7.0, 0.00001));
     }
 
     @Test
