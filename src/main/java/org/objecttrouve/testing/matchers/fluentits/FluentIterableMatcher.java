@@ -167,9 +167,6 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         }
     }
 
-
-
-
     /**
      * A measure for the extent to which the actual {@code Iterable} meets the expectations.
      *
@@ -232,9 +229,13 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         if (matchedExpected.size() < settings.expectations.length) {
             findings.add(new Finding("Not all expectations were fulfilled."));
         }
-        if (settings.mustNotHaveUnexpectedItems && actual.length > settings.expectations.length) {
-            findings.add(new Finding("Unexpected actual items."));
-        }
+        if (settings.mustNotHaveUnexpectedItems)
+            if (actual.length > settings.expectations.length) {
+                findings.add(new Finding("Unexpected actual items."));
+            }
+        else if (!matchMatrix.isOneToOne()) {
+                findings.add(new Finding("Expectations don't correspond 1:1 (!) to actual items."));
+            }
         if (matchedExpected.size() > matchedActual.size()) {
             findings.add(new Finding("Could not find matches for all expectations."));
         }
