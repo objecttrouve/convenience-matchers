@@ -96,7 +96,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
 
     // Matching
     private X[] actual = (X[]) new Object[0];
-    private double[][] matchMatrix = new double[0][0];
+    private MatchMatrix matchMatrix = new MatchMatrix(0, 0);
     private final Set<Integer> matchedExpected = new HashSet<>();
     private final Set<Integer> matchedActual = new HashSet<>();
     private final Set<Integer> unsorted = new HashSet<>();
@@ -136,7 +136,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
 
         // noinspection unchecked
         actual = (X[]) stream(iterable.spliterator(), false).toArray();
-        matchMatrix = new double[settings.expectations.length][actual.length];
+        matchMatrix = new MatchMatrix(settings.expectations.length, actual.length);
 
         loop(this::match);
         loop(this::aggregate);
@@ -241,7 +241,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         if (settings.ordered) {
             int matchedInOrder = 0;
             for (int i = 0, j = 0; i < settings.expectations.length && j < actual.length; i++, j++) {
-                if (matchMatrix[i][j] == 1) {
+                if (matchMatrix.matched(i, j)) {
                     matchedInOrder++;
                 } else if (!settings.mustNotHaveUnexpectedItems) {
                     unordered.add(j);
@@ -309,7 +309,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         this.findings.clear();
         this.matchedActual.clear();
         this.matchedExpected.clear();
-        this.matchMatrix = new double[0][0];
+        this.matchMatrix = new MatchMatrix(0, 0);
     }
 
 
@@ -325,18 +325,19 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
     private void match(final int i, final int j) {
         final Matcher<X> expectation = settings.expectations[i];
         if (expectation.matches(actual[j])) {
-            matchMatrix[i][j] = 1;
+            matchMatrix.match(i, j);
         } else {
             if (expectation instanceof ScorableMatcher) {
-                matchMatrix[i][j] = ((ScorableMatcher) expectation).getScore();
+                matchMatrix.scoredMismatch(i, j, ((ScorableMatcher) expectation).getScore());
             } else {
-                matchMatrix[i][j] = 0;
+                // Redundant. TODO: Remove?
+                matchMatrix.mismatch(i, j);
             }
         }
     }
 
     private void aggregate(final int i, final int j) {
-        if (matchMatrix[i][j] == 1) {
+        if (matchMatrix.matched(i, j)) {
             matchedExpected.add(i);
             matchedActual.add(j);
         }
@@ -416,7 +417,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
                 }
                 final Set<ScoredMismatch> unmatched = new TreeSet<>();
                 for (int i = 0; i < settings.expectations.length; i++) {
-                    final double score = matchMatrix[i][j];
+                    final double score = matchMatrix.getScore(i, j);
                     if (score != 1.0) {
                         unmatched.add(new ScoredMismatch(j, i, score));
                     }
