@@ -12,10 +12,6 @@ class MatchMatrix {
         matchMatrix[expectationIndex][actualItemIndex] = 1.0;
     }
 
-    void mismatch(final int expectationIndex, final int actualItemIndex) {
-        matchMatrix[expectationIndex][actualItemIndex] = 0.0;
-    }
-
     void scoredMismatch(final int expectationIndex, final int actualItemIndex, double score) {
         matchMatrix[expectationIndex][actualItemIndex] = score;
     }

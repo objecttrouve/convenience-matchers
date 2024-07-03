@@ -329,10 +329,8 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
         } else {
             if (expectation instanceof ScorableMatcher) {
                 matchMatrix.scoredMismatch(i, j, ((ScorableMatcher) expectation).getScore());
-            } else {
-                // Redundant. TODO: Remove?
-                matchMatrix.mismatch(i, j);
             }
+            // Else mismatch!
         }
     }
 
