@@ -234,7 +234,7 @@ public class FluentIterableMatcher<X, C extends Iterable<X>> extends TypeSafeMat
                 findings.add(new Finding("Unexpected actual items."));
             }
         else if (!matchMatrix.isOneToOne()) {
-                findings.add(new Finding("Expectations don't correspond 1:1 (!) to actual items."));
+                findings.add(new Finding("No 1:1 relationship between expectations and actual items."));
             }
         if (matchedExpected.size() > matchedActual.size()) {
             findings.add(new Finding("Could not find matches for all expectations."));
