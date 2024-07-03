@@ -53,6 +53,24 @@ public class Examples {
         ));
     }
 
+    @Test
+    public void test__matchesSafely__mismatch__2_matcher_expectations__ofSize_2__1_actual__consistent_with__exactly_bad_oneToOne() {
+
+        final List<String> strings = asList("item", "youtem", "theytem");
+
+        assertThat(strings, is(
+                anIterableOf(String.class)
+                        .withItemsMatching(
+                                containsString("it"),
+                                containsString("it"),
+                                containsString("tem")
+                        )
+                        .ofSize(3)
+                        .exactly()
+        ));
+    }
+
+
 
     @Test
     public void test__matchesSafely__mismatch__ofSize_1__2_actual() {
